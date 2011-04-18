@@ -23,6 +23,7 @@ import time
 import oauth.oauth as oauth
 import urlparse, cgi
 import urllib
+import json
 
 from simpleoauth import SimpleOAuthClient
 
@@ -70,12 +71,19 @@ class CartoDB(object):
         params = self.client.access_resource(oauth_request, resource)
         return params
 
-    def run_sql(self, sql):
-        """ executes sql query on cartodb server and return json """
+    def run_sql(self, sql, parse_json=True):
+        """ executes sql query on cartodb server 
+            if parse_json is False, returned data isn't parsed as json
+            and is returned as is
+        """
         p = urllib.urlencode({'sql': sql})
         #TODO: parse json and return python objects
-        return self.get_resource(RESOURCE_URL + '?' + p)
+        data = self.get_resource(RESOURCE_URL + '?' + p)
+        if parse_json:
+            return json.loads(data)
+        return data
 
 if __name__ == '__main__':
     db = CartoDB(CONSUMER_KEY, CONSUMER_SECRET)
     print db.run_sql("select * from test")
+    print db.run_sql("select * from test", False)
