@@ -1,0 +1,18 @@
+
+CartoDB python client 
+=====================
+
+A simple CartoDB client to perform requests against the CartoDB API.
+Internally it uses OAuth
+
+* quick start *
+
+    from cartodb import CartoDB
+    db = CartoDB(CONSUMER_KEY, CONSUMER_SECRET)
+    print db.run_sql("select * from test")
+
+* requirements * 
+
+     python 2.5 
+     pip install oauth
+
