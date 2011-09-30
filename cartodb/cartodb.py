@@ -42,6 +42,9 @@ AUTHORIZATION_URL = 'https://%(user)s.cartodb.com/oauth/authorize'
 RESOURCE_URL = 'https://%(user)s.cartodb.com/api/v1/sql'
 
 
+class CartoDBException(Exception):
+    pass
+
 class CartoDB(object):
     """ basic client to access cartodb api """
 
@@ -90,6 +93,11 @@ class CartoDB(object):
             if parse_json:
                 return json.loads(content)
             return content
+        elif resp['status'] == '400':
+            raise CartoDBException(json.loads(content)['error'])
+        elif resp['status'] == '500':
+            raise CartoDBException('internal server error')
+
         return None
 
 

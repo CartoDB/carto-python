@@ -20,6 +20,11 @@ quick start
     CONSUMER_SECRET='YYYYYYYYYYYYYYYYYYYYYYYYYY'
     cartodb_domain = 'vitorino'
     cl = CartoDB(CONSUMER_KEY, CONSUMER_SECRET, user, password, cartodb_domain)
-    print cl.sql('select * from mytable')
+    try:
+        print cl.sql('select * from mytable')
+    except CartoDBException as e:
+        print ("some error ocurred", e)
+
+
 
 
