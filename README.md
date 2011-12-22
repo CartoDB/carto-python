@@ -11,6 +11,13 @@ You can install cartodb-python by cloning this repository or by using [Pip](http
 pip install -e git+git://github.com/javisantana/cartodb-python.git#egg=cartodb
 ```
 
+Note that cartodb-python depends on the python-oauth2 module:
+
+```bash
+sudo apt-get install python-oauth2
+```
+
+
 # Usage example #
 
 The following example requires your CartoDB API consmer key and consumer secret. Refer to the [CartoDB Authentication documentation](http://developers.cartodb.com/api/authentication.html) for details.
