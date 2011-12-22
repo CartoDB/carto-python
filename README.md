@@ -6,15 +6,26 @@ The cartodb-python project is a Python client for the [CartoDB SQL API](http://d
 
 You can install cartodb-python by cloning this repository or by using [Pip](http://pypi.python.org/pypi/pip), a Python package installer similar to easy_install.
 
+```bash
+pip install cartodb
+```
+
+or if you want to use the development version
 
 ```bash
 pip install -e git+git://github.com/javisantana/cartodb-python.git#egg=cartodb
 ```
 
-Note that cartodb-python depends on the python-oauth2 module:
+Note that cartodb-python depends on the ouath2 module
 
 ```bash
-sudo apt-get install python-oauth2
+pip install oauth2
+```
+
+and if you're running python < 2.6 you need to install simplejson
+
+```bash
+pip install simplejson
 ```
 
 
