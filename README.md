@@ -24,7 +24,7 @@ The following example requires your CartoDB API consmer key and consumer secret.
 
 
 ```python
-import cartodb
+from cartodb import CartoDB, CartoDBException
 
 user =  'me@mail.com'
 password =  'secret'
