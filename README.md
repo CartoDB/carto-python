@@ -1,30 +1,39 @@
+# What is cartodb-python? #
 
-CartoDB python client 
-=====================
+The cartodb-python project is a Python client for the [CartoDB SQL API](http://developers.cartodb.com/api/sql.html) that supports [authentication using OAuth](http://developers.cartodb.com/api/authentication.html).
 
-A simple CartoDB client to perform requests against the CartoDB API.
-Internally it uses OAuth
+# Installation #
 
-
-installing 
-----------
-
-    pip install -e git+git://github.com/javisantana/cartodb-python.git#egg=cartdob
-
-quick start
------------
-
-    user =  'your@mail.com'
-    password =  'XXXX'
-    CONSUMER_KEY='XXXXXXXXXXXXXXXXXX'
-    CONSUMER_SECRET='YYYYYYYYYYYYYYYYYYYYYYYYYY'
-    cartodb_domain = 'vitorino'
-    cl = CartoDB(CONSUMER_KEY, CONSUMER_SECRET, user, password, cartodb_domain)
-    try:
-        print cl.sql('select * from mytable')
-    except CartoDBException as e:
-        print ("some error ocurred", e)
+You can install cartodb-python by cloning this repository or by using [Pip](http://pypi.python.org/pypi/pip), a Python package installer similar to easy_install.
 
 
+```bash
+pip install -e git+git://github.com/javisantana/cartodb-python.git#egg=cartodb
+```
+
+Note that cartodb-python depends on the python-oauth2 module:
+
+```bash
+sudo apt-get install python-oauth2
+```
 
 
+# Usage example #
+
+The following example requires your CartoDB API consmer key and consumer secret. Refer to the [CartoDB Authentication documentation](http://developers.cartodb.com/api/authentication.html) for details.
+
+
+```python
+from cartodb import CartoDB, CartoDBException
+
+user =  'me@mail.com'
+password =  'secret'
+CONSUMER_KEY='YOUR_CARTODB_CONSUMER_KEY'
+CONSUMER_SECRET='YOUR_CARTODB_CONSUMER_SECRET'
+cartodb_domain = 'YOUR_CARTODB_DOMAIN'
+cl = CartoDB(CONSUMER_KEY, CONSUMER_SECRET, user, password, cartodb_domain)
+try:
+    print cl.sql('select * from mytable')
+except CartoDBException as e:
+    print ("some error ocurred", e)
+```
