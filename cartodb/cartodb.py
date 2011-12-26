@@ -49,7 +49,7 @@ class CartoDB(object):
     """ basic client to access cartodb api """
     MAX_GET_QUERY_LEN = 2048
 
-    def __init__(self, key, secret, email, password, cartodb_domain, host='carto.com', protocol='https'):
+    def __init__(self, key, secret, email, password, cartodb_domain, host='cartodb.com', protocol='https'):
 
         self.consumer_key = key
         self.consumer_secret = secret
