@@ -36,10 +36,10 @@ except ImportError:
 
 from oauth2 import Request
 
-REQUEST_TOKEN_URL = 'https://%(user)s.cartodb.com/oauth/request_token'
-ACCESS_TOKEN_URL = 'https://%(user)s.cartodb.com/oauth/access_token'
-AUTHORIZATION_URL = 'https://%(user)s.cartodb.com/oauth/authorize'
-RESOURCE_URL = 'https://%(user)s.cartodb.com/api/v1/sql'
+#REQUEST_TOKEN_URL = 'https://%(user)s.%(domain)s/oauth/request_token'
+ACCESS_TOKEN_URL = '%(protocol)s://%(user)s.%(domain)s/oauth/access_token'
+#AUTHORIZATION_URL = 'https://%(user)s.%(domain)s/oauth/authorize'
+RESOURCE_URL = '%(protocol)s://%(user)s.%(domain)s/api/v1/sql'
 
 
 class CartoDBException(Exception):
@@ -47,8 +47,9 @@ class CartoDBException(Exception):
 
 class CartoDB(object):
     """ basic client to access cartodb api """
+    MAX_GET_QUERY_LEN = 2048
 
-    def __init__(self, key, secret, email, password, cartodb_domain):
+    def __init__(self, key, secret, email, password, cartodb_domain, host='carto.com', protocol='https'):
 
         self.consumer_key = key
         self.consumer_secret = secret
@@ -63,32 +64,39 @@ class CartoDB(object):
         params["x_auth_mode"] = 'client_auth'
 
         # Get Access Token
-        access_token_url = ACCESS_TOKEN_URL % {'user': cartodb_domain}
+        access_token_url = ACCESS_TOKEN_URL % {'user': cartodb_domain, 'domain': host, 'protocol': protocol}
         resp, token = client.request(access_token_url, method="POST", body=urllib.urlencode(params))
         access_token = dict(urlparse.parse_qsl(token))
         token = oauth.Token(access_token['oauth_token'], access_token['oauth_token_secret'])
 
         # prepare client
-        self.resource_url = RESOURCE_URL % {'user': cartodb_domain}
+        self.resource_url = RESOURCE_URL % {'user': cartodb_domain, 'domain': host, 'protocol': protocol}
         self.client = oauth.Client(consumer, token)
 
 
-    def req(self, url, http_method="GET", http_headers=None):
+    def req(self, url, http_method="GET", http_headers=None, body=''):
         """ make an autorized request """
         resp, content = self.client.request(
             url,
+            body=body,
             method=http_method,
             headers=http_headers
         )
         return resp, content
 
-    def sql(self, sql, parse_json=True):
+    def sql(self, sql, parse_json=True, do_post=True):
         """ executes sql in cartodb server
             set parse_json to False if you want raw reponse
         """
         p = urllib.urlencode({'q': sql})
-        url = self.resource_url + '?' + p
-        resp, content = self.req(url);
+        url = self.resource_url
+        # depending on query size do a POST or GET
+        if len(sql) < self.MAX_GET_QUERY_LEN and not do_post:
+            url = url + '?' + p
+            resp, content = self.req(url);
+        else:
+            resp, content = self.req(url, 'POST', body=p);
+
         if resp['status'] == '200':
             if parse_json:
                 return json.loads(content)
