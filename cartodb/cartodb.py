@@ -49,13 +49,13 @@ class CartoDB(object):
     """ basic client to access cartodb api """
     MAX_GET_QUERY_LEN = 2048
 
-    def __init__(self, key, secret, email, password, cartodb_domain, host='cartodb.com', protocol='https'):
+    def __init__(self, key, secret, email, password, cartodb_domain, host='cartodb.com', protocol='https', proxy_info=None):
 
         self.consumer_key = key
         self.consumer_secret = secret
         consumer = oauth.Consumer(self.consumer_key, self.consumer_secret)
 
-        client = oauth.Client(consumer)
+        client = oauth.Client(consumer, proxy_info=proxy_info)
         client.set_signature_method = oauth.SignatureMethod_HMAC_SHA1()
 
         params = {}
