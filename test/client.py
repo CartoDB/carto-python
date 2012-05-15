@@ -1,9 +1,5 @@
-from cartodb import CartoDBOAuth as CartoDB, CartoDBException, CartoDBAPIKey
-
-import httplib2
-import oauth2 as oauth
-
 import unittest
+from cartodb import CartoDBOAuth as CartoDB, CartoDBException, CartoDBAPIKey
 
 from secret import *
 
