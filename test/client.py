@@ -16,7 +16,7 @@ class CartoDBClientTest(object):
         self.assertRaises(CartoDBException, self.client.sql, 'select * from non_existing_table', { 'do_post':False})
 
     def test_sql(self, do_post=True):
-        data = self.client.sql('select * from tracker', do_post=do_post)
+        data = self.client.sql('select * from ' + EXISTING_TABLE, do_post=do_post)
         self.assertIsNotNone(data)
         self.assertIn('rows', data)
         self.assertIn('total_rows', data)
