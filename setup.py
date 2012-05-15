@@ -1,5 +1,6 @@
 
-from distutils.core import setup
+#from distutils.core import setup
+from setuptools import setup
 import sys
 
 REQUIRES = ['oauth2']
@@ -14,5 +15,6 @@ setup(name='cartodb',
       version='0.4',
       install_requires=REQUIRES,
       packages=['cartodb'],
-      requires = REQUIRES
+      requires = REQUIRES,
+      test_suite='test.client'
 )

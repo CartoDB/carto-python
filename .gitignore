@@ -1,5 +1,7 @@
 
 *.swp
 *.pyc
-test.py
+secret.py
+env
+
 
