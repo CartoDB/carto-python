@@ -13,7 +13,7 @@ pip install cartodb
 or if you want to use the development version
 
 ```bash
-pip install -e git+git://github.com/javisantana/cartodb-python.git#egg=cartodb
+pip install -e git+git://github.com/Vizzuality/cartodb-python.git#egg=cartodb
 ```
 
 Note that cartodb-python depends on the ouath2 module
