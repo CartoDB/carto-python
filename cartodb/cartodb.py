@@ -41,7 +41,7 @@ from oauth2 import Request
 #REQUEST_TOKEN_URL = 'https://%(user)s.%(domain)s/oauth/request_token'
 ACCESS_TOKEN_URL = '%(protocol)s://%(user)s.%(domain)s/oauth/access_token'
 #AUTHORIZATION_URL = 'https://%(user)s.%(domain)s/oauth/authorize'
-RESOURCE_URL = '%(protocol)s://%(user)s.%(domain)s/api/v1/sql'
+RESOURCE_URL = '%(protocol)s://%(user)s.%(domain)s/api/%(api_version)s/sql'
 
 
 class CartoDBException(Exception):
@@ -51,8 +51,8 @@ class CartoDBBase(object):
     """ basic client to access cartodb api """
     MAX_GET_QUERY_LEN = 2048
 
-    def __init__(self, cartodb_domain, host='cartodb.com', protocol='https'):
-        self.resource_url = RESOURCE_URL % {'user': cartodb_domain, 'domain': host, 'protocol': protocol}
+    def __init__(self, cartodb_domain, host='cartodb.com', protocol='https', api_version='v1'):
+        self.resource_url = RESOURCE_URL % {'user': cartodb_domain, 'domain': host, 'protocol': protocol, 'api_version': api_version}
 
     def req(self, url, http_method="GET", http_headers=None, body=''):
         """
