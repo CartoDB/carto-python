@@ -33,6 +33,11 @@ class CartoDBClientTestApiKey(CartoDBClientTest, unittest.TestCase):
     def setUp(self):
         self.client = CartoDBAPIKey(API_KEY, user)
 
+class CartoDBClientTestApiKeyV2(CartoDBClientTest, unittest.TestCase):
+
+    def setUp(self):
+        self.client = CartoDBAPIKey(API_KEY, user, api_version='v2')
+
 
 if __name__ == '__main__':
     unittest.main()

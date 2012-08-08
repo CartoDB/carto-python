@@ -88,8 +88,8 @@ class CartoDBOAuth(CartoDBBase):
     """
     This client allows to auth in cartodb using oauth. 
     """
-    def __init__(self, key, secret, email, password, cartodb_domain, host='cartodb.com', protocol='https', proxy_info=None):
-        super(CartoDBOAuth, self).__init__(cartodb_domain, host, protocol)
+    def __init__(self, key, secret, email, password, cartodb_domain, host='cartodb.com', protocol='https', proxy_info=None, *args, **kwargs):
+        super(CartoDBOAuth, self).__init__(cartodb_domain, host, protocol, *args, **kwargs)
 
         self.consumer_key = key
         self.consumer_secret = secret
@@ -129,8 +129,8 @@ class CartoDBAPIKey(CartoDBBase):
     this method is easier than use the oauth authentification but if less secure, it is recommended to use only using the https endpoint
     """
 
-    def __init__(self, api_key, cartodb_domain, host='cartodb.com', protocol='https', proxy_info=None):
-        super(CartoDBAPIKey, self).__init__(cartodb_domain, host, protocol)
+    def __init__(self, api_key, cartodb_domain, host='cartodb.com', protocol='https', proxy_info=None, *args, **kwargs):
+        super(CartoDBAPIKey, self).__init__(cartodb_domain, host, protocol, *args, **kwargs)
         self.api_key = api_key
         self.client = httplib2.Http()
         if protocol != 'https':
