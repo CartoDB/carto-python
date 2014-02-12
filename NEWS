@@ -1,0 +1,4 @@
+Feb-12-2014: version 0.7
+
+ - additional checks in sql call for 404 status (#5)
+

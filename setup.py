@@ -8,10 +8,10 @@ if sys.version_info < (2 , 6):
     REQUIRES.append('simplejson')
 
 setup(name='cartodb', 
-      author = 'Javi Santana', 
+      author = 'Javi Santana',
       author_email = 'jsantana@vizzuality.com',
       description = 'client to access cartodb api',
-      version='0.6',
+      version='0.7',
       url='https://github.com/Vizzuality/cartodb',
       install_requires=REQUIRES,
       packages=['cartodb'],
