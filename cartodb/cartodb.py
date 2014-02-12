@@ -79,8 +79,13 @@ class CartoDBBase(object):
             return content
         elif resp['status'] == '400':
             raise CartoDBException(json.loads(content)['error'])
+        elif resp['status'] == '404':
+            raise CartoDBException('Not found: ' + url)
         elif resp['status'] == '500':
             raise CartoDBException('internal server error')
+        else:
+            raise CartoDBException('Unknown error occurred')
+
 
         return None
 
