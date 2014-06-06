@@ -71,6 +71,23 @@ except CartoDBException as e:
 print ("some error ocurred", e)
 ```
 
+# API
+
+## cartodb.sql(sql, [parse_json, do_post, format])
+
+executes the ``sql`` and returns the result
+
+    - parse_json: default True, parse the result from CartoDB and returns a python object instead of
+      a string
+    - do_post: use POST instead of GET to fetch results from CartoDB. It's recommended to set this
+      param to False if the queries are reading data to use CartoDB caches.
+    - format: one of the ones supported by CartoDB: 'json' (default), 'geojson', 'shp', 'csv',
+      'kml'. When using a format different than 'json' or 'geojson' ``parse_json`` takes no effect
+      and it's always set to False
+
+raises CartoDBException
+
+
 Note for people using version 0.4
 ==================================
 
