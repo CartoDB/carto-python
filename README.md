@@ -66,9 +66,9 @@ API_KEY ='YOUR_CARTODB_API_KEY'
 cartodb_domain = 'YOUR_CARTODB_DOMAIN'
 cl = CartoDBAPIKey(API_KEY, cartodb_domain)
 try:
-print cl.sql('select * from mytable')
+   print cl.sql('select * from mytable')
 except CartoDBException as e:
-print ("some error ocurred", e)
+   print ("some error ocurred", e)
 ```
 
 Note for people using version 0.4
