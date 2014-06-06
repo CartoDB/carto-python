@@ -60,11 +60,16 @@ class CartoDBBase(object):
         """
         raise NotImplementedError('req method must be implemented')
 
-    def sql(self, sql, parse_json=True, do_post=True):
+    def sql(self, sql, parse_json=True, do_post=True, format=None):
         """ executes sql in cartodb server
             set parse_json to False if you want raw reponse
         """
-        p = urllib.urlencode({'q': sql})
+        params = {'q': sql}
+        if format:
+            params['format'] = format
+            if format not in ['json', 'geojson']:
+                parse_json = False
+        p = urllib.urlencode(params)
         url = self.resource_url
         # depending on query size do a POST or GET
         if len(sql) < self.MAX_GET_QUERY_LEN and not do_post:
