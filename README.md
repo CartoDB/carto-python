@@ -31,8 +31,7 @@ Usage example
 =============
 
 The following example requires your **CartoDB API consmer key and consumer
-secret** or the **API KEY**. Refer to the [CartoDB Authentication
-documentation](http://developers.cartodb.com/documentation/cartodb-apis.html#authentication)
+secret** or the **API KEY**. Refer to the [CartoDB documentation](http://docs.cartodb.com/cartodb-platform/sql-api.html#authentication)
 for details.
 
 Using oAuth
