@@ -88,9 +88,6 @@ class CartoDBBase(object):
             raise CartoDBException('Unknown error occurred')
 
 
-        return None
-
-
 class CartoDBOAuth(CartoDBBase):
     """
     This client allows to auth in cartodb using oauth.
