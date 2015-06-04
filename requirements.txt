@@ -1,3 +1,4 @@
-
-oauth2
-simplejson
+requests==2.7.0
+simplejson==3.7.3
+requests_oauthlib==0.5.0
+oauth2==1.5.211
