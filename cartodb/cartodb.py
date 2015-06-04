@@ -1,5 +1,3 @@
-# -*- encoding: utf-8 -*-
-
 """
   ** CartoDBClient **
 
@@ -8,9 +6,8 @@
 
   * Requirements:
 
-     python 2.5
-     pip install oauth2
-     pip install simplejson # if you're running python < 2.6
+     python 2.6
+     pip install -r requirements.txt
 
   * Example use:
         user =  'your@mail.com'
@@ -18,16 +15,17 @@
         CONSUMER_KEY='XXXXXXXXXXXXXXXXXX'
         CONSUMER_SECRET='YYYYYYYYYYYYYYYYYYYYYYYYYY'
         cartodb_domain = 'vitorino'
-        cl = CartoDB(CONSUMER_KEY, CONSUMER_SECRET, user, password, cartodb_domain)
+        cl = CartoDBOAuth(CONSUMER_KEY, CONSUMER_SECRET, user, password, cartodb_domain)
         print cl.sql('select * from a')
 
 """
-
+import httplib2
 import warnings
 import urlparse
 import oauth2 as oauth
 import urllib
-import httplib2
+import requests
+from requests_oauthlib import OAuth1Session
 
 try:
     import json
@@ -38,6 +36,44 @@ ACCESS_TOKEN_URL = '%(protocol)s://%(user)s.%(domain)s/oauth/access_token'
 RESOURCE_URL = '%(protocol)s://%(user)s.%(domain)s/api/%(api_version)s/sql'
 
 
+def proxyinfo2proxies(proxy_info):
+    """
+    Converts ProxyInfo object into a proxies dict
+    :param proxy_info: ProxyInfo object
+    :return: requests' proxies dict
+    """
+    proxies = {}
+
+    if proxy_info.proxy_user and proxy_info.proxy_pass:
+        credentials = "{user}:{password}@".format(user=proxy_info.proxy_user, password=proxy_info.proxy_pass)
+    elif proxy_info.proxy_user:
+        credentials = "{user}@".format(user=proxy_info.proxy_user)
+    else:
+        credentials = ''
+    port = ":{port}".format(port=proxy_info.proxy_port) if proxy_info.proxy_port else ''
+
+    proxy_url = "http://{credentials}{host}{port}".format(credentials=credentials, host=proxy_info.proxy_host, port=port)
+
+    if proxy_info.applies_to("http"):
+        proxies["http"] = proxy_url
+    if proxy_info.applies_to("https"):
+        proxies["https"] = proxy_url
+
+    return proxies
+
+
+def proxies2proxyinfo(proxies):
+    """
+    Converts proxies dict into a ProxyInfo object
+    :param proxies: requests' proxies dict
+    :return: ProxyInfo object
+    """
+    url_components = urlparse.urlparse(proxies["http"]) if "http" in proxies else urlparse.urlparse(proxies["https"])
+
+    return httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_HTTP_NO_TUNNEL, url_components.hostname, url_components.port,
+                              proxy_user=url_components.username, proxy_pass=url_components.password)
+
+
 class CartoDBException(Exception):
     pass
 
@@ -46,60 +82,114 @@ class CartoDBBase(object):
     """ basic client to access cartodb api """
     MAX_GET_QUERY_LEN = 2048
 
-    def __init__(self, cartodb_domain, host='cartodb.com', protocol='https', api_version='v2'):
-        self.resource_url = RESOURCE_URL % {'user': cartodb_domain, 'domain': host, 'protocol': protocol, 'api_version': api_version}
-
-    def req(self, url, http_method="GET", http_headers=None, body=''):
+    def __init__(self, cartodb_domain, host='cartodb.com', protocol='https', api_version='v2', proxy_info=None):
         """
-        this method should implement how to send a request to server using propper auth
+        :param cartodb_domain: Subdomain for API requests. It's called "cartodb_domain", but it's just a subdomain and doesn't have to live under cartodb.com
+        :param host: Domain for API requests, even though it's called "host"
+        :param protocol: Just use the default
+        :param api_version: Use default or 'v1' to avoid caching
+        :param proxy_info: httplib2's ProxyInfo object or requests' proxy dict
+        :return:
+        """
+        self.resource_url = RESOURCE_URL % {'user': cartodb_domain, 'domain': host, 'protocol': protocol, 'api_version': api_version}
+        self.host = host
+        self.protocol = protocol
+        self.api_version = api_version
+        # For backwards compatibility, we need to support httplib2's ProxyInfo and requests' proxies objects
+        # And we still need old-style ProxyInfo for the xAuth client
+        if type(proxy_info) == httplib2.ProxyInfo:
+            self.proxy_info = proxy_info
+            self.proxies = proxyinfo2proxies(self.proxy_info)
+        if type(proxy_info) == dict:
+            self.proxies = proxy_info
+            self.proxy_info = proxies2proxyinfo(self.proxies)
+        else:
+            self.proxy_info = None
+            self.proxies = None
+
+    def req(self, url, http_method="GET", http_headers=None, body=None, params=None):
+        """
+        Subclasses must implement this method, that will be used to send API requests with proper auth
+        :param url: API URL, currently, only SQL API is supported
+        :param http_method: "GET" or "POST"
+        :param http_headers: requests' http_headers
+        :param body: requests' "data"
+        :param params: requests' "params"
+        :return:
         """
         raise NotImplementedError('req method must be implemented')
 
+    def get_response_data(self, resp, parse_json=True):
+        """
+        Get response data or throw an appropiate exception
+        :param resp: requests' response object
+        :param parse_json: if True, response will be parsed as JSON
+        :return: response data, either as json or as a regular response.content object
+        """
+        if resp.status_code == requests.codes.ok:
+            if parse_json:
+                return resp.json()
+            return resp.content
+        elif resp.status_code == requests.codes.bad_request:
+            raise CartoDBException(resp.json()['error'])
+        elif resp.status_code == requests.codes.not_found:
+            raise CartoDBException('Not found: ' + resp.url)
+        elif resp.status_code == requests.codes.internal_server_error:
+            raise CartoDBException('Internal server error')
+        elif resp.status_code == requests.codes.unauthorized or resp.status_code == requests.codes.forbidden:
+            raise CartoDBException('Access denied')
+        else:
+            raise CartoDBException('Unknown error occurred')
+
     def sql(self, sql, parse_json=True, do_post=True, format=None):
-        """ executes sql in cartodb server
-            set parse_json to False if you want raw reponse
+        """
+        Executes SQL query in a CartoDB server
+        :param sql:
+        :param parse_json: Set it to False if you want raw reponse
+        :param do_post: Set it to True to force post request
+        :param format: Any of the data export formats allowed by CartoDB's SQL API
+        :return: response data, either as json or as a regular response.content object
         """
         params = {'q': sql}
         if format:
             params['format'] = format
             if format not in ['json', 'geojson']:
                 parse_json = False
-        p = urllib.urlencode(params)
         url = self.resource_url
 
         # depending on query size do a POST or GET
         if len(sql) < self.MAX_GET_QUERY_LEN and not do_post:
-            url = url + '?' + p
-            resp, content = self.req(url);
+            resp = self.req(url, 'GET', params=params)
         else:
-            resp, content = self.req(url, 'POST', body=p);
+            resp = self.req(url, 'POST', body=params)
 
-        if resp['status'] == '200':
-            if parse_json:
-                return json.loads(content)
-            return content
-        elif resp['status'] == '400':
-            raise CartoDBException(json.loads(content)['error'])
-        elif resp['status'] == '404':
-            raise CartoDBException('Not found: ' + url)
-        elif resp['status'] == '500':
-            raise CartoDBException('internal server error')
-        else:
-            raise CartoDBException('Unknown error occurred')
+        return self.get_response_data(resp, parse_json)
 
 
 class CartoDBOAuth(CartoDBBase):
     """
-    This client allows to auth in cartodb using oauth.
+    This class provides you with authenticated access to CartoDB's APIs using your XAuth credentials.
+    You can find your API key in https://USERNAME.cartodb.com/your_apps/oauth.
     """
-    def __init__(self, key, secret, email, password, cartodb_domain, host='cartodb.com', protocol='https', proxy_info=None, *args, **kwargs):
-        super(CartoDBOAuth, self).__init__(cartodb_domain, host, protocol, *args, **kwargs)
+    def __init__(self, key, secret, email, password, cartodb_domain, **kwargs):
+        """
+        :param key: XAuth consumer key
+        :param secret: XAuth consumer secret
+        :param email: User name on CartoDB (yes, no email)
+        :param password: User password on CartoDB
+        :param cartodb_domain: Subdomain for API requests. It's called "cartodb_domain", but it's just a subdomain and doesn't have to live under cartodb.com
+        :param kwargs: Any other params to be sent to the parent class
+        :return:
+        """
+        super(CartoDBOAuth, self).__init__(cartodb_domain, **kwargs)
 
+        # Sadly, we xAuth is not supported by requests or any of its modules, so we need to stick to
+        # oauth2 when it comes to getting the access token
         self.consumer_key = key
         self.consumer_secret = secret
         consumer = oauth.Consumer(self.consumer_key, self.consumer_secret)
 
-        client = oauth.Client(consumer, proxy_info=proxy_info)
+        client = oauth.Client(consumer, proxy_info=self.proxy_info)
         client.set_signature_method = oauth.SignatureMethod_HMAC_SHA1()
 
         params = {}
@@ -108,49 +198,62 @@ class CartoDBOAuth(CartoDBBase):
         params["x_auth_mode"] = 'client_auth'
 
         # Get Access Token
-        access_token_url = ACCESS_TOKEN_URL % {'user': cartodb_domain, 'domain': host, 'protocol': protocol}
+        access_token_url = ACCESS_TOKEN_URL % {'user': cartodb_domain, 'domain': self.host, 'protocol': self.protocol}
         resp, token = client.request(access_token_url, method="POST", body=urllib.urlencode(params))
         access_token = dict(urlparse.parse_qsl(token))
-        token = oauth.Token(access_token['oauth_token'], access_token['oauth_token_secret'])
 
-        # prepare client
-        self.client = oauth.Client(consumer, token)
+        # Prepare client (now this is requests again!)
+        try:
+            self.client = OAuth1Session(self.consumer_key, client_secret=self.consumer_secret, resource_owner_key=access_token['oauth_token'],
+                                        resource_owner_secret=access_token['oauth_token_secret'])
+        except KeyError:
+            raise CartoDBException('Access denied')
 
-
-    def req(self, url, http_method="GET", http_headers=None, body=''):
-        """ make an autorized request """
-        resp, content = self.client.request(
-            url,
-            body=body,
-            method=http_method,
-            headers=http_headers
-        )
-        return resp, content
+    def req(self, url, http_method="GET", http_headers=None, body=None, params=None):
+        """
+        Make a XAuth-authorized request
+        :param url: API URL, currently, only SQL API is supported
+        :param http_method: "GET" or "POST"
+        :param http_headers: requests' http_headers
+        :param body: requests' "data"
+        :param params: requests' "params"
+        :return: requests' response object
+        """
+        return self.client.request(http_method.lower(), url, params=params, data=body, headers=http_headers, proxies=self.proxies)
 
 
 class CartoDBAPIKey(CartoDBBase):
     """
-    this class provides you access to auth CartoDB API using your API. You can find your API key in https://USERNAME.cartodb.com/your_apps/api_key.
-    this method is easier than use the oauth authentification but if less secure, it is recommended to use only using the https endpoint
+    This class provides you with authenticated access to CartoDB's APIs using your API key.
+    You can find your API key in https://USERNAME.cartodb.com/your_apps/api_key.
+    This method is easier than use the oauth authentification but if less secure, it is recommended to use only using the https endpoint
     """
+    def __init__(self, api_key, cartodb_domain, **kwargs):
+        """
+        :param api_key: API key
+        :param cartodb_domain: Subdomain for API requests. It's called "cartodb_domain", but it's just a subdomain and doesn't have to live under cartodb.com
+        :param kwargs: Any other params to be sent to the parent class
+        :return:
+        """
+        super(CartoDBAPIKey, self).__init__(cartodb_domain, **kwargs)
 
-    def __init__(self, api_key, cartodb_domain, host='cartodb.com', protocol='https', proxy_info=None, *args, **kwargs):
-        super(CartoDBAPIKey, self).__init__(cartodb_domain, host, protocol, *args, **kwargs)
         self.api_key = api_key
-        self.client = httplib2.Http()
-        if protocol != 'https':
-            warnings.warn("you are using API key auth method with http")
+        self.client = requests
 
+        if self.protocol != 'https':
+            warnings.warn("You are using unencrypted API key authentication!!!")
 
-    def req(self, url, http_method="GET", http_headers={}, body=''):
-        api_key_param = 'api_key=' + self.api_key
-        if http_method == "POST":
-            body = body + "&" + api_key_param
-            headers = {'Content-type': 'application/x-www-form-urlencoded'}
-            headers.update(http_headers)
-            resp, content = self.client.request(url, "POST", body=body, headers=headers)
-        else:
-            url = url + "&" + api_key_param
-            resp, content = self.client.request(url, headers=http_headers)
+    def req(self, url, http_method="GET", http_headers=None, body=None, params=None):
+        """
+        Make a API-key-authorized request
+        :param url: API URL, currently, only SQL API is supported
+        :param http_method: "GET" or "POST"
+        :param http_headers: requests' http_headers
+        :param body: requests' "data"
+        :param params: requests' "params"
+        :return: requests' response object
+        """
+        params = params or {}
+        params.update({"api_key": self.api_key})
 
-        return resp, content
+        return self.client.request(http_method.lower(), url, params=params, data=body, headers=http_headers, proxies=self.proxies)
