@@ -1,10 +1,10 @@
 What is cartodb-python?
 =======================
 
-The cartodb-python project is a Python client for the [CartoDB SQL
-API](http://developers.cartodb.com/documentation/sql-api.html) that supports
-[authentication using OAuth or API
-key](http://developers.cartodb.com/documentation/sql-api.html#authentication).
+The cartodb-python project is a Python client for:
+
+* [CartoDB's SQL API](http://developers.cartodb.com/documentation/sql-api.html) with [authentication using OAuth or API key](http://developers.cartodb.com/documentation/sql-api.html#authentication).
+* [CartoDB's Import API](http://docs.cartodb.com/cartodb-platform/import-api.html) with [authentication using API key](http://docs.cartodb.com/cartodb-platform/import-api.html#auth).
 
 Installation
 ============
@@ -15,23 +15,19 @@ easy\_install:
 
     pip install cartodb
 
-Or if you want to use the development version:
+Or if you want to use the development version (currently the only one that supports the import API):
 
     pip install -e git+git://github.com/Vizzuality/cartodb-python.git#egg=cartodb
 
-Note that cartodb-python depends on the ouath2 module:
+You might need to install cartodb's dependencies as well:
 
-    pip install oauth2
+    pip install -r requirements.txt
 
-And if you're running python prior to 2.6 you need to install simplejson:
+Usage example: SQL API
+======================
 
-    pip install simplejson
-
-Usage example
-=============
-
-The following example requires your **CartoDB API consmer key and consumer
-secret** or the **API KEY**. Refer to the [CartoDB documentation](http://docs.cartodb.com/cartodb-platform/sql-api.html#authentication)
+The following example requires your **CartoDB API consumer key and consumer
+secret** or the **API key**. Refer to the [CartoDB documentation](http://docs.cartodb.com/cartodb-platform/sql-api.html#authentication)
 for details.
 
 Using oAuth
@@ -69,22 +65,49 @@ except CartoDBException as e:
    print ("some error ocurred", e)
 ```
 
+Usage example: Import API
+=========================
+
+The following example requires your **CartoDB API key**. Refer to the [CartoDB documentation](http://docs.cartodb.com/cartodb-platform/sql-api.html#authentication)
+for details.
+
+You can import a file into CartoDB like this:
+
+```python
+fi = FileImport("test.csv", cl)
+fi.run()
+```
+
+You can also import a dataset from a remote URL:
+
+```python
+fi = URLImport("http://acdmy.org/d/counties.zip", cl)
+fi.run()
+```
+
+You can get all the pending imports:
+
+```python
+im = ImportManager(cl)
+import_list = im.all(ids_only=False)
+```
+
+Or just one:
+
+```python
+im = ImportManager(cl)
+single_import = im.get("afaab071-dc95-4bda-a772-ea37f8729157")
+```
+
+You can update the attributes in a import job any time (like for checking if an import has finished):
+
+```python
+single_import.update()
+```
+
 # API
 
-## cartodb.sql(sql, [parse_json, do_post, format])
-
-executes the ``sql`` and returns the result
-
-    - parse_json: default True, parse the result from CartoDB and returns a python object instead of
-      a string
-    - do_post: use POST instead of GET to fetch results from CartoDB. It's recommended to set this
-      param to False if the queries are reading data to use CartoDB caches.
-    - format: one of the ones supported by CartoDB: 'json' (default), 'geojson', 'shp', 'csv',
-      'kml'. When using a format different than 'json' or 'geojson' ``parse_json`` takes no effect
-      and it's always set to False
-
-raises CartoDBException
-
+Please refer to the source code for API reference documentation.
 
 Note for people using version 0.4
 ==================================
