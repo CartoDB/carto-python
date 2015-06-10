@@ -85,6 +85,8 @@ fi = URLImport("http://acdmy.org/d/counties.zip", cl)
 fi.run()
 ```
 
+At this point, ```fi.success``` indicates whether the initial upload was successful or not.
+
 You can get all the pending imports:
 
 ```python
@@ -99,10 +101,18 @@ im = ImportManager(cl)
 single_import = im.get("afaab071-dc95-4bda-a772-ea37f8729157")
 ```
 
-You can update the attributes in a import job any time (like for checking if an import has finished):
+You can update the attributes of an import job any time (like for checking if an import has finished):
 
 ```python
 single_import.update()
+```
+
+Object attributes correspond to those defined [by the API](http://docs.cartodb.com/cartodb-platform/import-api.html#response-1). In particular, ```state``` is useful to know when the import is finished:
+
+```python
+while im.state != "complete" and im.state != "failure":
+    time.sleep(10)
+    im.update()
 ```
 
 # API
