@@ -15,9 +15,9 @@ easy\_install:
 
     pip install cartodb
 
-Or if you want to use the development version (currently the only one that supports the import API):
+Or if you want to use the development version (currently the only one that supports the Import API):
 
-    pip install -e git+git://github.com/Vizzuality/cartodb-python.git#egg=cartodb
+    pip install -e git+git://github.com/CartoDB/cartodb-python.git#egg=cartodb
 
 You might need to install cartodb's dependencies as well:
 
@@ -51,7 +51,7 @@ except CartoDBException as e:
 Using API KEY
 -------------
 
-You can get you api key in https://YOUR_USER.cartodb.com/your_apps/api_key
+You can get you API key in https://YOUR_USER.cartodb.com/your_apps
 
 ```python
 from cartodb import CartoDBAPIKey, CartoDBException
@@ -68,12 +68,17 @@ except CartoDBException as e:
 Usage example: Import API
 =========================
 
-The following example requires your **CartoDB API key**. Refer to the [CartoDB documentation](http://docs.cartodb.com/cartodb-platform/sql-api.html#authentication)
-for details.
+The following example requires your **CartoDB API key**. Refer to the [CartoDB documentation](http://docs.cartodb.com/cartodb-platform/sql-api.html#authentication) for details.
 
 You can import a file into CartoDB like this:
 
 ```python
+from cartodb import CartoDBAPIKey, CartoDBException, FileImport
+
+API_KEY ='YOUR_CARTODB_API_KEY'
+cartodb_domain = 'YOUR_CARTODB_DOMAIN'
+cl = CartoDBAPIKey(API_KEY, cartodb_domain)
+
 fi = FileImport("test.csv", cl)
 fi.run()
 ```
@@ -81,6 +86,8 @@ fi.run()
 You can also import a dataset from a remote URL:
 
 ```python
+from cartodb import URLImport
+
 fi = URLImport("http://acdmy.org/d/counties.zip", cl)
 fi.run()
 ```
@@ -90,6 +97,8 @@ At this point, ```fi.success``` indicates whether the initial upload was success
 You can get all the pending imports:
 
 ```python
+from cartodb import ImportManager
+
 im = ImportManager(cl)
 import_list = im.all(ids_only=False)
 ```
