@@ -32,7 +32,7 @@ class ImportJob(object):
         :param data_dict: Dictionary to be mapped into object attributes
         :return:
         """
-        for k, v in data_dict.iteritems():
+        for k, v in data_dict.items():  # More efficient if use 'future.utils.iteritems' or 'six.iteritems'
             setattr(self, k, v)
         if "item_queue_id" in data_dict:
             self.id = data_dict["item_queue_id"]
