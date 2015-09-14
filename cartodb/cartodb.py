@@ -143,7 +143,7 @@ class CartoDBBase(object):
                 return resp.json()
             return resp.content
         elif resp.status_code == requests.codes.bad_request:
-            raise CartoDBException(resp.json()['error'])
+            raise CartoDBException(resp.json()['errors'])
         elif resp.status_code == requests.codes.not_found:
             raise CartoDBException('Not found: ' + resp.url)
         elif resp.status_code == requests.codes.internal_server_error:
@@ -214,7 +214,7 @@ class CartoDBOAuth(CartoDBBase):
         resp, token = client.request(access_token_url, method="POST", body=urlencode(params))
         if resp['status'] != '200':
             raise CartoDBException("%s: %s" % (resp['status'], token))
-        access_token = dict(parse_qsl(token))
+        access_token = dict(parse_qsl(token.decode()))
 
         # Prepare client (now this is requests again!)
         try:
