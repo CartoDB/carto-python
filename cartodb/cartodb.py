@@ -143,7 +143,8 @@ class CartoDBBase(object):
                 return resp.json()
             return resp.content
         elif resp.status_code == requests.codes.bad_request:
-            raise CartoDBException(resp.json()['errors'])
+            r = resp.json()
+            raise CartoDBException(r.get('error', False) or r.get('errors', False))
         elif resp.status_code == requests.codes.not_found:
             raise CartoDBException('Not found: ' + resp.url)
         elif resp.status_code == requests.codes.internal_server_error:
