@@ -43,9 +43,9 @@ CONSUMER_SECRET='YOUR_CARTODB_CONSUMER_SECRET'
 cartodb_domain = 'YOUR_CARTODB_DOMAIN'
 cl = CartoDBOAuth(CONSUMER_KEY, CONSUMER_SECRET, user, password, cartodb_domain)
 try:
-    print cl.sql('select * from mytable')
+    print(cl.sql('select * from mytable'))
 except CartoDBException as e:
-    print ("some error ocurred", e)
+    print("some error ocurred", e)
 ```
 
 Using API KEY
@@ -60,9 +60,9 @@ API_KEY ='YOUR_CARTODB_API_KEY'
 cartodb_domain = 'YOUR_CARTODB_DOMAIN'
 cl = CartoDBAPIKey(API_KEY, cartodb_domain)
 try:
-   print cl.sql('select * from mytable')
+   print(cl.sql('select * from mytable'))
 except CartoDBException as e:
-   print ("some error ocurred", e)
+   print("some error ocurred", e)
 ```
 
 Usage example: Import API

@@ -21,11 +21,16 @@
 """
 import httplib2
 import warnings
-import urlparse
 import oauth2 as oauth
-import urllib
 import requests
 from requests_oauthlib import OAuth1Session
+
+try:
+    from urllib.parse import urlparse, parse_qsl, urlencode
+except ImportError:
+    # fall back to Python 2.x
+    from urlparse import urlparse, parse_qsl
+    from urllib import urlencode
 
 try:
     import json
@@ -69,7 +74,7 @@ def proxies2proxyinfo(proxies):
     :param proxies: requests' proxies dict
     :return: ProxyInfo object
     """
-    url_components = urlparse.urlparse(proxies["http"]) if "http" in proxies else urlparse.urlparse(proxies["https"])
+    url_components = urlparse(proxies["http"]) if "http" in proxies else urlparse(proxies["https"])
 
     return httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_HTTP_NO_TUNNEL, url_components.hostname, url_components.port,
                               proxy_user=url_components.username, proxy_pass=url_components.password)
@@ -138,7 +143,8 @@ class CartoDBBase(object):
                 return resp.json()
             return resp.content
         elif resp.status_code == requests.codes.bad_request:
-            raise CartoDBException(resp.json()['error'])
+            r = resp.json()
+            raise CartoDBException(r.get('error', False) or r.get('errors', 'Bad Request: ' + resp.text))
         elif resp.status_code == requests.codes.not_found:
             raise CartoDBException('Not found: ' + resp.url)
         elif resp.status_code == requests.codes.internal_server_error:
@@ -206,8 +212,10 @@ class CartoDBOAuth(CartoDBBase):
 
         # Get Access Token
         access_token_url = ACCESS_TOKEN_URL % {'user': cartodb_domain, 'domain': self.host, 'protocol': self.protocol}
-        resp, token = client.request(access_token_url, method="POST", body=urllib.urlencode(params))
-        access_token = dict(urlparse.parse_qsl(token))
+        resp, token = client.request(access_token_url, method="POST", body=urlencode(params))
+        if resp['status'] != '200':
+            raise CartoDBException("%s: %s" % (resp['status'], token))
+        access_token = dict(parse_qsl(token.decode()))
 
         # Prepare client (now this is requests again!)
         try:
