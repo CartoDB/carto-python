@@ -88,7 +88,7 @@ class CartoDBBase(object):
     """ basic client to access cartodb api """
     MAX_GET_QUERY_LEN = 2048
 
-    def __init__(self, cartodb_domain, host='cartodb.com', protocol='https', api_version=None, proxy_info=None, sql_api_version='v2', import_api_version='v1'):
+    def __init__(self, cartodb_domain, host='cartodb.com', protocol='https', api_version=None, proxy_info=None, sql_api_version='v2', import_api_version='v1', resource_url=RESOURCE_URL):
         """
         :param cartodb_domain: Subdomain for API requests. It's called "cartodb_domain", but it's just a subdomain and doesn't have to live under cartodb.com
         :param host: Domain for API requests, even though it's called "host"
@@ -101,7 +101,7 @@ class CartoDBBase(object):
         """
         if api_version is None:
             api_version = sql_api_version
-        self.resource_url = RESOURCE_URL % {'user': cartodb_domain, 'domain': host, 'protocol': protocol, 'api_version': api_version}
+        self.resource_url = resource_url % {'user': cartodb_domain, 'domain': host, 'protocol': protocol, 'api_version': api_version}
         self.imports_url = IMPORTS_URL % {'user': cartodb_domain, 'domain': host, 'protocol': protocol, 'api_version': import_api_version}
         self.host = host
         self.protocol = protocol
