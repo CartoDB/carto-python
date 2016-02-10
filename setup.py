@@ -3,7 +3,7 @@
 from setuptools import setup
 import sys
 
-REQUIRES = ['oauth2', 'requests']
+REQUIRES = ['oauth2', 'requests', 'requests_oauthlib']
 if sys.version_info < (2 , 6):
     REQUIRES.append('simplejson')
 
