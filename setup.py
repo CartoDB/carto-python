@@ -3,11 +3,11 @@
 from setuptools import setup
 import sys
 
-REQUIRES = ['oauth2']
+REQUIRES = ['oauth2', 'requests']
 if sys.version_info < (2 , 6):
     REQUIRES.append('simplejson')
 
-setup(name='cartodb', 
+setup(name='cartodb',
       author = 'Javi Santana',
       author_email = 'jsantana@vizzuality.com',
       description = 'client to access cartodb api',
