@@ -7,11 +7,11 @@ REQUIRES = ['oauth2']
 if sys.version_info < (2 , 6):
     REQUIRES.append('simplejson')
 
-setup(name='cartodb', 
+setup(name='cartodb',
       author = 'Javi Santana',
       author_email = 'jsantana@vizzuality.com',
       description = 'client to access cartodb api',
-      version='0.8.1',
+      version='0.8.2',
       url='https://github.com/Vizzuality/cartodb',
       install_requires=REQUIRES,
       packages=['cartodb'],
