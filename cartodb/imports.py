@@ -9,7 +9,7 @@ class ImportJob(object):
     """
     id = None
 
-    def __init__(self, client, type_guessing=True, quoted_fields_guessing=True, content_guessing=False, create_vis=False, **kwargs):
+    def __init__(self, client, type_guessing=True, quoted_fields_guessing=True, content_guessing=False, create_vis=False, privacy='private', **kwargs):
         """
         :param client: Client to make authorized requests (currently only CartoDBAPIKey is supported)
         :param type_guessing: If set to False disables field type guessing (for Excel and CSVs)
@@ -23,7 +23,8 @@ class ImportJob(object):
         self.run_params = {"type_guessing": type_guessing,
                            "quoted_fields_guessing": quoted_fields_guessing,
                            "content_guessing": content_guessing,
-                           "create_vis": create_vis}
+                           "create_vis": create_vis,
+                           "privacy": privacy}
 
         self.update_from_dict(kwargs)
 
