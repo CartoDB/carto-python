@@ -107,7 +107,7 @@ class URLImport(ImportJob):
     def __init__(self, url, *args, **kwargs):
         """
         :param url: Remote URL for the file
-        :param interval: Number of seconds between update intervals (>=900). If none, URL won't be sync'ed
+        :param interval: Number of seconds between update intervals (>=3600). If none, URL won't be sync'ed
         :param args: Sent to parent class
         :param kwargs: Sent to parent class
         :return:
