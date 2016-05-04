@@ -88,7 +88,16 @@ You can also import a dataset from a remote URL:
 ```python
 from cartodb import URLImport
 
-fi = URLImport("http://acdmy.org/d/counties.zip", cl)
+fi = URLImport(MY_URL, cl)
+fi.run()
+```
+
+If you specify a refresh interval (>=3600s) for a remote URL, your import job becomes a sync table, and CartoDB will refresh the datasets based on the contents of the URL at that interval:
+
+```python
+from cartodb import URLImport
+
+fi = URLImport(MY_URL, cl, interval=3600)
 fi.run()
 ```
 

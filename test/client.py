@@ -52,6 +52,11 @@ class CartoDBClientTestImportAPI(unittest.TestCase):
         fi.run()
         self.assertIsNotNone(fi.id)
 
+    def test_sync_import(self):
+        fi = URLImport(IMPORT_URL, self.client, interval=3600)
+        fi.run()
+        self.assertIsNotNone(fi.id)
+
 
 if __name__ == '__main__':
     unittest.main()
