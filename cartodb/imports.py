@@ -61,6 +61,7 @@ class ImportJob(object):
         Updates the information of the import job against the CartoDB server
         :return:
         """
+        raise NotImplementedError
         if self.id is None:
             raise CartoDBException("Import job needs to be run first!")
 
@@ -88,6 +89,16 @@ class FileImport(ImportJob):
         """
         self.req(self.client.imports_url, api_params=self.run_params, client_params={"files": self.files, "http_method": "POST"})
 
+    def update(self):
+        """
+        Updates the information of the import job against the CartoDB server
+        :return:
+        """
+        if self.id is None:
+            raise CartoDBException("Import job needs to be run first!")
+
+        self.req("%s/%s" % (self.client.imports_url, self.id))
+
 
 class URLImport(ImportJob):
     """
@@ -97,12 +108,14 @@ class URLImport(ImportJob):
     def __init__(self, url, *args, **kwargs):
         """
         :param url: Remote URL for the file
+        :param interval: Number of seconds between update intervals (>=3600). If none, URL won't be sync'ed
         :param args: Sent to parent class
         :param kwargs: Sent to parent class
         :return:
         """
         super(URLImport, self).__init__(*args, **kwargs)
         self.url = url
+        self.interval = kwargs["interval"] if "interval" in kwargs else None
 
     def run(self):
         """
@@ -112,7 +125,24 @@ class URLImport(ImportJob):
         api_params = self.run_params
         api_params["url"] = self.url
 
-        self.req(self.client.imports_url, api_params=api_params, client_params={"http_method": "POST"})
+        if self.interval is None:
+            self.req(self.client.imports_url, api_params=api_params, client_params={"http_method": "POST"})
+        else:
+            api_params["interval"] = self.interval
+            self.req(self.client.synchronizations_url, client_params={"json": api_params, "http_method": "POST"})
+
+    def update(self):
+        """
+        Updates the information of the import job against the CartoDB server
+        :return:
+        """
+        if self.id is None:
+            raise CartoDBException("Import job needs to be run first!")
+
+        if self.interval:
+            self.req("%s/%s" % (self.client.synchronizations_url, self.id))
+        else:
+            self.req("%s/%s" % (self.client.imports_url, self.id))
 
 
 class ImportManager(object):

@@ -40,6 +40,7 @@ except ImportError:
 ACCESS_TOKEN_URL = '%(protocol)s://%(user)s.%(domain)s/oauth/access_token'
 RESOURCE_URL = '%(protocol)s://%(user)s.%(domain)s/api/%(api_version)s/sql'
 IMPORTS_URL = '%(protocol)s://%(user)s.%(domain)s/api/%(api_version)s/imports'
+SYNCHRONIZATIONS_URL = '%(protocol)s://%(user)s.%(domain)s/api/%(api_version)s/synchronizations'
 
 
 def proxyinfo2proxies(proxy_info):
@@ -103,6 +104,7 @@ class CartoDBBase(object):
             api_version = sql_api_version
         self.resource_url = RESOURCE_URL % {'user': cartodb_domain, 'domain': host, 'protocol': protocol, 'api_version': api_version}
         self.imports_url = IMPORTS_URL % {'user': cartodb_domain, 'domain': host, 'protocol': protocol, 'api_version': import_api_version}
+        self.synchronizations_url = SYNCHRONIZATIONS_URL % {'user': cartodb_domain, 'domain': host, 'protocol': protocol, 'api_version': import_api_version}
         self.host = host
         self.protocol = protocol
         self.api_version = api_version
@@ -259,7 +261,7 @@ class CartoDBAPIKey(CartoDBBase):
         if self.protocol != 'https':
             warnings.warn("You are using unencrypted API key authentication!!!")
 
-    def req(self, url, http_method="GET", http_headers=None, body=None, params=None, files=None):
+    def req(self, url, http_method="GET", http_headers=None, body=None, json=None, params=None, files=None):
         """
         Make a API-key-authorized request
         :param url: API URL, currently, only SQL API is supported
@@ -273,4 +275,4 @@ class CartoDBAPIKey(CartoDBBase):
         params = params or {}
         params.update({"api_key": self.api_key})
 
-        return self.client.request(http_method.lower(), url, params=params, data=body, headers=http_headers, proxies=self.proxies, files=files)
+        return self.client.request(http_method.lower(), url, params=params, data=body, json=json, headers=http_headers, proxies=self.proxies, files=files)
