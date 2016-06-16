@@ -1,18 +1,22 @@
 import unittest
-from cartodb import CartoDBOAuth as CartoDB, CartoDBException, CartoDBAPIKey, FileImport, URLImport
 
-from secret import *
+from carto import CartoException, APIKeyAuthClient, FileImport, URLImport, SQLCLient
+from secret import API_KEY, USER, EXISTING_TABLE, IMPORT_FILE, IMPORT_URL
 
 
-class CartoDBClientTest(object):
+class SQLClientTest(unittest.TestCase):
+    def setUp(self):
+        self.client = APIKeyAuthClient(API_KEY, USER)
+        self.sql = SQLCLient(self.client)
+
     def test_sql_error(self):
-        self.assertRaises(CartoDBException, self.client.sql, 'select * from non_existing_table')
+        self.assertRaises(CartoException, self.sql.send, 'select * from non_existing_table')
 
     def test_sql_error_get(self):
-        self.assertRaises(CartoDBException, self.client.sql, 'select * from non_existing_table', {'do_post': False})
+        self.assertRaises(CartoException, self.sql.send, 'select * from non_existing_table', {'do_post': False})
 
     def test_sql(self, do_post=True):
-        data = self.client.sql('select * from ' + EXISTING_TABLE, do_post=do_post)
+        data = self.sql.send('select * from ' + EXISTING_TABLE, do_post=do_post)
         self.assertIsNotNone(data)
         self.assertIn('rows', data)
         self.assertIn('total_rows', data)
@@ -23,24 +27,9 @@ class CartoDBClientTest(object):
         self.test_sql(do_post=False)
 
 
-class CartoDBClientTestOAuth(CartoDBClientTest, unittest.TestCase):
+class FileImportTest(unittest.TestCase):
     def setUp(self):
-        self.client = CartoDB(CONSUMER_KEY, CONSUMER_SECRET, user, password, user)
-
-
-class CartoDBClientTestApiKey(CartoDBClientTest, unittest.TestCase):
-    def setUp(self):
-        self.client = CartoDBAPIKey(API_KEY, user)
-
-
-class CartoDBClientTestApiKeyV2(CartoDBClientTest, unittest.TestCase):
-    def setUp(self):
-        self.client = CartoDBAPIKey(API_KEY, user, api_version='v2')
-
-
-class CartoDBClientTestImportAPI(unittest.TestCase):
-    def setUp(self):
-        self.client = CartoDBAPIKey(API_KEY, user)
+        self.client = APIKeyAuthClient(API_KEY, USER)
 
     def test_file_import(self):
         fi = FileImport(IMPORT_FILE, self.client)
@@ -60,4 +49,3 @@ class CartoDBClientTestImportAPI(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

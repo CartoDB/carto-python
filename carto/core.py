@@ -1,0 +1,2 @@
+class CartoException(Exception):
+    pass
