@@ -22,6 +22,7 @@ class BaseAuthClient(object):
         self.host = host
         self.protocol = protocol
         self.proxies = proxies
+        self.client = requests
 
         if host is None and domain is not None:
             self.base_url = '{protocol}://{user}.{domain}/api/'.format(user=self.user, domain=self.domain, protocol=self.protocol)
@@ -83,9 +84,6 @@ class NoAuthClient(BaseAuthClient):
         """
         url = self.base_url + relative_url
 
-        params = params or {}
-        params.update({"api_key": self.api_key})
-
         return self.client.request(http_method.lower(), url, params=params, data=body, headers=http_headers, proxies=self.proxies)
 
 
@@ -102,7 +100,6 @@ class APIKeyAuthClient(BaseAuthClient):
         super(APIKeyAuthClient, self).__init__(*args, **kwargs)
 
         self.api_key = api_key
-        self.client = requests
 
         if self.protocol != 'https':
             warnings.warn("You are using unencrypted API key authentication!!!")
