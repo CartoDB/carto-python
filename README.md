@@ -1,104 +1,110 @@
-What is cartodb-python?
-=======================
+carto-python
+============
 
-The cartodb-python project is a Python client for:
+Python SDK for Carto's APIs:
 
-* [CartoDB's SQL API](http://developers.cartodb.com/documentation/sql-api.html) with [authentication using OAuth or API key](http://developers.cartodb.com/documentation/sql-api.html#authentication).
-* [CartoDB's Import API](http://docs.cartodb.com/cartodb-platform/import-api.html) with [authentication using API key](http://docs.cartodb.com/cartodb-platform/import-api.html#auth).
+* [SQL API](http://developers.cartodb.com/documentation/sql-api.html)
+* [Import API](http://docs.cartodb.com/cartodb-platform/import-api.html)
+
+carto-python is a full, backwards incompatible rewrite of the deprecated [cartodb-python](https://github.com/CartoDB/cartodb-python/) SDK. Since the
+initial rewrite, carto-python has been loaded with a lot of new features, not present in old cartodb-python.
 
 Installation
 ============
 
-You can install cartodb-python by cloning this repository or by using
-[Pip](http://pypi.python.org/pypi/pip), a Python package installer similar to
-easy\_install:
+You can install carto-python by cloning this repository or by using
+[Pip](http://pypi.python.org/pypi/pip):
 
-    pip install cartodb
+    pip install carto
 
-Or if you want to use the development version (currently the only one that supports the Import API):
+If you want to use the development version, you can install directly from github:
 
-    pip install -e git+git://github.com/CartoDB/cartodb-python.git#egg=cartodb
+    pip install -e git+git://github.com/CartoDB/carto-python.git#egg=carto
 
-You might need to install cartodb's dependencies as well:
+If using, the development version, you might want to install Carto's dependencies as well:
 
     pip install -r requirements.txt
 
-Usage example: SQL API
-======================
+Authentication
+==============
 
-The following example requires your **CartoDB API consumer key and consumer
-secret** or the **API key**. Refer to the [CartoDB documentation](http://docs.cartodb.com/cartodb-platform/sql-api.html#authentication)
-for details.
+Before making API calls, we need to define how those calls are going to be authenticated. Currently, we support two different
+authentication methods: unauthenticated and API key based. Therefore, we first need to create an _authentication client_ that will
+be used when instantiating the Python classes that deal with API requests.
 
-Using oAuth
------------
+For unauthenticated requests, we need to create a NoAuthClient object:
 
 ```python
-from cartodb import CartoDBOAuth, CartoDBException
+from carto import NoAuthClient
 
-user =  'me@mail.com'
-password =  'secret'
-CONSUMER_KEY='YOUR_CARTODB_CONSUMER_KEY'
-CONSUMER_SECRET='YOUR_CARTODB_CONSUMER_SECRET'
-cartodb_domain = 'YOUR_CARTODB_DOMAIN'
-cl = CartoDBOAuth(CONSUMER_KEY, CONSUMER_SECRET, user, password, cartodb_domain)
+auth_client = NoAuthClient(user="myuser")
+```
+
+For API key authenticated requests, we need to create an APIKeyAuthClient instance:
+
+```python
+from carto import APIKeyAuthClient
+
+auth_client = APIKeyAuthClient(api_key="myapikey", user="myuser")
+```
+
+API key is mandatory for all API requests except for sending SQL queries to public datasets.
+
+By default, API requests are sent to _carto.com_. They can be sent to another domain by setting the `domain` parameter. Furthermore,
+subdomainless API access, used typically by our on-premises product, is also available. In this case, the `host` parameter needs to be
+set, instead of `domain`.
+
+For a detailed description of the rest of parameters both constructors accept, please take a look at the documentation of the source code.
+
+SQL API
+=======
+
+Making requests to the SQL API is pretty straightforward:
+
+```python
+from carto import SQLCLient
+
+sql = SQLCLient(auth_client)
+
 try:
-    print(cl.sql('select * from mytable'))
-except CartoDBException as e:
+    sql.send('select * from mytable')
+except CartoException as e:
     print("some error ocurred", e)
+except:
+     print sql.rows
 ```
 
-Using API KEY
--------------
+Please refer to the source code documentation to find out about the rest of the parameters accepted by the constructor and the `send` method.
+In particular, the `send` method allows you to control the format of the results.
 
-You can get you API key in https://YOUR_USER.cartodb.com/your_apps
+Import API
+==========
 
-```python
-from cartodb import CartoDBAPIKey, CartoDBException
-
-API_KEY ='YOUR_CARTODB_API_KEY'
-cartodb_domain = 'YOUR_CARTODB_DOMAIN'
-cl = CartoDBAPIKey(API_KEY, cartodb_domain)
-try:
-   print(cl.sql('select * from mytable'))
-except CartoDBException as e:
-   print("some error ocurred", e)
-```
-
-Usage example: Import API
-=========================
-
-The following example requires your **CartoDB API key**. Refer to the [CartoDB documentation](http://docs.cartodb.com/cartodb-platform/sql-api.html#authentication) for details.
-
-You can import a file into CartoDB like this:
+You can import a file into Carto like this:
 
 ```python
-from cartodb import CartoDBAPIKey, CartoDBException, FileImport
-
-API_KEY ='YOUR_CARTODB_API_KEY'
-cartodb_domain = 'YOUR_CARTODB_DOMAIN'
-cl = CartoDBAPIKey(API_KEY, cartodb_domain)
+from carto import FileImport
 
 # Import csv file, set privacy as 'link' and create a default viz
-fi = FileImport("test.csv", cl, create_vis='true', privacy='link')
+fi = FileImport("test.csv", auth_client, create_vis='true', privacy='link')
 fi.run()
 ```
 
 You can also import a dataset from a remote URL:
 
 ```python
-from cartodb import URLImport
+from carto import URLImport
 
-fi = URLImport(MY_URL, cl)
+fi = URLImport(MY_URL, auth_client)
 fi.run()
 ```
 
-If you specify a refresh interval (>=3600s) for a remote URL, your import job becomes a sync table, and CartoDB will refresh the datasets based on the contents of the URL at that interval:
+If you specify a refresh interval (>=900s) for a remote URL, your import job becomes a sync table, and Carto will refresh the datasets based on the contents of the URL at that interval:
 
 ```python
-from cartodb import URLImport
+from carto import URLImport
 
-fi = URLImport(MY_URL, cl, interval=3600)
+fi = URLImport("http://test.com/myremotefile", auth_client, interval=3600)
 fi.run()
 ```
 
@@ -107,16 +113,16 @@ At this point, ```fi.success``` indicates whether the initial upload was success
 You can get all the pending imports:
 
 ```python
-from cartodb import ImportManager
+from carto import ImportManager
 
-im = ImportManager(cl)
+im = ImportManager(auth_client)
 import_list = im.all(ids_only=False)
 ```
 
 Or just one:
 
 ```python
-im = ImportManager(cl)
+im = ImportManager(auth_client)
 single_import = im.get("afaab071-dc95-4bda-a772-ea37f8729157")
 ```
 
@@ -134,32 +140,11 @@ while im.state != "complete" and im.state != "failure":
     im.update()
 ```
 
-# API
-
-Please refer to the source code for API reference documentation.
-
-Note for people using version 0.4
-==================================
-
-With the new API key auth now you have two options to authenticate so the class
-CartoDB has been replaced with CartoDBOAuth and CartoDBAPIKey.
-
-In order to migrate your code to this version you have to replace
-
-```python
-from cartodb import CartoDB
-```
-
-by
-
-```python
-from cartodb import CartoDBOAuth as CartoDB
-```
+Please refer to the source code documentation to find out about the rest of the parameters accepted by constructors and methods.
 
 Running tests
 =============
 
-Clone the repo, create a secret.py from secret.py.example, fill the variables
-and execute:
+Clone the repo, create a secret.py from secret.py.example, fill the variables and execute:
 
     python setup.py test
