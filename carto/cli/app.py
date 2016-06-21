@@ -5,15 +5,15 @@ import click
 class CartoDBUser(object):
 
     def __init__(self, user_name=None, api_key=None):
-        self.client = SQLCLient(
-            APIKeyAuthClient(api_key=api_key, user=user_name))
         self.user_name = user_name
+        self.client = APIKeyAuthClient(api_key=api_key, user=user_name)
+        self.sql_client = SQLCLient(self.client)
 
     def execute_sql(self, query):
         try:
-            res = self.client.send(query)
+            res = self.sql_client.send(query)
             if 'rows' in res:
-                return self.client.send(query).get('rows')
+                return res.get('rows')
             else:
                 print(dir(res))
                 raise CartoException("Your query does not return any row")
@@ -89,7 +89,6 @@ def table_list(cartodb):
 
     for row in rows:
         click.echo(row.get('table_name'))
-
 
 cli.add_command(count)
 cli.add_command(bbox)
