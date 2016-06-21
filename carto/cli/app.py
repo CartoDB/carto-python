@@ -1,4 +1,4 @@
-from carto import CartoException, APIKeyAuthClient, SQLCLient
+from carto import CartoException, APIKeyAuthClient, SQLCLient, FileImport
 import click
 
 
@@ -90,10 +90,50 @@ def table_list(cartodb):
     for row in rows:
         click.echo(row.get('table_name'))
 
+
+@click.command(help='Import a local file')
+@click.argument('file_path')
+@click.option('--create-vis', type=bool, default=True,
+              help="Create a visualization too?")
+@click.option('--privacy', type=click.Choice(['private', 'link', 'public']),
+              default='private', help="Define dataset privacy")
+@click.pass_obj
+def import_file(cartodb, file_path, create_vis, privacy):
+    fi = FileImport(
+        file_path, cartodb.client, create_vis=create_vis, privacy=privacy)
+    fi.run()
+    click.echo('Id:{}'.format(fi.id))
+    click.echo('Status:{}'.format(fi.success))
+
+
+'''
+More ideas on commands to add:
+
+- Describe table
+- CartoDBfy a table
+- Import dataset/URL
+- Export dataset
+- Execute SQL via normal and batch APIs
+
+  - Check batch API job status
+
+- Work on named maps:
+
+  - list templates
+  - add/update/delete template
+
+- Work with Static Maps API
+
+- Debug levels?
+'''
+
+
 cli.add_command(count)
 cli.add_command(bbox)
 cli.add_command(table_list)
 cli.add_command(schema_list)
+cli.add_command(import_file)
+
 
 if __name__ == '__main__':
     # Use environment variables starting as CARTODB
