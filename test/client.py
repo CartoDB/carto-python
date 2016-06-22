@@ -59,11 +59,9 @@ class NoAuthClientTest(unittest.TestCase):
         self.test_sql(do_post=False)
 
 
-
 class FileImportTest(unittest.TestCase):
     def setUp(self):
         self.client = APIKeyAuthClient(API_KEY, USER)
-        
 
     def test_file_import(self):
         fi = FileImport(IMPORT_FILE, self.client)
@@ -94,17 +92,12 @@ class FileImportTest(unittest.TestCase):
         fi.run()
         self.assertEqual(fi.success, True)
         initial_id = fi.id
-        has_state = True
-        try:
-            state = fi.state
-        except AttributeError:
-            has_state = False
+        has_state = True if hasattr(fi, "state") else False
         self.assertEqual(has_state, False)
         fi.update()
         self.assertEqual(fi.state, 'pending')
         final_id = fi.id
         self.assertEqual(initial_id, final_id)
-
 
 
 class ImportErrorTest(unittest.TestCase):
@@ -118,14 +111,12 @@ class ImportErrorTest(unittest.TestCase):
         fi.update()
         count = 0
         while fi.state != 'failure':
-            time.sleep(5)
-            fi.update()
             if count == 10:
                 raise Exception("The state is incorrectly stored as: " + fi.state)
+            time.sleep(5)
+            fi.update()
+            count += 1
         self.assertEqual(fi.state, 'failure')
-
-
-
 
 
 if __name__ == '__main__':
