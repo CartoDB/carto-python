@@ -131,15 +131,15 @@ class ImportManager(object):
         :return: An import job, a list of import job IDs or a list of import jobs
         """
         if id is not None:
-            resp = self.client.send("%s/%s" % (self.client.api_url, id))
+            resp = self.client.send("%s/%s" % (self.api_url, id))
             response_data = self.client.get_response_data(resp, True)
             return ImportJob(self.client, **response_data)
         else:
             imports = []
 
-            resp = self.client.send(self.client.api_url)
+            resp = self.client.send(self.api_url)
             response_data = self.client.get_response_data(resp, True)
-            if response_data["success"] is True:
+            if response_data.get("success", False) is not False:
                 for import_job_id in response_data["imports"]:
                     if ids_only is True:
                         imports.append(import_job_id)
