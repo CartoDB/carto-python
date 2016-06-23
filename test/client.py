@@ -1,7 +1,7 @@
 import unittest
 import time
 
-from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, FileImportManager, URLImportManager
+from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, FileImportManager
 from secret import API_KEY, USER, EXISTING_TABLE, IMPORT_FILE, IMPORT_URL
 
 
@@ -34,12 +34,7 @@ class NoAuthClientTest(unittest.TestCase):
         self.sql = SQLCLient(self.client)
 
     def test_no_api_key(self):
-        check = False
-        try:
-            no_auth_key = self.client.api_key
-        except AttributeError:
-            check = True
-        self.assertTrue(check)
+        self.assertFalse(hasattr(self.client, "api_key"))
 
     def test_sql_error(self):
         self.assertRaises(CartoException, self.sql.send, 'select * from non_existing_table')
@@ -81,7 +76,6 @@ class FileImportTest(unittest.TestCase):
     def test_import_jobs_length(self):
         import_id = None
         manager = FileImportManager(self.client)
-        fi = FileImport(IMPORT_FILE, self.client)
         all_imports = manager.all()
         self.assertEqual(len(all_imports), 1)
         import_id = all_imports[0].id
@@ -103,7 +97,7 @@ class FileImportTest(unittest.TestCase):
 class ImportErrorTest(unittest.TestCase):
     def setUp(self):
         self.client = APIKeyAuthClient(API_KEY, USER)
-        
+
     def test_error_handling(self):
         fi = FileImport("test/fake.html", self.client)
         fi.run()

@@ -115,6 +115,7 @@ class URLImport(ImportJob):
 
 class ImportManager(object):
     item_queue_id = None
+    api_url = None
 
     def __init__(self, client):
         """
