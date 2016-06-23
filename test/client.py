@@ -1,8 +1,19 @@
 import unittest
 import time
 
-from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, FileImportManager
+
+from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, FileImportManager, URLImportManager, CartoExportManager, CartoExportJob
 from secret import API_KEY, USER, EXISTING_TABLE, IMPORT_FILE, IMPORT_URL
+
+class CartoExportTest(unittest.TestCase):
+    def setUp(self):
+        self.client = APIKeyAuthClient(API_KEY, USER)
+        self.sql = SQLCLient(self.client)
+
+    def test_export_url_exists(self):
+        c_job = CartoExportJob(self.client, "5f07d024-515b-40f8-8c4d-990ac734639b", API_KEY)
+        c_job.run()
+        self.assertIsNotNone(c_job.url)
 
 
 class SQLClientTest(unittest.TestCase):
@@ -111,7 +122,6 @@ class ImportErrorTest(unittest.TestCase):
             fi.update()
             count += 1
         self.assertEqual(fi.state, 'failure')
-
 
 if __name__ == '__main__':
     unittest.main()

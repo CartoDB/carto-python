@@ -1,4 +1,6 @@
 from .core import CartoException
+import requests
+import time
 
 
 IMPORT_API_FILE_URL = '{api_version}/imports'
@@ -113,6 +115,30 @@ class URLImport(ImportJob):
         super(URLImport, self).__init__(client, **kwargs)
 
 
+class CartoExportJob(object):
+    def __init__(self, client, visualization_id, api_key):
+        self.client = client
+        self.id = visualization_id
+        self.api_key = client.api_key
+        self.url = None
+
+    def run(self):
+        payload = {'visualization_id': self.id}
+        p = requests.post('https://'+self.client.user+'.cartodb.com/api/v3/visualization_exports?api_key='+self.api_key, params=payload)
+        p_json = p.json()
+        viz_export_id = p_json["id"]
+        g = requests.get('https://'+self.client.user+'.cartodb.com/api/v3/visualization_exports/'+ "" +viz_export_id+ "" + '?api_key='+self.api_key, params=None)
+        g_json = g.json()
+        get_status = g_json["state"]
+        while (get_status != "complete"):
+            time.sleep(5)
+            g = requests.get('https://'+self.client.user+'.cartodb.com/api/v3/visualization_exports/'+ "" +viz_export_id+ "" + '?api_key='+self.api_key, params=None)
+            g_json = g.json()
+            get_status = g_json["state"]
+        self.url = g_json["url"]
+
+
+
 class ImportManager(object):
     item_queue_id = None
     api_url = None
@@ -182,3 +208,33 @@ class URLImportManager(ImportManager):
         self.api_url = IMPORT_API_SYNC_TABLE_URL.format(api_version=api_version)
 
         super(URLImportManager, self).__init__(client, **kwargs)
+
+
+
+class CartoExportManager(ImportManager):
+    def __init__(self, client, api_version='v1', **kwargs):        
+        self.api_url = IMPORT_API_FILE_URL.format(api_version=api_version)
+
+        super(CartoExportManager, self).__init__(client, **kwargs)
+
+    def get(self, id=None, ids_only=False):
+
+        if id is not None:
+            resp = self.client.send("%s/%s" % (self.api_url, id))
+            response_data = self.client.get_response_data(resp, True)
+            return CartoExportJob(self.client, **response_data)
+        else:
+            exports = []
+
+            resp = self.client.send(self.api_url)
+            response_data = self.client.get_response_data(resp, True)
+            if response_data.get("success", False) is not False:
+                for export_job_id in response_data["exports"]:
+                    if ids_only is True:
+                        exports.append(export_job_id)
+                    else:
+                        exports.append(self.get(export_job_id))
+
+            return exports
+
+
