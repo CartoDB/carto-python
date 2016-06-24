@@ -5,6 +5,7 @@ import time
 
 IMPORT_API_FILE_URL = '{api_version}/imports'
 IMPORT_API_SYNC_TABLE_URL = '{api_version}/synchronizations'
+EXPORT_API_URL = 'v3/visualization_exports/'
 
 
 class ImportJob(object):
@@ -38,6 +39,12 @@ class ImportJob(object):
             setattr(self, k, v)
         if "item_queue_id" in data_dict:
             self.id = data_dict["item_queue_id"]
+        try:
+            self.status = data_dict["state"]
+            self.export_url = data_dict["url"]
+        except KeyError:
+            self.status = None
+            self.export_url = None
 
     def send(self, url, url_params=None, client_params=None):
         """
@@ -86,19 +93,11 @@ class CartoExportJob(ImportJob):
 
     def run(self):
         payload = {'visualization_id': self.viz_id}
-        p = self.client.send('v3/visualization_exports/?', 'POST', None, None, None, payload, None)
-        p_json = self.client.get_response_data(p, True)
-        self.update_from_dict(p_json)
-        g = self.client.send('v3/visualization_exports/'+self.id, 'GET', None, None, None, None, None)
-        g_json = self.client.get_response_data(g, True)
-
-        get_status = g_json["state"]
-        while (get_status != "complete"):
-            time.sleep(5)
-            g = self.client.send('v3/visualization_exports/'+self.id, 'GET', None, None, None, None, None)
-            g_json = self.client.get_response_data(g, True)
-            get_status = g_json["state"]
-        self.url = g_json["url"]
+        self.send(EXPORT_API_URL, url_params=payload, client_params={"http_method": "POST"})
+        self.send(EXPORT_API_URL+self.id, client_params = {"http_method": "GET"})
+        while (self.status != "complete"):
+            #self.update()
+            self.send(EXPORT_API_URL+self.id, client_params = {"http_method": "GET"})
         print(self.url)
 
 """

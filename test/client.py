@@ -4,8 +4,8 @@ import time
 
 from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, FileImportManager, URLImportManager, CartoExportManager, CartoExportJob
 from secret import API_KEY, USER, EXISTING_TABLE, IMPORT_FILE, IMPORT_URL, VIZ_EXPORT_ID
-"""
 
+"""
 class SQLClientTest(unittest.TestCase):
     def setUp(self):
         self.client = APIKeyAuthClient(API_KEY, USER)
@@ -112,9 +112,8 @@ class CartoExportTest(unittest.TestCase):
         self.assertEqual(len(all_exports), 1)
         export_id = all_exports[0].id
         self.assertIsNotNone(exports_id)
-"""
 
-"""
+
 class ImportErrorTest(unittest.TestCase):
     def setUp(self):
         self.client = APIKeyAuthClient(API_KEY, USER)
