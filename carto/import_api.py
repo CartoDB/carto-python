@@ -39,12 +39,6 @@ class ImportJob(object):
             setattr(self, k, v)
         if "item_queue_id" in data_dict:
             self.id = data_dict["item_queue_id"]
-        try:
-            self.status = data_dict["state"]
-            self.export_url = data_dict["url"]
-        except KeyError:
-            self.status = None
-            self.export_url = None
 
     def send(self, url, url_params=None, client_params=None):
         """
@@ -87,18 +81,19 @@ class CartoExportJob(ImportJob):
     def __init__(self, client, visualization_id, api_key, api_version='v1', **kwargs):
         self.viz_id = visualization_id
         self.api_key = client.api_key
-        self.url = None
 
         super(CartoExportJob, self).__init__(client, **kwargs)
 
-    def run(self):
-        payload = {'visualization_id': self.viz_id}
-        self.send(EXPORT_API_URL, url_params=payload, client_params={"http_method": "POST"})
+    def run(self, **import_params):
+        import_params["visualization_id"] = self.viz_id
+        self.send(EXPORT_API_URL, url_params=import_params, client_params={"http_method": "POST"})
         self.send(EXPORT_API_URL+self.id, client_params = {"http_method": "GET"})
-        while (self.status != "complete"):
-            #self.update()
-            self.send(EXPORT_API_URL+self.id, client_params = {"http_method": "GET"})
-        print(self.url)
+
+    def update(self):
+        if self.id is None:
+            raise CartoException("Export job needs to be run or retrieved first!")
+            
+        self.send(EXPORT_API_URL+self.id, client_params = {"http_method": "GET"})
 
 """
 class CartoExportJob(object):
