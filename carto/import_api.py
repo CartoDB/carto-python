@@ -76,6 +76,57 @@ class ImportJob(object):
         self.send("%s/%s" % (self.api_url, self.id))
 
 
+class CartoExportJob(ImportJob):
+    def __init__(self, client, visualization_id, api_key, api_version='v1', **kwargs):
+        self.viz_id = visualization_id
+        self.api_key = client.api_key
+        self.url = None
+
+        super(CartoExportJob, self).__init__(client, **kwargs)
+
+    def run(self):
+        payload = {'visualization_id': self.viz_id}
+        p = self.client.send('v3/visualization_exports/?', 'POST', None, None, None, payload, None)
+        p_json = self.client.get_response_data(p, True)
+        self.update_from_dict(p_json)
+        g = self.client.send('v3/visualization_exports/'+self.id, 'GET', None, None, None, None, None)
+        g_json = self.client.get_response_data(g, True)
+
+        get_status = g_json["state"]
+        while (get_status != "complete"):
+            time.sleep(5)
+            g = self.client.send('v3/visualization_exports/'+self.id, 'GET', None, None, None, None, None)
+            g_json = self.client.get_response_data(g, True)
+            get_status = g_json["state"]
+        self.url = g_json["url"]
+        print(self.url)
+
+"""
+class CartoExportJob(object):
+    def __init__(self, client, visualization_id, api_key):
+        self.client = client
+        self.id = visualization_id
+        self.api_key = client.api_key
+        self.url = None
+
+    def run(self):
+        payload = {'visualization_id': self.id}
+        p = requests.post('https://'+self.client.user+'.cartodb.com/api/v3/visualization_exports?api_key='+self.api_key, params=payload)
+        p_json = p.json()
+        viz_export_id = p_json["id"]
+        g = requests.get('https://'+self.client.user+'.cartodb.com/api/v3/visualization_exports/'+ "" +viz_export_id+ "" + '?api_key='+self.api_key, params=None)
+        g_json = g.json()
+        get_status = g_json["state"]
+        while (get_status != "complete"):
+            time.sleep(5)
+            g = requests.get('https://'+self.client.user+'.cartodb.com/api/v3/visualization_exports/'+ "" +viz_export_id+ "" + '?api_key='+self.api_key, params=None)
+            g_json = g.json()
+            get_status = g_json["state"]
+        self.url = g_json["url"]
+"""
+
+
+
 class FileImport(ImportJob):
     """
     This class provides support for uploading and importing local files into CartoDB
@@ -113,29 +164,6 @@ class URLImport(ImportJob):
         self.api_url = IMPORT_API_SYNC_TABLE_URL.format(api_version=api_version)
 
         super(URLImport, self).__init__(client, **kwargs)
-
-
-class CartoExportJob(object):
-    def __init__(self, client, visualization_id, api_key):
-        self.client = client
-        self.id = visualization_id
-        self.api_key = client.api_key
-        self.url = None
-
-    def run(self):
-        payload = {'visualization_id': self.id}
-        p = requests.post('https://'+self.client.user+'.cartodb.com/api/v3/visualization_exports?api_key='+self.api_key, params=payload)
-        p_json = p.json()
-        viz_export_id = p_json["id"]
-        g = requests.get('https://'+self.client.user+'.cartodb.com/api/v3/visualization_exports/'+ "" +viz_export_id+ "" + '?api_key='+self.api_key, params=None)
-        g_json = g.json()
-        get_status = g_json["state"]
-        while (get_status != "complete"):
-            time.sleep(5)
-            g = requests.get('https://'+self.client.user+'.cartodb.com/api/v3/visualization_exports/'+ "" +viz_export_id+ "" + '?api_key='+self.api_key, params=None)
-            g_json = g.json()
-            get_status = g_json["state"]
-        self.url = g_json["url"]
 
 
 
