@@ -95,28 +95,6 @@ class FileImportTest(unittest.TestCase):
         self.assertEqual(initial_id, final_id)
 
 
-class CartoExportTest(unittest.TestCase):
-    def setUp(self):
-        self.client = APIKeyAuthClient(API_KEY, USER)
-        self.sql = SQLCLient(self.client)
-
-    def test_export_url_exists(self):
-        export_job = CartoExportJob(self.client, VIZ_EXPORT_ID, API_KEY)
-        export_job.run()
-        while (export_job.state != "complete"):
-            export_job.update()
-        self.assertIsNotNone(export_job.url)
-        print(export_job.url)
-"""
-    def test_export_jobs_length(self):
-        import_id = None
-        manager = CartoExportManager(self.client)
-        all_exports = manager.all()
-        self.assertEqual(len(all_exports), 1)
-        export_id = all_exports[0].id
-        self.assertIsNotNone(exports_id)
-"""
-
 class ImportErrorTest(unittest.TestCase):
     def setUp(self):
         self.client = APIKeyAuthClient(API_KEY, USER)
@@ -134,6 +112,20 @@ class ImportErrorTest(unittest.TestCase):
             fi.update()
             count += 1
         self.assertEqual(fi.state, 'failure')
+
+
+class CartoExportTest(unittest.TestCase):
+    def setUp(self):
+        self.client = APIKeyAuthClient(API_KEY, USER)
+        self.sql = SQLCLient(self.client)
+
+
+    def test_export_url_exists(self):
+        export_job = CartoExportJob(self.client, VIZ_EXPORT_ID, API_KEY)
+        export_job.run()
+        while (export_job.state != "complete"):
+            export_job.update()
+        self.assertIsNotNone(export_job.url)
 
 
 if __name__ == '__main__':
