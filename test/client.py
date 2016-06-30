@@ -2,7 +2,7 @@ import unittest
 import time
 
 
-from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, FileImportManager, URLImportManager, CartoExportManager, CartoExportJob
+from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, FileImportManager, URLImportManager, CartoExportJob
 from secret import API_KEY, USER, EXISTING_TABLE, IMPORT_FILE, IMPORT_URL, VIZ_EXPORT_ID
 
 

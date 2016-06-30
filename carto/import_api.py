@@ -204,5 +204,3 @@ class URLImportManager(ImportManager):
         self.api_url = IMPORT_API_SYNC_TABLE_URL.format(api_version=api_version)
 
         super(URLImportManager, self).__init__(client, **kwargs)
-
-
