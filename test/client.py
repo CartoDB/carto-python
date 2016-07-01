@@ -1,8 +1,8 @@
 import unittest
 import time
 
-from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, FileImportManager, NamedMap
-from secret import API_KEY, USER, EXISTING_TABLE, IMPORT_FILE, IMPORT_URL, NAMED_MAP_TEMPLATE, NAMED_MAP_PARAMS
+from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, FileImportManager, NamedMap, NamedMapManager
+from secret import API_KEY, USER, EXISTING_TABLE, IMPORT_FILE, IMPORT_URL, NAMED_MAP_TEMPLATE, NAMED_MAP_TEMPLATE2, NAMED_MAP_PARAMS
 
 
 class SQLClientTest(unittest.TestCase):
@@ -119,11 +119,19 @@ class NamedMapTest(unittest.TestCase):
 
     def test_named_map_created(self):
         named = NamedMap(self.client, NAMED_MAP_TEMPLATE, NAMED_MAP_PARAMS)
+        named_manager = NamedMapManager(self.client)
         named.create()
         instantiated_map = named.instantiate("auth_token1")
         updated_info = named.update()
+        named_manager.get(id="template_name")
+        named2 = NamedMap(self.client, NAMED_MAP_TEMPLATE2, NAMED_MAP_PARAMS)
+        named2.create()
+        named_manager.all()
         check_deleted = named.delete()
+        check_deleted2 = named2.delete()
         self.assertEqual(check_deleted, 204)
+        self.assertEqual(check_deleted2, 204)
+
 
 
 if __name__ == '__main__':
