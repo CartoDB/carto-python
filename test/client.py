@@ -1,10 +1,10 @@
 import unittest
 import time
 
-from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, FileImportManager
+from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, FileImportManager, NamedMap
 from secret import API_KEY, USER, EXISTING_TABLE, IMPORT_FILE, IMPORT_URL
 
-
+"""
 class SQLClientTest(unittest.TestCase):
     def setUp(self):
         self.client = APIKeyAuthClient(API_KEY, USER)
@@ -111,6 +111,19 @@ class ImportErrorTest(unittest.TestCase):
             fi.update()
             count += 1
         self.assertEqual(fi.state, 'failure')
+"""
+
+class NamedMapTest(unittest.TestCase):
+    def setUp(self):
+        self.client = APIKeyAuthClient(API_KEY, USER)
+
+    def test_named_map_created(self):
+        named = NamedMap(self.client, "template.json", "params.json")
+        temp_name = named.create()
+        instantiated_map = named.instantiate(temp_name, "auth_token1")
+        updated_info = named.update(temp_name)
+        check_deleted = named.delete(temp_name)
+        self.assertEqual(check_deleted, 204)
 
 
 if __name__ == '__main__':
