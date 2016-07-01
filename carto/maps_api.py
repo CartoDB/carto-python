@@ -4,7 +4,7 @@ from secret import API_KEY, USER, EXISTING_TABLE, IMPORT_FILE, IMPORT_URL
 import requests
 
 
-IMPORT_API_FILE_URL = 'v1/map/named'
+IMPORT_API_FILE_URL = 'v1/map/named/'
 
 
 class NamedMap(object):
@@ -17,7 +17,7 @@ class NamedMap(object):
 	def create(self):
 		header = {'content-type': 'application/json'}
 		payload = open(self.template_name)
-		data = requests.post('https://rsharan.cartodb.com/api/'+IMPORT_API_FILE_URL+"?api_key="+API_KEY, data=payload, headers=header)
+		data = self.client.send(IMPORT_API_FILE_URL, http_method="POST", http_headers=header, body=payload)
 		n_map_name = data.json()['template_id']
 		return n_map_name
 
@@ -25,24 +25,21 @@ class NamedMap(object):
 		header = {'content-type': 'application/json'}
 		payload = open(self.params_name)
 		if (auth != None): 
-			data = requests.post('https://rsharan.cartodb.com/api/v1/map/named/'+map_name+"?auth_token="+auth, data=payload, headers=header)
-			print(data.json())
+			data = self.client.send(IMPORT_API_FILE_URL+map_name+"?auth_token="+auth, http_method="POST", http_headers=header, body=payload)
 			return data.json()
 		else:
-			data = requests.post('https://rsharan.cartodb.com/api/v1/map/named/'+map_name, data=payload, headers=header)
+			data = self.client.send(IMPORT_API_FILE_URL+map_name, http_method="POST", http_headers=header, body=payload)
 			return data.json()
 
 	def update(self, map_name):
 		header = {'content-type': 'application/json'}
 		payload = open(self.template_name)
-		data = requests.put('https://rsharan.cartodb.com/api/v1/map/named/'+map_name+"?api_key="+API_KEY, data=payload, headers=header)
-		print(data.json())
+		data = self.client.send(IMPORT_API_FILE_URL+map_name, http_method="PUT", http_headers=header, body=payload)
 		return data.json()
 
 
 	def delete(self, map_name):
-		check = requests.delete('https://rsharan.cartodb.com/api/v1/map/named/'+map_name+"?api_key="+API_KEY)
-		print(check.status_code)
+		check = self.client.send(IMPORT_API_FILE_URL+map_name, http_method="DELETE")
 		return check.status_code
 
 
