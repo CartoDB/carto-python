@@ -109,9 +109,14 @@ def import_file(cartodb, file_path, create_vis, privacy):
 '''
 More ideas on commands to add:
 
+- Use a custom API entry point
+- Import
+  - From file
+  - From URL
+  - Sync tables
+
 - Describe table
 - CartoDBfy a table
-- Import dataset/URL
 - Export dataset
 - Execute SQL via normal and batch APIs
 
