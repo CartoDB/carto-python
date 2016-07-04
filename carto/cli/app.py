@@ -22,12 +22,12 @@ class CartoDBUser(object):
 
 
 @click.group()
-@click.option('--user-name',
-              help='Your CartoDB user, you can use also ' +
-              'the environment variable CARTODB_USER_NAME')
-@click.option('--api-key',
-              help='API KEY, you can use also the environment ' +
-              'variable CARTODB_API_KEY')
+@click.option('--user-name', envvar='CARTODB_USER_NAME',
+              help='Your CartoDB user. It can be omitted if CARTODB_USER_NAME '+
+              'is available')
+@click.option('--api-key', envvar='CARTODB_API_KEY',
+              help='CartoDB API KEY. It can be omitted if CARTODB_API_KEY ' +
+              'is available')
 @click.pass_context
 def cli(ctx, user_name, api_key):
     ctx.obj = CartoDBUser(user_name, api_key)
@@ -137,4 +137,4 @@ cli.add_command(import_file)
 
 if __name__ == '__main__':
     # Use environment variables starting as CARTODB
-    cli(auto_envvar_prefix='CARTODB')
+    cli()
