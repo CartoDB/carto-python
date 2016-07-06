@@ -1,5 +1,5 @@
 USER = "rsharan"
-API_KEY = "4100be7eace8c55eede8246b5e50996f3949d26d"
+API_KEY = "637efda04e1a90cafd805b1bb0def229b6632daf"
 EXISTING_TABLE = "earthquakes_cdbjs_lesson3"
 VIZ_EXPORT_ID = "d1584840-3a35-11e6-873b-0e31c9be1b51"
 IMPORT_FILE="test/test.csv"
