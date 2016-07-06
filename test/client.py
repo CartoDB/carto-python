@@ -1,8 +1,9 @@
 import unittest
 import time
 
-from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, FileImportManager
-from secret import API_KEY, USER, EXISTING_TABLE, IMPORT_FILE, IMPORT_URL
+
+from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, FileImportManager, URLImportManager, ExportJob
+from secret import API_KEY, USER, EXISTING_TABLE, IMPORT_FILE, IMPORT_URL, VIZ_EXPORT_ID
 
 
 class SQLClientTest(unittest.TestCase):
@@ -89,6 +90,7 @@ class FileImportTest(unittest.TestCase):
         has_state = True if hasattr(fi, "state") else False
         self.assertEqual(has_state, False)
         fi.update()
+        time.sleep(5)
         self.assertEqual(fi.state, 'pending')
         final_id = fi.id
         self.assertEqual(initial_id, final_id)
@@ -111,6 +113,24 @@ class ImportErrorTest(unittest.TestCase):
             fi.update()
             count += 1
         self.assertEqual(fi.state, 'failure')
+
+
+class CartoExportTest(unittest.TestCase):
+    def setUp(self):
+        self.client = APIKeyAuthClient(API_KEY, USER)
+        self.sql = SQLCLient(self.client)
+
+    def test_export_url_exists(self):
+        export_job = ExportJob(self.client, VIZ_EXPORT_ID, API_KEY)
+        export_job.run()
+        count = 0
+        while (export_job.state != "complete"):
+            if count == 10:
+                raise Exception("The job did not complete in a reasonable time and its state is stored as: " + export_job.state)
+            time.sleep(5)
+            export_job.update()
+            count += 1
+        self.assertIsNotNone(export_job.url)
 
 
 if __name__ == '__main__':
