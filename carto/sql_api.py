@@ -1,5 +1,8 @@
-SQL_API_URL = '{api_version}/sql'
+import requests
+import time
 
+SQL_API_URL = '{api_version}/sql'
+SQL_BATCH_API_URL = '{api_version}/sql/job/'
 
 class SQLCLient(object):
     """
@@ -36,3 +39,36 @@ class SQLCLient(object):
             resp = self.auth_client.send(self.api_url, 'POST', body=params)
 
         return self.auth_client.get_response_data(resp, parse_json)
+
+
+class BatchSQLClient(object):
+
+    def __init__(self, auth_client, api_version='v2'):
+        self.auth_client = auth_client
+        self.api_url = SQL_BATCH_API_URL.format(api_version=api_version)
+
+    def create(self, sql_query, api_key):
+        header = {'content-type': 'application/json'}
+        data = requests.post('https://rsharan.cartodb.com/api/' + self.api_url + "?api_key=" + api_key, json={"query": sql_query}, headers=header)
+        print(data.json())
+        return data.json()['job_id']
+
+    def read(self, job_id, api_key):
+        header = {'content-type': 'application/json'}
+        data = requests.get('https://rsharan.cartodb.com/api/' + self.api_url + job_id + "?api_key=" + api_key, headers=header)
+        print(data.json())
+        return data.json()
+
+
+
+
+class BatchSQLManager(object):
+    def __init__(self, client):
+        self.client = client
+
+    def get(self):
+        pass
+
+
+
+

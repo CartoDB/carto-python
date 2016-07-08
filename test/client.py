@@ -2,10 +2,10 @@ import unittest
 import time
 
 
-from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, FileImportManager, URLImportManager, ExportJob
+from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, BatchSQLClient, FileImportManager, URLImportManager, ExportJob
 from secret import API_KEY, USER, EXISTING_TABLE, IMPORT_FILE, IMPORT_URL, VIZ_EXPORT_ID
 
-
+"""
 class SQLClientTest(unittest.TestCase):
     def setUp(self):
         self.client = APIKeyAuthClient(API_KEY, USER)
@@ -131,6 +131,18 @@ class CartoExportTest(unittest.TestCase):
             export_job.update()
             count += 1
         self.assertIsNotNone(export_job.url)
+"""
+
+class BatchSQLTest(unittest.TestCase):
+    def setUp(self):
+        self.client = APIKeyAuthClient(API_KEY, USER)
+        self.sql = BatchSQLClient(self.client)
+
+    def test_batch_create(self):
+        query = "update tornados_sql set damage = 100"
+        job_id = self.sql.create(query, API_KEY)
+        self.sql.read(job_id, API_KEY)
+
 
 
 if __name__ == '__main__':
