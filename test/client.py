@@ -5,7 +5,6 @@ import time
 from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, BatchSQLClient, BatchSQLManager, FileImportManager, URLImportManager, ExportJob
 from secret import API_KEY, USER, EXISTING_TABLE, IMPORT_FILE, IMPORT_URL, VIZ_EXPORT_ID
 
-"""
 class SQLClientTest(unittest.TestCase):
     def setUp(self):
         self.client = APIKeyAuthClient(API_KEY, USER)
@@ -131,25 +130,48 @@ class CartoExportTest(unittest.TestCase):
             export_job.update()
             count += 1
         self.assertIsNotNone(export_job.url)
-"""
 
 class BatchSQLTest(unittest.TestCase):
     def setUp(self):
         self.client = APIKeyAuthClient(API_KEY, USER)
         self.sql = BatchSQLClient(self.client)
         self.manager = BatchSQLManager(self.client)
-
+    
     def test_batch_create(self):
         query2 = "update all_day set depth = 100"
-        job_id2 = self.sql.create(query2)
+        data2 = self.sql.create(query2)
         query = "update qnmappluto set lot = 2022"
-        job_id = self.sql.create(query)
+        data = self.sql.create(query)
+        job_id = data['job_id']
         self.sql.update(job_id, "update qnmappluto set lot = 2112312")
         self.sql.read(job_id)
-        self.sql.cancel(job_id)
+        confirmation = self.sql.cancel(job_id)
+        self.assertEqual(confirmation, 'cancelled')
 
         all_sql_updates = self.manager.all()
+    
+    def test_batch_no_auth_error(self):
+        switch = False
+        no_auth_client = NoAuthClient(USER)
+        no_auth_sql = BatchSQLClient(no_auth_client)
+        query = "update qnmappluto set lot = 100"
+        try:
+            data = no_auth_sql.create(query)
+        except CartoException:
+            switch = True
+        self.assertEqual(switch, True)
 
+    def test_batch_multi_sql(self):
+        query = [
+            "update twitter_breakfast_lunch_dinner set body = 'hi'",
+            "update twitter_breakfast_lunch_dinner set twitter_lang = francais",
+            "update twitter_breakfast_lunch_dinner set category_name = 123",
+            "update twitter_breakfast_lunch_dinner set favoritescount = 10"
+        ]
+        data = self.sql.create(query)
+        job_id = data['job_id']
+        confirmation = self.sql.cancel(job_id)
+        self.assertEqual(confirmation, 'cancelled')
 
 
 
