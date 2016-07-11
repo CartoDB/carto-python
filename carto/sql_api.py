@@ -43,31 +43,52 @@ class SQLCLient(object):
 
 class BatchSQLClient(object):
 
-    def __init__(self, auth_client, api_version='v2'):
-        self.auth_client = auth_client
+    def __init__(self, client, api_version='v2'):
+        self.client = client
+        self.api_key = self.client.api_key
         self.api_url = SQL_BATCH_API_URL.format(api_version=api_version)
 
-    def create(self, sql_query, api_key):
+    def create(self, sql_query):
+        #raise cartoexception
         header = {'content-type': 'application/json'}
-        data = requests.post('https://rsharan.cartodb.com/api/' + self.api_url + "?api_key=" + api_key, json={"query": sql_query}, headers=header)
-        print(data.json())
+        data = requests.post('https://rsharan.cartodb.com/api/' + self.api_url + "?api_key=" + self.api_key, json={"query": sql_query}, headers=header)
+        #print(data.json())
         return data.json()['job_id']
 
-    def read(self, job_id, api_key):
+    def read(self, job_id):
+        #split into 2 cases
         header = {'content-type': 'application/json'}
-        data = requests.get('https://rsharan.cartodb.com/api/' + self.api_url + job_id + "?api_key=" + api_key, headers=header)
+        data = requests.get('https://rsharan.cartodb.com/api/' + self.api_url + job_id + "?api_key=" + self.api_key, headers=header)
+        #print(data.json())
+        return data.json()
+
+    def update(self, job_id, sql_query):
+        #raise cartoexception
+        header = {'content-type': 'application/json'}
+        data = requests.put('https://rsharan.cartodb.com/api/' + self.api_url + job_id + "?api_key=" + self.api_key, json={"query": sql_query}, headers=header)
         print(data.json())
         return data.json()
 
+    def cancel(self, job_id):
+        #raise cartoexception
+        confirmation = requests.delete('https://rsharan.cartodb.com/api/' + self.api_url + job_id + "?api_key=" + self.api_key)
+        return confirmation.json()['status']
 
+
+#for batch requests, do testing for both lists and string lists
+#use large dataset
 
 
 class BatchSQLManager(object):
-    def __init__(self, client):
+    def __init__(self, client, api_version='v2'):
         self.client = client
+        self.api_key = self.client.api_key
+        self.api_url = SQL_BATCH_API_URL.format(api_version=api_version)
 
-    def get(self):
-        pass
+    def all(self):
+        #raise cartoexception
+        data = requests.get('https://rsharan.cartodb.com/api/' + self.api_url + "?api_key=" + self.api_key)
+        return data.json()
 
 
 

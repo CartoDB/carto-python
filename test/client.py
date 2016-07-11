@@ -2,7 +2,7 @@ import unittest
 import time
 
 
-from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, BatchSQLClient, FileImportManager, URLImportManager, ExportJob
+from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, BatchSQLClient, BatchSQLManager, FileImportManager, URLImportManager, ExportJob
 from secret import API_KEY, USER, EXISTING_TABLE, IMPORT_FILE, IMPORT_URL, VIZ_EXPORT_ID
 
 """
@@ -137,11 +137,19 @@ class BatchSQLTest(unittest.TestCase):
     def setUp(self):
         self.client = APIKeyAuthClient(API_KEY, USER)
         self.sql = BatchSQLClient(self.client)
+        self.manager = BatchSQLManager(self.client)
 
     def test_batch_create(self):
-        query = "update tornados_sql set damage = 100"
-        job_id = self.sql.create(query, API_KEY)
-        self.sql.read(job_id, API_KEY)
+        query2 = "update all_day set depth = 100"
+        job_id2 = self.sql.create(query2)
+        query = "update qnmappluto set lot = 2022"
+        job_id = self.sql.create(query)
+        self.sql.update(job_id, "update qnmappluto set lot = 2112312")
+        self.sql.read(job_id)
+        self.sql.cancel(job_id)
+
+        all_sql_updates = self.manager.all()
+
 
 
 
