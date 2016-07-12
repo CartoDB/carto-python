@@ -4,7 +4,7 @@ import time
 from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, FileImportManager, NamedMap, NamedMapManager
 from secret import API_KEY, USER, EXISTING_TABLE, IMPORT_FILE, IMPORT_URL, NAMED_MAP_TEMPLATE, NAMED_MAP_TEMPLATE2, NAMED_MAP_PARAMS
 
-
+"""
 class SQLClientTest(unittest.TestCase):
     def setUp(self):
         self.client = APIKeyAuthClient(API_KEY, USER)
@@ -111,22 +111,26 @@ class ImportErrorTest(unittest.TestCase):
             fi.update()
             count += 1
         self.assertEqual(fi.state, 'failure')
-
+"""
 
 class NamedMapTest(unittest.TestCase):
     def setUp(self):
         self.client = APIKeyAuthClient(API_KEY, USER)
 
     def test_named_map_created(self):
-        named = NamedMap(self.client, NAMED_MAP_TEMPLATE, NAMED_MAP_PARAMS)
+        named = NamedMap(self.client, NAMED_MAP_TEMPLATE)
         named_manager = NamedMapManager(self.client)
         named.create()
-        instantiated_map = named.instantiate("auth_token1")
+        instantiated_map = named.instantiate(NAMED_MAP_PARAMS, "auth_token1")
         updated_info = named.update()
-        named_manager.get(id="template_name")
-        named2 = NamedMap(self.client, NAMED_MAP_TEMPLATE2, NAMED_MAP_PARAMS)
+        test = named_manager.get(id="template_name")
+        check = test.update()
+
+        named2 = NamedMap(self.client, NAMED_MAP_TEMPLATE2)
         named2.create()
-        named_manager.all()
+        all_maps = named_manager.all(ids_only=False)
+        all_maps[0].update()
+
         check_deleted = named.delete()
         check_deleted2 = named2.delete()
         self.assertEqual(check_deleted, 204)
