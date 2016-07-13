@@ -1,6 +1,3 @@
-import requests
-
-
 MAPS_API_URL = '{api_version}/map/named/'
 
 
@@ -13,7 +10,7 @@ class NamedMap(object):
         self.template_id = template_id
 
     def update_from_dict(self, data_dict):
-        for k, v in data_dict.items():  
+        for k, v in data_dict.items():
             setattr(self, k, v)
         if "item_queue_id" in data_dict:
             self.id = data_dict["item_queue_id"]
@@ -30,26 +27,25 @@ class NamedMap(object):
         header = {'content-type': 'application/json'}
         if self.is_file is True:
             with open(self.template_name) as payload:
-            	self.send(self.api_url, "POST", header, payload)
+                self.send(self.api_url, "POST", header, payload)
         else:
             self.send(self.api_url, "POST", header, self.template_name)
 
     def instantiate(self, params_name, auth=None):
         header = {'content-type': 'application/json'}
         with open(params_name) as payload:
-	        if (auth is not None): 
-	            self.send(self.api_url + self.template_id + "?auth_token=" + auth, "POST", header, payload)
-	        else:
-	            self.send(self.api_url + self.template_id, "POST", header, payload)
+            if (auth is not None):
+                self.send(self.api_url + self.template_id + "?auth_token=" + auth, "POST", header, payload)
+            else:
+                self.send(self.api_url + self.template_id, "POST", header, payload)
 
     def update(self):
         header = {'content-type': 'application/json'}
         if self.is_file is True:
             with open(self.template_name) as payload:
-            	self.send(self.api_url + self.template_id, "PUT", header, payload)
+                self.send(self.api_url + self.template_id, "PUT", header, payload)
         else:
             self.send(self.api_url + self.template_id, "PUT", header, self.template_name)
-
 
     def delete(self):
         check = self.client.send(self.api_url + self.template_id, http_method="DELETE")
@@ -72,9 +68,9 @@ class NamedMapManager(object):
             named_maps_ids = data.json()['template_ids']
             for named_map_id in named_maps_ids:
                 if ids_only is True:
-                    named_maps.append(named_map_id) #returns template ids
+                    named_maps.append(named_map_id)
                 else:
-                    named_maps.append(self.get(named_map_id)) #returns jsons
+                    named_maps.append(self.get(named_map_id))
 
             return named_maps
 

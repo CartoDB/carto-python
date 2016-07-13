@@ -2,9 +2,9 @@ import unittest
 import time
 
 from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, FileImportManager, NamedMap, NamedMapManager
-from secret import API_KEY, USER, EXISTING_TABLE, IMPORT_FILE, IMPORT_URL, NAMED_MAP_TEMPLATE, NAMED_MAP_TEMPLATE2, NAMED_MAP_PARAMS
+from secret import API_KEY, USER, EXISTING_TABLE, IMPORT_FILE, IMPORT_URL, NAMED_MAP_TEMPLATE1, TEMPLATE1_NAME, TEMPLATE1_AUTH_TOKEN, NAMED_MAP_TEMPLATE2, NAMED_MAP_PARAMS
 
-"""
+
 class SQLClientTest(unittest.TestCase):
     def setUp(self):
         self.client = APIKeyAuthClient(API_KEY, USER)
@@ -89,6 +89,7 @@ class FileImportTest(unittest.TestCase):
         has_state = True if hasattr(fi, "state") else False
         self.assertEqual(has_state, False)
         fi.update()
+        time.sleep(5)
         self.assertEqual(fi.state, 'pending')
         final_id = fi.id
         self.assertEqual(initial_id, final_id)
@@ -111,29 +112,43 @@ class ImportErrorTest(unittest.TestCase):
             fi.update()
             count += 1
         self.assertEqual(fi.state, 'failure')
-"""
+
 
 class NamedMapTest(unittest.TestCase):
     def setUp(self):
         self.client = APIKeyAuthClient(API_KEY, USER)
 
-    def test_named_map_created(self):
-        named = NamedMap(self.client, NAMED_MAP_TEMPLATE)
-        named_manager = NamedMapManager(self.client)
+    def test_named_map_methods(self):
+        named = NamedMap(self.client, NAMED_MAP_TEMPLATE1)
         named.create()
-        instantiated_map = named.instantiate(NAMED_MAP_PARAMS, "auth_token1")
-        updated_info = named.update()
-        test = named_manager.get(id="template_name")
-        check = test.update()
-
+        self.assertIsNotNone(named.template_name)
+        self.assertIsNotNone(named.template_id)
+        temp_id = named.template_id
+        named.instantiate(NAMED_MAP_PARAMS, TEMPLATE1_AUTH_TOKEN)
+        self.assertIsNotNone(named.layergroupid)
+        named.update()
+        self.assertEqual(named.template_id, temp_id)
+        check_deleted = named.delete()
+        self.assertEqual(check_deleted, 204)
+    
+    def test_named_map_manager(self):
+        named = NamedMap(self.client, NAMED_MAP_TEMPLATE1)
+        named_manager = NamedMapManager(self.client)
+        initial_maps = named_manager.all(ids_only=False)
+        named.create()
+        named.instantiate(NAMED_MAP_PARAMS, TEMPLATE1_AUTH_TOKEN)
+        temp_id = named.template_id
+        test = named_manager.get(id=TEMPLATE1_NAME)
+        test.update()
+        self.assertEqual(temp_id, test.template_id)
         named2 = NamedMap(self.client, NAMED_MAP_TEMPLATE2)
         named2.create()
         all_maps = named_manager.all(ids_only=False)
+        self.assertEqual(len(initial_maps) + 2, len(all_maps))
         all_maps[0].update()
-
         check_deleted = named.delete()
-        check_deleted2 = named2.delete()
         self.assertEqual(check_deleted, 204)
+        check_deleted2 = named2.delete()
         self.assertEqual(check_deleted2, 204)
 
 

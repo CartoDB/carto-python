@@ -61,7 +61,8 @@ class ImportJob(object):
                 import_params["interval"] = self.interval
             self.send(self.api_url, client_params={"json": import_params, "http_method": "POST"})
         elif self.files is not None:  # File import
-            self.send(self.api_url, url_params=import_params, client_params={"http_method": "POST", "files": self.files})
+            self.send(self.api_url, url_params=import_params, client_params={
+                      "http_method": "POST", "files": self.files})
 
     def update(self):
         """
@@ -78,6 +79,7 @@ class FileImport(ImportJob):
     """
     This class provides support for uploading and importing local files into CartoDB
     """
+
     def __init__(self, file_name, client, api_version='v1', **kwargs):
         """
         :param file_name: File name (paths are supported)
@@ -97,6 +99,7 @@ class URLImport(ImportJob):
     This class provides support for uploading and importing remote files into CartoDB
     Sync tables are created if the interval param is used
     """
+
     def __init__(self, url, client, api_version='v1', interval=None, **kwargs):
         """
         :param url: Remote URL for the file
@@ -159,6 +162,7 @@ class ImportManager(object):
 
 
 class FileImportManager(ImportManager):
+
     def __init__(self, client, api_version='v1', **kwargs):
         """
         :param client: Client to make authorized requests (currently only APIKeyAuthClient is supported)
@@ -172,6 +176,7 @@ class FileImportManager(ImportManager):
 
 
 class URLImportManager(ImportManager):
+
     def __init__(self, client, api_version='v1', **kwargs):
         """
         :param client: Client to make authorized requests (currently only APIKeyAuthClient is supported)
