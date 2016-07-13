@@ -3,6 +3,7 @@ from .core import CartoException
 
 IMPORT_API_FILE_URL = '{api_version}/imports'
 IMPORT_API_SYNC_TABLE_URL = '{api_version}/synchronizations'
+IMPORT_API_EXPORT_URL = '{api_version}/visualization_exports/'
 
 
 class ImportJob(object):
@@ -111,6 +112,26 @@ class URLImport(ImportJob):
         self.api_url = IMPORT_API_SYNC_TABLE_URL.format(api_version=api_version)
 
         super(URLImport, self).__init__(client, **kwargs)
+
+
+class ExportJob(ImportJob):
+    def __init__(self, client, visualization_id, api_key, api_version='v3', **kwargs):
+        self.viz_id = visualization_id
+        self.api_key = client.api_key
+        self.api_url = IMPORT_API_EXPORT_URL.format(api_version=api_version)
+
+        super(ExportJob, self).__init__(client, **kwargs)
+
+    def run(self, **import_params):
+        import_params["visualization_id"] = self.viz_id
+        self.send(self.api_url, url_params=import_params, client_params={"http_method": "POST"})
+        self.send(self.api_url + self.id, client_params = {"http_method": "GET"})
+
+    def update(self):
+        if self.id is None:
+            raise CartoException("Export job needs to be run or retrieved first!")
+
+        self.send(self.api_url + self.id, client_params = {"http_method": "GET"})
 
 
 class ImportManager(object):
