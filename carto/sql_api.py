@@ -1,16 +1,15 @@
-import requests
-import time
 from carto import NoAuthClient
 from .core import CartoException
 
+
 SQL_API_URL = '{api_version}/sql'
 SQL_BATCH_API_URL = '{api_version}/sql/job/'
+
 
 class SQLCLient(object):
     """
     Allows you to send requests to Carto's SQL API
     """
-
     def __init__(self, auth_client, api_version='v2'):
         """
         :param auth_client: Auth client to make authorized requests, such as APIKeyAuthClient
@@ -44,59 +43,53 @@ class SQLCLient(object):
 
 
 class BatchSQLClient(object):
-
     def __init__(self, client, api_version='v2'):
         self.client = client
+        if isinstance(self.client, NoAuthClient):
+            raise CartoException("The client must be authenticated with an API key to access the batch sql api.")
         self.api_url = SQL_BATCH_API_URL.format(api_version=api_version)
-        if not isinstance(self.client, NoAuthClient):
-            self.api_key = self.client.api_key
+        self.api_key = self.client.api_key
+
+    def update_from_dict(self, data_dict):
+        for k, v in data_dict.items():
+            setattr(self, k, v)
+        if "item_queue_id" in data_dict:
+            self.id = data_dict["item_queue_id"]
+
+    def send(self, url, h_method, json_body=None, http_header=None):
+        data = self.client.send(url, http_method=h_method, http_headers=http_header, json=json_body)
+        data_json = self.client.get_response_data(data)
+        return data_json
 
     def create(self, sql_query):
-        if isinstance(self.client, NoAuthClient):
-            raise CartoException("The client must be authenticated with an API key to create a batch sql job")
         header = {'content-type': 'application/json'}
-        data = requests.post('https://rsharan.cartodb.com/api/' + self.api_url + "?api_key=" + self.api_key, json={"query": sql_query}, headers=header)
-        return data.json()
+        data = self.send(self.api_url, h_method="POST", json_body={"query": sql_query}, http_header=header)
+        return data
 
     def read(self, job_id):
         header = {'content-type': 'application/json'}
-        if isinstance(self.client, NoAuthClient):
-            data = requests.get('https://rsharan.cartodb.com/api/' + self.api_url + job_id, headers=header)
-        else:
-            data = requests.get('https://rsharan.cartodb.com/api/' + self.api_url + job_id + "?api_key=" + self.api_key, headers=header)
-        #print(data.json())
-        return data.json()
+        data = self.send(self.api_url + job_id, h_method="GET", http_header=header)
+        return data
 
-    def update(self, job_id, sql_query):
-        if isinstance(self.client, NoAuthClient):
-            raise CartoException("The client must be authenticated with an API key to update a batch sql job")        
+    def update(self, job_id, sql_query):       
         header = {'content-type': 'application/json'}
-        data = requests.put('https://rsharan.cartodb.com/api/' + self.api_url + job_id + "?api_key=" + self.api_key, json={"query": sql_query}, headers=header)
-        #print(data.json())
-        return data.json()
+        data = self.send(self.api_url + job_id, h_method="PUT", json_body={"query": sql_query}, http_header=header)
+        return data
 
-    def cancel(self, job_id):
-        if isinstance(self.client, NoAuthClient):
-            raise CartoException("The client must be authenticated with an API key to update a batch sql job")        
-        confirmation = requests.delete('https://rsharan.cartodb.com/api/' + self.api_url + job_id + "?api_key=" + self.api_key)
-        print(confirmation.json())
-        return confirmation.json()['status']
+    def cancel(self, job_id):      
+        confirmation = self.send(self.api_url + job_id, h_method="DELETE")
+        return confirmation['status']
 
-
-#for batch requests, do testing for both lists and string lists
 
 class BatchSQLManager(object):
     def __init__(self, client, api_version='v2'):
         self.client = client
+        if isinstance(self.client, NoAuthClient):
+            raise CartoException("The client must be authenticated with an API key to list the sql jobs.")
         self.api_key = self.client.api_key
         self.api_url = SQL_BATCH_API_URL.format(api_version=api_version)
 
     def all(self):
-        if isinstance(self.client, NoAuthClient):
-            raise CartoException("The client must be authenticated with an API key to list the sql jobs")
-        data = requests.get('https://rsharan.cartodb.com/api/' + self.api_url + "?api_key=" + self.api_key)
-        return data.json()
-
-
-
-
+        data = self.client.send(self.api_url, "GET")
+        data_json = self.client.get_response_data(data)
+        return data_json
