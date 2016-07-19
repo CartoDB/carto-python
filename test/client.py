@@ -89,8 +89,7 @@ class FileImportTest(unittest.TestCase):
         has_state = True if hasattr(fi, "state") else False
         self.assertEqual(has_state, False)
         fi.update()
-        time.sleep(5)
-        self.assertEqual(fi.state, 'pending')
+        self.assertEqual(hasattr(fi, "state"), True)
         final_id = fi.id
         self.assertEqual(initial_id, final_id)
 
