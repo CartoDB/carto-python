@@ -1,8 +1,9 @@
 import unittest
 import time
 
-from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, FileImportManager, ExportJob, NamedMap, NamedMapManager
-from secret import API_KEY, USER, EXISTING_TABLE, IMPORT_FILE, IMPORT_URL, VIZ_EXPORT_ID, NAMED_MAP_TEMPLATE1, TEMPLATE1_NAME, TEMPLATE1_AUTH_TOKEN, NAMED_MAP_TEMPLATE2, NAMED_MAP_PARAMS
+
+from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, FileImportManager, URLImportManager, ExportJob, NamedMap, NamedMapManager, BatchSQLClient, BatchSQLManager
+from secret import API_KEY, USER, EXISTING_TABLE, IMPORT_FILE, IMPORT_URL, VIZ_EXPORT_ID, NAMED_MAP_TEMPLATE1, TEMPLATE1_NAME, TEMPLATE1_AUTH_TOKEN, NAMED_MAP_TEMPLATE2, NAMED_MAP_PARAMS, BATCH_SQL_SINGLE_QUERY, BATCH_SQL_MULTI_QUERY
 
 
 class SQLClientTest(unittest.TestCase):
@@ -167,6 +168,39 @@ class NamedMapTest(unittest.TestCase):
         self.assertEqual(check_deleted, 204)
         check_deleted2 = named2.delete()
         self.assertEqual(check_deleted2, 204)
+
+
+class BatchSQLTest(unittest.TestCase):
+    def setUp(self):
+        self.client = APIKeyAuthClient(API_KEY, USER)
+        self.sql = BatchSQLClient(self.client)
+        self.manager = BatchSQLManager(self.client)
+    
+    def test_batch_create(self):
+        query = BATCH_SQL_SINGLE_QUERY
+        data = self.sql.create(query)
+        job_id = data['job_id']
+        read = self.sql.read(job_id)
+        confirmation = self.sql.cancel(job_id)
+        self.assertEqual(confirmation, 'cancelled')
+        all_sql_updates = self.manager.all()
+        self.assertIsNotNone(all_sql_updates)
+    
+    def test_batch_no_auth_error(self):
+        switch = False
+        no_auth_client = NoAuthClient(USER)
+        try:
+            no_auth_sql = BatchSQLClient(no_auth_client)
+        except CartoException:
+            switch = True
+        self.assertEqual(switch, True)
+
+    def test_batch_multi_sql(self):
+        query = BATCH_SQL_MULTI_QUERY
+        data = self.sql.create(query)
+        job_id = data['job_id']
+        confirmation = self.sql.cancel(job_id)
+        self.assertEqual(confirmation, 'cancelled')
 
 
 if __name__ == '__main__':
