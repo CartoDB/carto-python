@@ -89,9 +89,9 @@ class CartoDBBase(object):
     """ basic client to access cartodb api """
     MAX_GET_QUERY_LEN = 2048
 
-    def __init__(self, cartodb_domain, host='cartodb.com', protocol='https', api_version=None, proxy_info=None, sql_api_version='v2', import_api_version='v1'):
+    def __init__(self, cartodb_domain, host='carto.com', protocol='https', api_version=None, proxy_info=None, sql_api_version='v2', import_api_version='v1'):
         """
-        :param cartodb_domain: Subdomain for API requests. It's called "cartodb_domain", but it's just a subdomain and doesn't have to live under cartodb.com
+        :param cartodb_domain: Subdomain for API requests. It's called "cartodb_domain", but it's just a subdomain and doesn't have to live under carto.com
         :param host: Domain for API requests, even though it's called "host"
         :param protocol: Just use the default
         :param sql_api_version: Use default or 'v1' to avoid caching
@@ -184,7 +184,7 @@ class CartoDBBase(object):
 class CartoDBOAuth(CartoDBBase):
     """
     This class provides you with authenticated access to CartoDB's APIs using your XAuth credentials.
-    You can find your API key in https://USERNAME.cartodb.com/your_apps/oauth.
+    You can find your API key in https://USERNAME.carto.com/your_apps/oauth.
     """
     def __init__(self, key, secret, email, password, cartodb_domain, **kwargs):
         """
@@ -192,7 +192,7 @@ class CartoDBOAuth(CartoDBBase):
         :param secret: XAuth consumer secret
         :param email: User name on CartoDB (yes, no email)
         :param password: User password on CartoDB
-        :param cartodb_domain: Subdomain for API requests. It's called "cartodb_domain", but it's just a subdomain and doesn't have to live under cartodb.com
+        :param cartodb_domain: Subdomain for API requests. It's called "cartodb_domain", but it's just a subdomain and doesn't have to live under carto.com
         :param kwargs: Any other params to be sent to the parent class
         :return:
         """
@@ -243,13 +243,13 @@ class CartoDBOAuth(CartoDBBase):
 class CartoDBAPIKey(CartoDBBase):
     """
     This class provides you with authenticated access to CartoDB's APIs using your API key.
-    You can find your API key in https://USERNAME.cartodb.com/your_apps/api_key.
+    You can find your API key in https://USERNAME.carto.com/your_apps/api_key.
     This method is easier than use the oauth authentification but if less secure, it is recommended to use only using the https endpoint
     """
     def __init__(self, api_key, cartodb_domain, **kwargs):
         """
         :param api_key: API key
-        :param cartodb_domain: Subdomain for API requests. It's called "cartodb_domain", but it's just a subdomain and doesn't have to live under cartodb.com
+        :param cartodb_domain: Subdomain for API requests. It's called "cartodb_domain", but it's just a subdomain and doesn't have to live under carto.com
         :param kwargs: Any other params to be sent to the parent class
         :return:
         """

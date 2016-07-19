@@ -3,8 +3,8 @@ What is cartodb-python?
 
 The cartodb-python project is a Python client for:
 
-* [CartoDB's SQL API](http://developers.cartodb.com/documentation/sql-api.html) with [authentication using OAuth or API key](http://developers.cartodb.com/documentation/sql-api.html#authentication).
-* [CartoDB's Import API](http://docs.cartodb.com/cartodb-platform/import-api.html) with [authentication using API key](http://docs.cartodb.com/cartodb-platform/import-api.html#auth).
+* [CartoDB's SQL API](http://developers.carto.com/documentation/sql-api.html) with [authentication using OAuth or API key](http://developers.carto.com/documentation/sql-api.html#authentication).
+* [CartoDB's Import API](http://docs.carto.com/cartodb-platform/import-api.html) with [authentication using API key](http://docs.carto.com/cartodb-platform/import-api.html#auth).
 
 Installation
 ============
@@ -27,7 +27,7 @@ Usage example: SQL API
 ======================
 
 The following example requires your **CartoDB API consumer key and consumer
-secret** or the **API key**. Refer to the [CartoDB documentation](http://docs.cartodb.com/cartodb-platform/sql-api.html#authentication)
+secret** or the **API key**. Refer to the [CartoDB documentation](http://docs.carto.com/cartodb-platform/sql-api.html#authentication)
 for details.
 
 Using oAuth
@@ -51,7 +51,7 @@ except CartoDBException as e:
 Using API KEY
 -------------
 
-You can get you API key in https://YOUR_USER.cartodb.com/your_apps
+You can get you API key in https://YOUR_USER.carto.com/your_apps
 
 ```python
 from cartodb import CartoDBAPIKey, CartoDBException
@@ -68,7 +68,7 @@ except CartoDBException as e:
 Usage example: Import API
 =========================
 
-The following example requires your **CartoDB API key**. Refer to the [CartoDB documentation](http://docs.cartodb.com/cartodb-platform/sql-api.html#authentication) for details.
+The following example requires your **CartoDB API key**. Refer to the [CartoDB documentation](http://docs.carto.com/cartodb-platform/sql-api.html#authentication) for details.
 
 You can import a file into CartoDB like this:
 
@@ -126,7 +126,7 @@ You can update the attributes of an import job any time (like for checking if an
 single_import.update()
 ```
 
-Object attributes correspond to those defined [by the API](http://docs.cartodb.com/cartodb-platform/import-api.html#response-1). In particular, ```state``` is useful to know when the import is finished:
+Object attributes correspond to those defined [by the API](http://docs.carto.com/cartodb-platform/import-api.html#response-1). In particular, ```state``` is useful to know when the import is finished:
 
 ```python
 while im.state != "complete" and im.state != "failure":
