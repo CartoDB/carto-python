@@ -53,6 +53,8 @@ class BaseAuthClient(object):
             if parse_json:
                 return resp.json()
             return resp.content
+        elif resp.status_code == 201:
+            return resp.json()
         elif resp.status_code == requests.codes.bad_request:
             r = resp.json()
             raise CartoException(r.get('error', False) or r.get('errors', 'Bad Request: ' + resp.text))

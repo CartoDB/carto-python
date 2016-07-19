@@ -1,8 +1,8 @@
 import unittest
 import time
 
-from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, FileImportManager, NamedMap, NamedMapManager
-from secret import API_KEY, USER, EXISTING_TABLE, IMPORT_FILE, IMPORT_URL, NAMED_MAP_TEMPLATE1, TEMPLATE1_NAME, TEMPLATE1_AUTH_TOKEN, NAMED_MAP_TEMPLATE2, NAMED_MAP_PARAMS
+from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, FileImportManager, ExportJob, NamedMap, NamedMapManager
+from secret import API_KEY, USER, EXISTING_TABLE, IMPORT_FILE, IMPORT_URL, VIZ_EXPORT_ID, NAMED_MAP_TEMPLATE1, TEMPLATE1_NAME, TEMPLATE1_AUTH_TOKEN, NAMED_MAP_TEMPLATE2, NAMED_MAP_PARAMS
 
 
 class SQLClientTest(unittest.TestCase):
@@ -114,6 +114,24 @@ class ImportErrorTest(unittest.TestCase):
         self.assertEqual(fi.state, 'failure')
 
 
+class CartoExportTest(unittest.TestCase):
+    def setUp(self):
+        self.client = APIKeyAuthClient(API_KEY, USER)
+        self.sql = SQLCLient(self.client)
+
+    def test_export_url_exists(self):
+        export_job = ExportJob(self.client, VIZ_EXPORT_ID, API_KEY)
+        export_job.run()
+        count = 0
+        while (export_job.state != "complete"):
+            if count == 10:
+                raise Exception("The job did not complete in a reasonable time and its state is stored as: " + export_job.state)
+            time.sleep(5)
+            export_job.update()
+            count += 1
+        self.assertIsNotNone(export_job.url)
+
+
 class NamedMapTest(unittest.TestCase):
     def setUp(self):
         self.client = APIKeyAuthClient(API_KEY, USER)
@@ -130,7 +148,7 @@ class NamedMapTest(unittest.TestCase):
         self.assertEqual(named.template_id, temp_id)
         check_deleted = named.delete()
         self.assertEqual(check_deleted, 204)
-    
+
     def test_named_map_manager(self):
         named = NamedMap(self.client, NAMED_MAP_TEMPLATE1)
         named_manager = NamedMapManager(self.client)
