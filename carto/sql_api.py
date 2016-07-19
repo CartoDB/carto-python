@@ -1,4 +1,4 @@
-from carto import NoAuthClient
+from .auth import NoAuthClient
 from .core import CartoException
 
 
@@ -71,12 +71,12 @@ class BatchSQLClient(object):
         data = self.send(self.api_url + job_id, h_method="GET", http_header=header)
         return data
 
-    def update(self, job_id, sql_query):       
+    def update(self, job_id, sql_query):
         header = {'content-type': 'application/json'}
         data = self.send(self.api_url + job_id, h_method="PUT", json_body={"query": sql_query}, http_header=header)
         return data
 
-    def cancel(self, job_id):      
+    def cancel(self, job_id):
         confirmation = self.send(self.api_url + job_id, h_method="DELETE")
         return confirmation['status']
 
