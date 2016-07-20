@@ -15,11 +15,11 @@ class NamedMap(object):
         if "item_queue_id" in data_dict:
             self.id = data_dict["item_queue_id"]
 
-    def send(self, url, h_method, http_header=None, file_body=None):
+    def send(self, url, http_method, http_header=None, file_body=None):
         if self.is_file is True:
-            data = self.client.send(url, http_method=h_method, http_headers=http_header, body=file_body)
+            data = self.client.send(url, http_method=http_method, http_headers=http_header, body=file_body)
         else:
-            data = self.client.send(url, http_method=h_method, http_headers=http_header, json=file_body)
+            data = self.client.send(url, http_method=http_method, http_headers=http_header, json=file_body)
         data_json = self.client.get_response_data(data)
         self.update_from_dict(data_json)
 
