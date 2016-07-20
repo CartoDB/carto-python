@@ -120,7 +120,7 @@ class CartoExportTest(unittest.TestCase):
         self.sql = SQLCLient(self.client)
 
     def test_export_url_exists(self):
-        export_job = ExportJob(self.client, VIZ_EXPORT_ID, API_KEY)
+        export_job = ExportJob(self.client, VIZ_EXPORT_ID)
         export_job.run()
         count = 0
         while (export_job.state != "complete"):

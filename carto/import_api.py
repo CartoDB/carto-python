@@ -8,7 +8,7 @@ IMPORT_API_EXPORT_URL = '{api_version}/visualization_exports/'
 
 class ImportJob(object):
     """
-    Equivalent to a job process on CartoDB.
+    Equivalent to a job process on CARTO.
     New jobs have no id until they're "run". Then, they can be updated so that their attributes
     reflect the current status of the job.
     """
@@ -52,8 +52,8 @@ class ImportJob(object):
 
     def run(self, **import_params):
         """
-        Actually creates the job import on the CartoDB server
-        :param import_params: To be send to the Import API, see Carto's docs on Import API for an updated list of accepted params
+        Actually creates the job import on the CARTO server
+        :param import_params: To be send to the Import API, see CARTO's docs on Import API for an updated list of accepted params
         :return:
         """
         if self.url is not None:  # URL import
@@ -66,7 +66,7 @@ class ImportJob(object):
 
     def update(self):
         """
-        Updates the information of the import job against the CartoDB server
+        Updates the information of the import job against the CARTO server
         :return:
         """
         if self.id is None:
@@ -77,7 +77,7 @@ class ImportJob(object):
 
 class FileImport(ImportJob):
     """
-    This class provides support for uploading and importing local files into CartoDB
+    This class provides support for uploading and importing local files into CARTO
     """
     def __init__(self, file_name, client, api_version='v1', **kwargs):
         """
@@ -95,7 +95,7 @@ class FileImport(ImportJob):
 
 class URLImport(ImportJob):
     """
-    This class provides support for uploading and importing remote files into CartoDB
+    This class provides support for uploading and importing remote files into CARTO
     Sync tables are created if the interval param is used
     """
     def __init__(self, url, client, api_version='v1', interval=None, **kwargs):
@@ -115,19 +115,36 @@ class URLImport(ImportJob):
 
 
 class ExportJob(ImportJob):
-    def __init__(self, client, visualization_id, api_key, api_version='v3', **kwargs):
+    """
+    Equivalent to a carto export in CARTO.
+    Allows a carto export to be created using a visualization in the user's CARTO account
+    """
+    def __init__(self, client, visualization_id, api_version='v3', **kwargs):
+        """
+        :param client: Client to make authorized requests
+        :param visualization_id: The id of the map that will be exported
+        :return:
+        """
         self.viz_id = visualization_id
-        self.api_key = client.api_key
         self.api_url = IMPORT_API_EXPORT_URL.format(api_version=api_version)
 
         super(ExportJob, self).__init__(client, **kwargs)
 
     def run(self, **import_params):
+        """
+        Make the actual request to the Import API
+        :param import_params: Any additional parameters
+        :return:
+        """
         import_params["visualization_id"] = self.viz_id
         self.send(self.api_url, url_params=import_params, client_params={"http_method": "POST"})
         self.send(self.api_url + self.id, client_params = {"http_method": "GET"})
 
     def update(self):
+        """
+        Updates the information of the export job against the CARTO server
+        :return:
+        """
         if self.id is None:
             raise CartoException("Export job needs to be run or retrieved first!")
 
