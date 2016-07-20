@@ -180,7 +180,6 @@ class ImportManager(object):
 
 
 class FileImportManager(ImportManager):
-
     def __init__(self, client, api_version='v1', **kwargs):
         """
         :param client: Client to make authorized requests (currently only APIKeyAuthClient is supported)
@@ -194,7 +193,6 @@ class FileImportManager(ImportManager):
 
 
 class URLImportManager(ImportManager):
-
     def __init__(self, client, api_version='v1', **kwargs):
         """
         :param client: Client to make authorized requests (currently only APIKeyAuthClient is supported)

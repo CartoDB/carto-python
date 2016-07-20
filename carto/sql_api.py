@@ -56,28 +56,28 @@ class BatchSQLClient(object):
         if "item_queue_id" in data_dict:
             self.id = data_dict["item_queue_id"]
 
-    def send(self, url, h_method, json_body=None, http_header=None):
-        data = self.client.send(url, http_method=h_method, http_headers=http_header, json=json_body)
+    def send(self, url, http_method, json_body=None, http_header=None):
+        data = self.client.send(url, http_method=http_method, http_headers=http_header, json=json_body)
         data_json = self.client.get_response_data(data)
         return data_json
 
     def create(self, sql_query):
         header = {'content-type': 'application/json'}
-        data = self.send(self.api_url, h_method="POST", json_body={"query": sql_query}, http_header=header)
+        data = self.send(self.api_url, http_method="POST", json_body={"query": sql_query}, http_header=header)
         return data
 
     def read(self, job_id):
         header = {'content-type': 'application/json'}
-        data = self.send(self.api_url + job_id, h_method="GET", http_header=header)
+        data = self.send(self.api_url + job_id, http_method="GET", http_header=header)
         return data
 
     def update(self, job_id, sql_query):
         header = {'content-type': 'application/json'}
-        data = self.send(self.api_url + job_id, h_method="PUT", json_body={"query": sql_query}, http_header=header)
+        data = self.send(self.api_url + job_id, http_method="PUT", json_body={"query": sql_query}, http_header=header)
         return data
 
     def cancel(self, job_id):
-        confirmation = self.send(self.api_url + job_id, h_method="DELETE")
+        confirmation = self.send(self.api_url + job_id, http_method="DELETE")
         return confirmation['status']
 
 

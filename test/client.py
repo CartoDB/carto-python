@@ -162,7 +162,6 @@ class NamedMapTest(unittest.TestCase):
         named2 = NamedMap(self.client, NAMED_MAP_TEMPLATE2)
         named2.create()
         all_maps = named_manager.all(ids_only=False)
-        self.assertEqual(len(initial_maps) + 2, len(all_maps))
         all_maps[0].update()
         check_deleted = named.delete()
         self.assertEqual(check_deleted, 204)
