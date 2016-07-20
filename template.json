@@ -1,0 +1,47 @@
+{
+  "version": "0.0.1",
+  "name": "template_name",
+  "auth": {
+    "method": "open",
+    "valid_tokens": [
+      "auth_token1",
+      "auth_token2"
+    ]
+  },
+  "placeholders": {
+    "color": {
+      "type": "css_color",
+      "default": "red"
+    },
+    "cartodb_id": {
+      "type": "number",
+      "default": 1
+    }
+  },
+  "layergroup": {
+    "version": "1.0.1",
+    "layers": [
+      {
+        "type": "cartodb",
+        "options": {
+          "cartocss_version": "2.1.1",
+          "cartocss": "#layer { polygon-fill: <%= color %>; }",
+          "sql": "select * from earthquakes_cdbjs_lesson3 WHERE cartodb_id = <%= cartodb_id %>"
+        }
+      }
+    ]
+  },
+  "view": {
+    "zoom": 4,
+    "center": {
+      "lng": 0,
+      "lat": 0
+    },
+    "bounds": {
+      "west": -45,
+      "south": -45,
+      "east": 45,
+      "north": 45
+    }
+  }
+}
