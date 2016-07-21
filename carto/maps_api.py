@@ -48,7 +48,7 @@ class NamedMap(object):
 
     def create(self):
         """
-        Creates a new named map in the server
+        Creates a new named map in the CARTO server
         :return: 
         """
         header = {'content-type': 'application/json'}
