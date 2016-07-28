@@ -6,7 +6,7 @@ SQL_API_URL = '{api_version}/sql'
 SQL_BATCH_API_URL = '{api_version}/sql/job/'
 
 
-class SQLCLient(object):
+class SQLClient(object):
     """
     Allows you to send requests to CARTO's SQL API
     """
