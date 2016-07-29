@@ -6,12 +6,12 @@ from .core import CartoException
 
 
 class BaseAuthClient(object):
-    """ Basic client to access Carto's APIs """
+    """ Basic client to access CARTO's APIs """
     MAX_GET_QUERY_LEN = 2048
 
-    def __init__(self, user, host=None, domain='cartodb.com', protocol='https', import_api_version='v1', proxies=None):
+    def __init__(self, user, host=None, domain='carto.com', protocol='https', import_api_version='v1', proxies=None):
         """
-        :param user: Carto user name for API requests
+        :param user: CARTO user name for API requests
         :param host: Host name for API requests
         :param protocol: Just use the default unless you really, really know what you're doing
         :param import_api_version: Only 'v1' is currently supported
@@ -71,7 +71,7 @@ class BaseAuthClient(object):
 
 class NoAuthClient(BaseAuthClient):
     """
-    This class provides you with unauthenticated access to Carto's APIs
+    This class provides you with unauthenticated access to CARTO's APIs
     Please notice that currently only SQL API queries on public datasets will work without proper authentication
     """
 
@@ -92,7 +92,7 @@ class NoAuthClient(BaseAuthClient):
 
 class APIKeyAuthClient(BaseAuthClient):
     """
-    This class provides you with authenticated access to Carto's APIs using your API key
+    This class provides you with authenticated access to CARTO's APIs using your API key
     You can find your API key by clicking on the API key section of the user dropdown menu
     """
     def __init__(self, api_key, *args, **kwargs):

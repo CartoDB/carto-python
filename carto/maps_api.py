@@ -2,7 +2,18 @@ MAPS_API_URL = '{api_version}/map/named/'
 
 
 class NamedMap(object):
+    """
+    Equivalent to creating a named map in CARTO.
+    """
     def __init__(self, client, template_name, api_version='v1', is_file=True, template_id=None):
+        """
+        :param client: Client to make authorized requests
+        :param template_name: The name of the json file with all of the information about the named map
+        :param api_version: Current version is 'v1. Others are not guaranteed to work
+        :param is_file: Is by default true when creating a NamedMap, and set to false when using NamedMapMananger
+        :param template_id: Is used to identify the map. Is only necessary whn using NamedMapMananger
+        :return:
+        """
         self.client = client
         self.template_name = template_name
         self.api_url = MAPS_API_URL.format(api_version=api_version)
@@ -10,12 +21,24 @@ class NamedMap(object):
         self.template_id = template_id
 
     def update_from_dict(self, data_dict):
+        """
+        :param data_dict: Dictionary to be mapped into object attributes
+        :return:
+        """
         for k, v in data_dict.items():
             setattr(self, k, v)
         if "item_queue_id" in data_dict:
             self.id = data_dict["item_queue_id"]
 
     def send(self, url, http_method, http_header=None, file_body=None):
+        """
+        Make the actual request to the Maps API
+        :param url: Endpoint URL
+        :param http_method: The method used to make the request to the API
+        :param http_header: The header used to make write requests to the API, by default is none
+        :param file_body: The information in the json file needed to create the named map
+        :return:
+        """
         if self.is_file is True:
             data = self.client.send(url, http_method=http_method, http_headers=http_header, body=file_body)
         else:
@@ -24,6 +47,10 @@ class NamedMap(object):
         self.update_from_dict(data_json)
 
     def create(self):
+        """
+        Creates a new named map in the CARTO server
+        :return: 
+        """
         header = {'content-type': 'application/json'}
         if self.is_file is True:
             with open(self.template_name) as payload:
@@ -32,6 +59,11 @@ class NamedMap(object):
             self.send(self.api_url, "POST", header, self.template_name)
 
     def instantiate(self, params_name, auth=None):
+        """
+        Allows you to fetch the map tiles of a created map 
+        :param params_name: The json with the styling info for the named map
+        :return: 
+        """
         header = {'content-type': 'application/json'}
         with open(params_name) as payload:
             if (auth is not None):
@@ -40,6 +72,10 @@ class NamedMap(object):
                 self.send(self.api_url + self.template_id, "POST", header, payload)
 
     def update(self):
+        """
+        Updates the named maps and get all of its info
+        :return: 
+        """
         header = {'content-type': 'application/json'}
         if self.is_file is True:
             with open(self.template_name) as payload:
@@ -48,16 +84,31 @@ class NamedMap(object):
             self.send(self.api_url + self.template_id, "PUT", header, self.template_name)
 
     def delete(self):
+        """
+        Deletes the named map from the user account in CARTO
+        :return: A status code depending on whether the delete request was successful
+        """
         check = self.client.send(self.api_url + self.template_id, http_method="DELETE")
         return check.status_code
 
 
 class NamedMapManager(object):
     def __init__(self, client, api_version='v1'):
+        """
+        :param client: Client to make authorized requests
+        :param api_version: Current version is 'v1. Others are not guaranteed to work
+        :return:
+        """
         self.client = client
         self.api_url = MAPS_API_URL.format(api_version=api_version)
 
     def get(self, id=None, ids_only=False):
+        """
+        Get one named map or a list with all the current ones
+        :param id: If set, only this map will be retrieved. This works no matter the state of the map
+        :param ids_only: If True, a list of IDs is returned; if False, a list of NamedMap objects is returned
+        :return: An named map, a list of named map IDs or a list of named maps
+        """
         if id is not None:
             data = self.client.send(self.api_url + id)
             return NamedMap(self.client, data.json()['template'], is_file=False, template_id=id)
@@ -75,4 +126,9 @@ class NamedMapManager(object):
             return named_maps
 
     def all(self, ids_only=False):
+        """
+        Get all the current named map
+        :param ids_only: If True, a list of IDs is returned; if False, a list of NamedMap objects is returned
+        :return: A list of named map IDs or a list of named maps
+        """
         return self.get(ids_only=ids_only)

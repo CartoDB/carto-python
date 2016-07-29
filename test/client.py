@@ -2,14 +2,14 @@ import unittest
 import time
 
 
-from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLCLient, FileImportManager, URLImportManager, ExportJob, NamedMap, NamedMapManager, BatchSQLClient, BatchSQLManager
+from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLClient, FileImportManager, URLImportManager, ExportJob, NamedMap, NamedMapManager, BatchSQLClient, BatchSQLManager
 from secret import API_KEY, USER, EXISTING_TABLE, IMPORT_FILE, IMPORT_URL, VIZ_EXPORT_ID, NAMED_MAP_TEMPLATE1, TEMPLATE1_NAME, TEMPLATE1_AUTH_TOKEN, NAMED_MAP_TEMPLATE2, NAMED_MAP_PARAMS, BATCH_SQL_SINGLE_QUERY, BATCH_SQL_MULTI_QUERY
 
 
 class SQLClientTest(unittest.TestCase):
     def setUp(self):
         self.client = APIKeyAuthClient(API_KEY, USER)
-        self.sql = SQLCLient(self.client)
+        self.sql = SQLClient(self.client)
 
     def test_sql_error(self):
         self.assertRaises(CartoException, self.sql.send, 'select * from non_existing_table')
@@ -32,7 +32,7 @@ class SQLClientTest(unittest.TestCase):
 class NoAuthClientTest(unittest.TestCase):
     def setUp(self):
         self.client = NoAuthClient(USER)
-        self.sql = SQLCLient(self.client)
+        self.sql = SQLClient(self.client)
 
     def test_no_api_key(self):
         self.assertFalse(hasattr(self.client, "api_key"))
@@ -117,10 +117,10 @@ class ImportErrorTest(unittest.TestCase):
 class CartoExportTest(unittest.TestCase):
     def setUp(self):
         self.client = APIKeyAuthClient(API_KEY, USER)
-        self.sql = SQLCLient(self.client)
+        self.sql = SQLClient(self.client)
 
     def test_export_url_exists(self):
-        export_job = ExportJob(self.client, VIZ_EXPORT_ID, API_KEY)
+        export_job = ExportJob(self.client, VIZ_EXPORT_ID)
         export_job.run()
         count = 0
         while (export_job.state != "complete"):
