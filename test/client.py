@@ -1,11 +1,12 @@
 import unittest
 import time
+import json
 
 
 from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLClient, FileImportManager, URLImportManager, ExportJob, NamedMap, NamedMapManager, BatchSQLClient, BatchSQLManager
 from secret import API_KEY, USER, EXISTING_TABLE, IMPORT_FILE, IMPORT_URL, VIZ_EXPORT_ID, NAMED_MAP_TEMPLATE1, TEMPLATE1_NAME, TEMPLATE1_AUTH_TOKEN, NAMED_MAP_TEMPLATE2, NAMED_MAP_PARAMS, BATCH_SQL_SINGLE_QUERY, BATCH_SQL_MULTI_QUERY
 
-
+"""
 class SQLClientTest(unittest.TestCase):
     def setUp(self):
         self.client = APIKeyAuthClient(API_KEY, USER)
@@ -130,45 +131,48 @@ class CartoExportTest(unittest.TestCase):
             export_job.update()
             count += 1
         self.assertIsNotNone(export_job.url)
-
+"""
 
 class NamedMapTest(unittest.TestCase):
     def setUp(self):
         self.client = APIKeyAuthClient(API_KEY, USER)
 
     def test_named_map_methods(self):
-        named = NamedMap(self.client, NAMED_MAP_TEMPLATE1)
-        named.create()
-        self.assertIsNotNone(named.template_name)
+        temp_file = open(NAMED_MAP_TEMPLATE1)
+        named = NamedMap(self.client, params=json.load(temp_file))
+        named.save()
         self.assertIsNotNone(named.template_id)
         temp_id = named.template_id
-        named.instantiate(NAMED_MAP_PARAMS, TEMPLATE1_AUTH_TOKEN)
+        param_file = open(NAMED_MAP_PARAMS)
+        named.instantiate(json.load(param_file), TEMPLATE1_AUTH_TOKEN)
         self.assertIsNotNone(named.layergroupid)
-        named.update()
-        self.assertEqual(named.template_id, temp_id)
+        del named.view
+        named.save()
+        self.assertEqual(False, hasattr(named, 'view'))
         check_deleted = named.delete()
         self.assertEqual(check_deleted, 204)
 
     def test_named_map_manager(self):
-        named = NamedMap(self.client, NAMED_MAP_TEMPLATE1)
+        temp_file = open(NAMED_MAP_TEMPLATE1)
+        named = NamedMap(self.client, params=json.load(temp_file))
         named_manager = NamedMapManager(self.client)
         initial_maps = named_manager.all(ids_only=False)
-        named.create()
-        named.instantiate(NAMED_MAP_PARAMS, TEMPLATE1_AUTH_TOKEN)
+        named.save()
+        param_file = open(NAMED_MAP_PARAMS)
+        named.instantiate(json.load(param_file), TEMPLATE1_AUTH_TOKEN)
         temp_id = named.template_id
         test = named_manager.get(id=TEMPLATE1_NAME)
-        test.update()
-        self.assertEqual(temp_id, test.template_id)
-        named2 = NamedMap(self.client, NAMED_MAP_TEMPLATE2)
-        named2.create()
+        temp_file2 = open(NAMED_MAP_TEMPLATE2)
+        named2 = NamedMap(self.client, params=json.load(temp_file2))
+        named2.save()
         all_maps = named_manager.all(ids_only=False)
-        all_maps[0].update()
+        self.assertEqual(len(initial_maps) + 2, len(all_maps))
         check_deleted = named.delete()
         self.assertEqual(check_deleted, 204)
         check_deleted2 = named2.delete()
         self.assertEqual(check_deleted2, 204)
 
-
+"""
 class BatchSQLTest(unittest.TestCase):
     def setUp(self):
         self.client = APIKeyAuthClient(API_KEY, USER)
@@ -200,7 +204,7 @@ class BatchSQLTest(unittest.TestCase):
         job_id = data['job_id']
         confirmation = self.sql.cancel(job_id)
         self.assertEqual(confirmation, 'cancelled')
-
+"""
 
 if __name__ == '__main__':
     unittest.main()
