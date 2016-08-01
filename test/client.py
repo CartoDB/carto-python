@@ -6,7 +6,7 @@ import json
 from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, URLImport, SQLClient, FileImportManager, URLImportManager, ExportJob, NamedMap, NamedMapManager, BatchSQLClient, BatchSQLManager
 from secret import API_KEY, USER, EXISTING_TABLE, IMPORT_FILE, IMPORT_URL, VIZ_EXPORT_ID, NAMED_MAP_TEMPLATE1, TEMPLATE1_NAME, TEMPLATE1_AUTH_TOKEN, NAMED_MAP_TEMPLATE2, NAMED_MAP_PARAMS, BATCH_SQL_SINGLE_QUERY, BATCH_SQL_MULTI_QUERY
 
-"""
+
 class SQLClientTest(unittest.TestCase):
     def setUp(self):
         self.client = APIKeyAuthClient(API_KEY, USER)
@@ -131,7 +131,7 @@ class CartoExportTest(unittest.TestCase):
             export_job.update()
             count += 1
         self.assertIsNotNone(export_job.url)
-"""
+
 
 class NamedMapTest(unittest.TestCase):
     def setUp(self):
@@ -172,7 +172,7 @@ class NamedMapTest(unittest.TestCase):
         check_deleted2 = named2.delete()
         self.assertEqual(check_deleted2, 204)
 
-"""
+
 class BatchSQLTest(unittest.TestCase):
     def setUp(self):
         self.client = APIKeyAuthClient(API_KEY, USER)
@@ -204,7 +204,7 @@ class BatchSQLTest(unittest.TestCase):
         job_id = data['job_id']
         confirmation = self.sql.cancel(job_id)
         self.assertEqual(confirmation, 'cancelled')
-"""
+
 
 if __name__ == '__main__':
     unittest.main()

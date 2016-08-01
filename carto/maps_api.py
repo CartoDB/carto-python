@@ -52,15 +52,19 @@ class NamedMap(object):
         reconstruct json based on object parameters
         """
         header = {'content-type': 'application/json'}
-        attrs = [i for i in self.__dict__.keys() if i[:1] != '_']
+
+        if self.version == '0.0.1':
+            attrs = ["version", "name", "auth", "placeholders", "layergroup", "view"]
+        else:
+            attrs = [key for key in self.__dict__.keys() if not key.startswith('__')]
+            del attr_dict['client']
+            del attr_dict['api_url']
         vals = []
         for a in attrs:
-            vals += [getattr(self, a)]
+            vals += [getattr(self, a, None)]
         attr_dict = {}
         for i in range(len(attrs)):
             attr_dict[attrs[i]] = vals[i]
-        del attr_dict['client']
-        del attr_dict['api_url']
         template_json = json.dumps(attr_dict)
 
         if hasattr(self, 'template_id'):
