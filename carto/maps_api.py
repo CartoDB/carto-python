@@ -8,6 +8,8 @@ class NamedMap(object):
     """
     Equivalent to creating a named map in CARTO.
     """
+    version = '0.0.1'
+
     def __init__(self, client, params=None, api_version='v1'):
         """
         :param client: Client to make authorized requests
@@ -47,7 +49,7 @@ class NamedMap(object):
     def save(self):
         """
         Creates a new named map in the CARTO server
-        :return: 
+        :return:
 
         reconstruct json based on object parameters
         """
@@ -57,8 +59,15 @@ class NamedMap(object):
             attrs = ["version", "name", "auth", "placeholders", "layergroup", "view"]
         else:
             attrs = [key for key in self.__dict__.keys() if not key.startswith('__')]
-            del attr_dict['client']
-            del attr_dict['api_url']
+            try:
+                attrs.remove('client')
+            except ValueError:
+                pass
+            try:
+                attrs.remove('api_url')
+            except ValueError:
+                pass
+
         vals = []
         for a in attrs:
             vals += [getattr(self, a, None)]
@@ -74,9 +83,9 @@ class NamedMap(object):
 
     def instantiate(self, params, auth=None):
         """
-        Allows you to fetch the map tiles of a created map 
+        Allows you to fetch the map tiles of a created map
         :param params_name: The json with the styling info for the named map
-        :return: 
+        :return:
         """
         header = {'content-type': 'application/json'}
         params_json = json.dumps(params)
@@ -113,7 +122,10 @@ class NamedMapManager(object):
         """
         if id is not None:
             data = self.client.send(self.api_url + id)
-            return NamedMap(self.client, data.json()['template'])
+            try:
+                return NamedMap(self.client, data.json()['template'])
+            except ValueError:
+                return None
         else:
             named_maps = []
 
