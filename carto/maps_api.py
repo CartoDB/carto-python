@@ -1,3 +1,6 @@
+import json
+
+
 MAPS_API_URL = '{api_version}/map/named/'
 
 
@@ -5,7 +8,9 @@ class NamedMap(object):
     """
     Equivalent to creating a named map in CARTO.
     """
-    def __init__(self, client, template_name, api_version='v1', is_file=True, template_id=None):
+    version = '0.0.1'
+
+    def __init__(self, client, params=None, api_version='v1'):
         """
         :param client: Client to make authorized requests
         :param template_name: The name of the json file with all of the information about the named map
@@ -15,10 +20,8 @@ class NamedMap(object):
         :return:
         """
         self.client = client
-        self.template_name = template_name
         self.api_url = MAPS_API_URL.format(api_version=api_version)
-        self.is_file = is_file
-        self.template_id = template_id
+        self.update_from_dict(params)
 
     def update_from_dict(self, data_dict):
         """
@@ -39,49 +42,57 @@ class NamedMap(object):
         :param file_body: The information in the json file needed to create the named map
         :return:
         """
-        if self.is_file is True:
-            data = self.client.send(url, http_method=http_method, http_headers=http_header, body=file_body)
-        else:
-            data = self.client.send(url, http_method=http_method, http_headers=http_header, json=file_body)
+        data = self.client.send(url, http_method=http_method, http_headers=http_header, body=file_body)
         data_json = self.client.get_response_data(data)
         self.update_from_dict(data_json)
 
-    def create(self):
+    def save(self):
         """
         Creates a new named map in the CARTO server
-        :return: 
+        :return:
+
+        reconstruct json based on object parameters
         """
         header = {'content-type': 'application/json'}
-        if self.is_file is True:
-            with open(self.template_name) as payload:
-                self.send(self.api_url, "POST", header, payload)
-        else:
-            self.send(self.api_url, "POST", header, self.template_name)
 
-    def instantiate(self, params_name, auth=None):
+        if self.version == '0.0.1':
+            attrs = ["version", "name", "auth", "placeholders", "layergroup", "view"]
+        else:
+            attrs = [key for key in self.__dict__.keys() if not key.startswith('__')]
+            try:
+                attrs.remove('client')
+            except ValueError:
+                pass
+            try:
+                attrs.remove('api_url')
+            except ValueError:
+                pass
+
+        vals = []
+        for a in attrs:
+            vals += [getattr(self, a, None)]
+        attr_dict = {}
+        for i in range(len(attrs)):
+            attr_dict[attrs[i]] = vals[i]
+        template_json = json.dumps(attr_dict)
+
+        if hasattr(self, 'template_id'):
+            self.send(self.api_url + self.template_id, "PUT", header, template_json)
+        else:
+            self.send(self.api_url, "POST", header, template_json)
+
+    def instantiate(self, params, auth=None):
         """
-        Allows you to fetch the map tiles of a created map 
+        Allows you to fetch the map tiles of a created map
         :param params_name: The json with the styling info for the named map
-        :return: 
+        :return:
         """
         header = {'content-type': 'application/json'}
-        with open(params_name) as payload:
-            if (auth is not None):
-                self.send(self.api_url + self.template_id + "?auth_token=" + auth, "POST", header, payload)
-            else:
-                self.send(self.api_url + self.template_id, "POST", header, payload)
-
-    def update(self):
-        """
-        Updates the named maps and get all of its info
-        :return: 
-        """
-        header = {'content-type': 'application/json'}
-        if self.is_file is True:
-            with open(self.template_name) as payload:
-                self.send(self.api_url + self.template_id, "PUT", header, payload)
+        params_json = json.dumps(params)
+        if (auth is not None):
+            self.send(self.api_url + self.template_id + "?auth_token=" + auth, "POST", header, params_json)
         else:
-            self.send(self.api_url + self.template_id, "PUT", header, self.template_name)
+            self.send(self.api_url + self.template_id, "POST", header, params_json)
 
     def delete(self):
         """
@@ -111,7 +122,10 @@ class NamedMapManager(object):
         """
         if id is not None:
             data = self.client.send(self.api_url + id)
-            return NamedMap(self.client, data.json()['template'], is_file=False, template_id=id)
+            try:
+                return NamedMap(self.client, data.json()['template'])
+            except ValueError:
+                return None
         else:
             named_maps = []
 

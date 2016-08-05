@@ -138,7 +138,7 @@ class ExportJob(ImportJob):
         """
         import_params["visualization_id"] = self.viz_id
         self.send(self.api_url, url_params=import_params, client_params={"http_method": "POST"})
-        self.send(self.api_url + self.id, client_params = {"http_method": "GET"})
+        self.send(self.api_url + self.id, client_params={"http_method": "GET"})
 
     def update(self):
         """
@@ -148,7 +148,7 @@ class ExportJob(ImportJob):
         if self.id is None:
             raise CartoException("Export job needs to be run or retrieved first!")
 
-        self.send(self.api_url + self.id, client_params = {"http_method": "GET"})
+        self.send(self.api_url + self.id, client_params={"http_method": "GET"})
 
 
 class ImportManager(object):
