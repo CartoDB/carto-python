@@ -1,15 +1,16 @@
 import warnings
 import requests
+from urlparse import urljoin
 
 
-from .core import CartoException
+from carto.core import CartoException
 
 
 class BaseAuthClient(object):
     """ Basic client to access CARTO's APIs """
     MAX_GET_QUERY_LEN = 2048
 
-    def __init__(self, user, host=None, domain='carto.com', protocol='https', import_api_version='v1', proxies=None):
+    def __init__(self, user, organization=None, host='carto.com', domain='carto.com', protocol='https', proxies=None):
         """
         :param user: CARTO user name for API requests
         :param host: Host name for API requests
@@ -24,10 +25,12 @@ class BaseAuthClient(object):
         self.protocol = protocol
         self.proxies = proxies
         self.client = requests
+        self.organization = organization
 
-        if host is None and domain is not None:
-            self.base_url = '{protocol}://{user}.{domain}/api/'.format(user=self.user, domain=self.domain, protocol=self.protocol)
-        elif host is not None:
+        if organization is not None:  # API_ISSUE: organization shouldn't be part of the FQDN
+            self.base_url = '{protocol}://{organization}.{domain}/user/{user}/api/'.format(user=self.user, organization=self.organization,
+                                                                                           domain=self.domain, protocol=self.protocol)
+        else:
             self.base_url = '{protocol}://{host}/user/{user}/api/'.format(user=self.user, host=self.host, protocol=self.protocol)
 
     def send(self, url, http_method="GET", http_headers=None, body=None, params=None, files=None):
@@ -85,7 +88,7 @@ class NoAuthClient(BaseAuthClient):
         :param params: requests' "params"
         :return: requests' response object
         """
-        url = self.base_url + relative_url
+        url = urljoin(self.base_url, relative_url)
 
         return self.client.request(http_method.lower(), url, params=params, data=body, headers=http_headers, proxies=self.proxies)
 
@@ -107,7 +110,7 @@ class APIKeyAuthClient(BaseAuthClient):
         if self.protocol != 'https':
             warnings.warn("You are using unencrypted API key authentication!!!")
 
-    def send(self, relative_url, http_method="GET", http_headers=None, body=None, json=None, params=None, files=None):
+    def send(self, relative_url, http_method="GET", http_headers=None, body=None, json=None, params=None, files=None, organization=None):
         """
         Make a API-key-authorized request
         :param relative_url: API URL, relative to self.base_url
@@ -118,10 +121,19 @@ class APIKeyAuthClient(BaseAuthClient):
         :param files: requests' "files"
         :return: requests' response object
         """
-        url = self.base_url + relative_url
+        if organization is None:
+            url = urljoin(self.base_url, relative_url)
+        else:
+            url = urljoin(self.base_url_with_organization, relative_url)
 
         params = params or {}
-        params.update({"api_key": self.api_key})
 
-        return self.client.request(http_method.lower(), url, params=params, data=body, json=json, headers=http_headers, proxies=self.proxies,
+        http_method = http_method.lower()
+        if http_method == "post" or http_method == "put":
+            if json is not None:
+                json.update({"api_key": self.api_key})
+        else:
+            params.update({"api_key": self.api_key})
+
+        return self.client.request(http_method, url, params=params, data=body, json=json, headers=http_headers, proxies=self.proxies,
                                    files=files)
