@@ -68,7 +68,10 @@ class Resource(APIConnected):
 
         # Update Python object if we get back a full object from the API
         if response.status_code == requests.codes.ok or response.status_code == requests.codes.created:
-            self.update_from_dict(self.client.get_response_data(response))
+            try:
+                self.update_from_dict(self.client.get_response_data(response))
+            except ValueError:
+                pass
 
         return response.status_code
 
@@ -101,7 +104,7 @@ class Resource(APIConnected):
             status_code = self.send(self.resource_endpoint, http_method="DELETE")
             if status_code == requests.codes.not_found:
                 raise CartoException(_("Object not found (HTTP error code: {error_code})".format(error_code=status_code)))
-            elif status_code != requests.codes.no_content and status_code != requests.codes.ok:
+            elif status_code != requests.codes.no_content and status_code != requests.codes.ok:  # API_ISSUE: Many times sucessful DELETE requests are acknowledged by a 200 OK
                 raise CartoException(_("Object could not be deleted (HTTP error code: {error_code})".format(error_code=status_code)))
 
             self._id = None
@@ -140,7 +143,9 @@ class Manager(APIConnected):
         """
         data = self.send(self.get_resource_endpoint(resource_id))
 
-        if data.status_code != requests.codes.ok:
+        if data.status_code == requests.codes.not_found:
+            return None
+        elif data.status_code != requests.codes.ok:
             raise CartoException(_("Could not retrieve resource (HTTP error code: {error_code})".format(error_code=data.status_code)))
 
         try:
