@@ -11,7 +11,7 @@ class SyncTableJob(AsyncResource):
     """
     collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
 
-    def __init__(self, url, client, interval):
+    def __init__(self, client, url, interval):
         """
         :param url: Remote URL for the file
         :param client: Client to make authorized requests (currently only APIKeyAuthClient is supported)

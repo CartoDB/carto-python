@@ -23,8 +23,8 @@ class APIConnected(object):
         Make the actual request to the API
         :param url: URL
         :param http_method: The method used to make the request to the API
-        :param client_args: Arguments so be sent to the auth client
-        :return:
+        :param client_args: Arguments to be sent to the auth client
+        :return: requests' response object
         """
         return self.client.send(url, http_method=http_method, **client_args)
 
@@ -95,6 +95,15 @@ class Resource(APIConnected):
             if status_code != requests.codes.created and status_code != requests.codes.ok:  # API_ISSUE: Many times sucessful POST requests are acknowledged by a 200 OK
                 raise CartoException(_("Object could not be created (HTTP error code: {error_code})".format(error_code=status_code)))
 
+    def refresh(self):
+        """
+        Refreshes a resource by checking against the API
+        """
+        if self.resource_endpoint is not None:
+            status_code = self.send(self.resource_endpoint)
+            if status_code != requests.codes.ok:
+                raise CartoException(_("Object could not be refreshed"))
+
     def delete(self):
         """
         Deletes the model from the user account in CARTO; Python object remains untouched
@@ -117,9 +126,11 @@ class AsyncResource(Resource):
         :param import_params: To be send to the Import API, see CARTO's docs on Import API for an updated list of accepted params
         :return:
         """
-        return self.send(self.collection_endpoint, http_method="POST", **client_params)
+        status_code = self.send(self.collection_endpoint, http_method="POST", **client_params)
+        if status_code != requests.codes.created and status_code != requests.codes.ok:  # API_ISSUE: Many times sucessful POST requests are acknowledged by a 200 OK
+            raise CartoException(_("Object could not be created (HTTP error code: {error_code})".format(error_code=status_code)))
 
-    def update(self):
+    def refresh(self):
         """
         Updates the information of the async job against the CARTO server
         :return:
@@ -185,8 +196,8 @@ class Manager(APIConnected):
 
         return resources
 
-    def create(self, **kwargs):
-        resource = self.model_class(self.client)
+    def create(self, *args, **kwargs):
+        resource = self.model_class(self.client, *args)
         resource.update_from_dict(kwargs)
         resource.save()
 

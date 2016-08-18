@@ -129,9 +129,8 @@ class APIKeyAuthClient(BaseAuthClient):
         params = params or {}
 
         http_method = http_method.lower()
-        if http_method == "post" or http_method == "put":
-            if json is not None:
-                json.update({"api_key": self.api_key})
+        if (http_method == "post" or http_method == "put") and json is not None:
+            json.update({"api_key": self.api_key})
         else:
             params.update({"api_key": self.api_key})
 
