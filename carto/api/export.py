@@ -10,7 +10,8 @@ class ExportJob(AsyncResource):
     Equivalent to a carto export in CARTO.
     Allows a carto export to be created using a visualization in the user's CARTO account
     """
-    collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
+    class Meta:
+        collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
 
     def __init__(self, client, visualization_id):
         """
@@ -18,7 +19,7 @@ class ExportJob(AsyncResource):
         :param visualization_id: The id of the visualization (or dataset!!!) that will be exported
         :return:
         """
-        self.viz_id = visualization_id
+        self.visualization_id = visualization_id
 
         super(ExportJob, self).__init__(client)
 
@@ -28,6 +29,6 @@ class ExportJob(AsyncResource):
         :param import_params: Any additional parameters
         :return:
         """
-        export_params["visualization_id"] = self.viz_id
+        export_params["visualization_id"] = self.visualization_id
 
         return super(ExportJob, self).run(params=export_params)

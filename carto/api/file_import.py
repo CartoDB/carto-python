@@ -1,5 +1,8 @@
-from carto.core import AsyncResource, Manager
+from carto.core import AsyncResource
 
+from pyrestcli.resources import Manager
+from pyrestcli.paginators import DummyPaginator  # Use CARTO's
+from pyrestcli.fields import IntegerField, CharField, BooleanField
 
 API_VERSION = "v1"
 API_ENDPOINT = '{api_version}/imports/'
@@ -9,11 +12,32 @@ class FileImportJob(AsyncResource):
     """
     This class provides support for one-time uploading and importing of remote and local files into CARTO
     """
-    collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
-    id_field = "item_queue_id"
-    fields = ("item_queue_id", "id", "user_id", "table_id", "data_type", "table_name", "state", "error_code", "queue_id", "tables_created_count",
-              "synchronization_id", "type_guessing", "quoted_fields_guessing", "content_guessing", "create_visualization", "visualization_id",
-              "user_defined_limits", "get_error_text", "display_name", "success", "warnings", "is_raster")
+    item_queue_id = CharField()
+    id = None
+    user_id = None
+    table_id = None
+    data_type = None
+    table_name = None
+    state = None
+    error_code = None
+    queue_id = None
+    tables_created_count = IntegerField()
+    synchronization_id = None
+    type_guessing = BooleanField()
+    quoted_fields_guessing = None
+    content_guessing = None
+    create_visualization = None
+    visualization_id = None
+    user_defined_limits = None
+    get_error_text = None
+    display_name = None
+    success = None
+    warnings = None
+    is_raster = None
+
+    class Meta:
+        collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
+        id_field = "item_queue_id"
 
     def __init__(self, client, url):
         """
@@ -46,4 +70,4 @@ class FileImportJob(AsyncResource):
 class FileImportJobManager(Manager):
     model_class = FileImportJob
     json_collection_attribute = "imports"
-    collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
+    paginator_class = DummyPaginator

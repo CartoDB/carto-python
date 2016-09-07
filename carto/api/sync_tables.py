@@ -1,5 +1,8 @@
-from carto.core import AsyncResource, Manager
+from carto.core import AsyncResource
 
+from pyrestcli.resources import Manager
+from pyrestcli.paginators import DummyPaginator  # Use CARTO's
+from pyrestcli.fields import IntegerField, CharField, BooleanField
 
 API_VERSION = "v1"
 API_ENDPOINT = '{api_version}/synchronizations'
@@ -9,7 +12,8 @@ class SyncTableJob(AsyncResource):
     """
     This class provides support for creating Sync Tables into CARTO
     """
-    collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
+    class Meta:
+        collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
 
     def __init__(self, client, url, interval):
         """
@@ -38,4 +42,4 @@ class SyncTableJob(AsyncResource):
 class SyncTableJobManager(Manager):
     model_class = SyncTableJob
     json_collection_attribute = "synchronizations"
-    collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
+    paginator_class = DummyPaginator

@@ -1,4 +1,8 @@
-from carto.core import Resource, Manager
+from pyrestcli.resources import Resource, Manager
+from pyrestcli.paginators import DummyPaginator  # Use CARTO's
+from pyrestcli.fields import IntegerField, CharField, DateTimeField, BooleanField
+
+from .tables import TableField
 
 
 API_VERSION = "v1"
@@ -6,27 +10,56 @@ API_ENDPOINT = "{api_version}/viz/"
 
 
 class Visualization(Resource):
-    fields = ("active_child", "active_layer_id", "attributions", "children", "created_at", "description", "display_name", "external_source",
-              "id", "kind", "license", "liked", "likes", "locked", "map_id", "name", "next_id", "parent_id", "permission", "prev_id",
-              "privacy", "source", "stats", "synchronization", "table", "tags", "title", "transition_options", "type", "updated_at", "url",
-              "uses_builder_features")
+    active_child = None
+    active_layer_id = CharField()
+    attributions = None
+    children = None
+    created_at = DateTimeField()
+    description = CharField()
+    display_name = CharField()
+    external_source = None
+    id = CharField()
+    kind = None
+    license = None
+    liked = BooleanField()
+    likes = IntegerField()
+    locked = BooleanField()
+    map_id = CharField()
+    name = CharField()
+    next_id = None
+    parent_id = None
+    permission = None
+    prev_id = None
+    privacy = None
+    source = None
+    stats = None
+    synchronization = None
+    table = TableField()
+    tags = None
+    title = CharField()
+    transition_options = None
+    type = None
+    updated_at = DateTimeField()
+    url = CharField()
+    uses_builder_features = None
 
-    def __str__(self):
-        try:
-            return unicode(self.name).encode("utf-8")
-        except AttributeError:
-            return super(Visualization, self).__str__()
+    class Meta:
+        collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
+        name_field = "name"
 
 
 class VisualizationManager(Manager):
     model_class = Visualization
-    json_collection_attribute = "visualizations"
-    collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
+    paginator_class = DummyPaginator
 
-    def send(self, url, http_method="GET", **client_args):
+    def send(self, url, http_method, **client_args):
         """
         Send API request
         :param url: relative endpoint URL
         :return: requests" response object
         """
-        return super(VisualizationManager, self).send(url, params={"type": "derived"})
+        if "params" not in client_args:
+            client_args["params"] = {}
+        client_args["params"].update({"type": "derived"})
+
+        return super(VisualizationManager, self).send(url, http_method, **client_args)

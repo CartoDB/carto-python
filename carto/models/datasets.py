@@ -2,9 +2,15 @@ import time
 import json
 from gettext import gettext as _
 
-from carto.core import Resource, Manager, CartoException
+from carto.core import CartoException
 from carto.api import FileImportJobManager, SyncTableJobManager
 from tables import TableManager
+
+from pyrestcli.resources import Resource, Manager
+from pyrestcli.paginators import DummyPaginator  # Use CARTO's
+from pyrestcli.fields import IntegerField, CharField, DateTimeField, BooleanField
+
+from .users import UserField
 
 
 API_VERSION = "v1"
@@ -22,21 +28,43 @@ class Dataset(Resource):
     """
     Represents a dataset in CARTO. Typically, that means there is a table in the PostgreSQL server associated to this object
     """
-    collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
-    fields = ("active_child", "active_layer_id", "attributions", "children", "created_at", "description", "display_name", "external_source",
-              "id", "kind", "license", "liked", "likes", "locked", "map_id", "name", "next_id", "parent_id", "permission", "prev_id",
-              "privacy", "source", "stats", "synchronization", "table", "tags", "title", "transition_options", "type", "updated_at", "url",
-              "uses_builder_features")
+    active_child = None
+    active_layer_id = None
+    attributions = None
+    children = None
+    created_at = DateTimeField()
+    description = None
+    display_name = None
+    external_source = None
+    id = None
+    kind = None
+    license = None
+    liked = BooleanField()
+    likes = IntegerField()
+    locked = None
+    map_id = None
+    name = None
+    next_id = None
+    parent_id = None
+    permission = None
+    prev_id = None
+    privacy = CharField()
+    source = None
+    stats = None
+    synchronization = None
+    table = None
+    tags = DateTimeField(many=True)
+    title = None
+    transition_options = None
+    type = None
+    updated_at = None
+    url = None
+    uses_builder_features = None
+    user = UserField()
 
-    def __str__(self):
-        """
-        Let's use the dataset name for a more meaningful representation
-        :return: Properly-encoded username
-        """
-        try:
-            return unicode(self.name).encode("utf-8")
-        except AttributeError:
-            return super(Dataset, self).__str__()
+    class Meta:
+        collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
+        name_field = "name"
 
 
 class DatasetManager(Manager):
@@ -45,18 +73,19 @@ class DatasetManager(Manager):
     """
     model_class = Dataset
     json_collection_attribute = "visualizations"
-    collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
+    paginator_class = DummyPaginator
 
-    def send(self, url, http_method="GET", **client_args):
+    def send(self, url, http_method, **client_args):
         """
-        There is a single API endpoint for datasets and visualizations in the API, so we need to add a type param to each request
-        to filter out visualizations
-        :param url: Relative endpoint URL
-        :param http_method: The method used to make the request to the API
-        :param client_args: Arguments to be sent to the auth client
-        :return: requests' response object
+        Send API request
+        :param url: relative endpoint URL
+        :return: requests" response object
         """
-        return super(DatasetManager, self).send(url, params={"type": "table"})
+        if "params" not in client_args:
+            client_args["params"] = {}
+        client_args["params"].update({"type": "table"})
+
+        return super(TableManager, self).send(url, http_method, **client_args)
 
     def create(self, url, interval=None, **import_args):
         """
