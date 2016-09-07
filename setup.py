@@ -7,5 +7,4 @@ setup(name="carto",
       description="SDK around CartoDB's APIs",
       version="1.0.0",
       url="https://github.com/CartoDB/carto-python",
-      packages=["carto"],
-      test_suite="test.client")
+      packages=["carto"])
