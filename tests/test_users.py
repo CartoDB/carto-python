@@ -1,9 +1,10 @@
 import pytest
 import time
+from pyrestcli.exceptions import NotFoundException
 
 from secret import USERNAME
 
-from carto.models import UserManager
+from carto.users import UserManager
 
 
 @pytest.fixture(scope="module")
@@ -62,13 +63,12 @@ def test_create_and_delete_user(user_manager):
     :param user_manager: User manager to work with
     """
     new_user = user_manager.create(username="test-carto-python-sdk-1r2t3", password="test_8g7d6", email="test_carto_python_sdk_1r2t3@test.com")
-    # API_ISSUE: following assert won't pass until https://github.com/CartoDB/cartodb/issues/9455 is fixed
-    # assert new_user._id is not None
+    assert new_user.username == "test-carto-python-sdk-1r2t3"
 
     time.sleep(10)  # We need to wait until a GET request will find the recently created user
     new_user = user_manager.get("test-carto-python-sdk-1r2t3")
     assert new_user.username == "test-carto-python-sdk-1r2t3"
 
     new_user.delete()
-    assert new_user._id is None
-    assert user_manager.get("test-carto-python-sdk-1r2t3") is None
+    with pytest.raises(NotFoundException):
+        user_manager.get("test-carto-python-sdk-1r2t3")

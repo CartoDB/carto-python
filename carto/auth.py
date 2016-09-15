@@ -9,7 +9,10 @@ class APIKeyAuthClient(BaseAuthClient):
     """
     def __init__(self, base_url, api_key, organization=None, proxies=None):
         """
+        :param base_url: Base URL. API endpoint paths will always be relative to this URL
         :param api_key: API key
+        :param organization: For enterprise users, organization user belongs to
+        :param proxies: requests' proxies object
         :return:
         """
         if not base_url.startswith("https"):
@@ -25,7 +28,7 @@ class APIKeyAuthClient(BaseAuthClient):
         Make a API-key-authorized request
         :param relative_path: URL path relative to self.base_url
         :param http_method: HTTP method
-        :param requests_args: kargs to be sent to requests
+        :param requests_args: kwargs to be sent to requests
         :return:
         """
         http_method = http_method.lower()

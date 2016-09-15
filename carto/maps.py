@@ -35,7 +35,5 @@ class NamedMap(Resource):
 
 
 class NamedMapManager(Manager):
-    model_class = NamedMap
+    resource_class = NamedMap
     json_collection_attribute = "template_ids"
-    json_resource_attribute = "template"
-    collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)

@@ -1,6 +1,10 @@
 import pytest
+from pyrestcli.exceptions import NotFoundException
 
-from carto.models import DatasetManager, PRIVATE, PUBLIC
+from carto.datasets import DatasetManager
+from carto.permissions import PRIVATE, PUBLIC
+
+from secret import IMPORT_FILE, IMPORT_URL
 
 
 @pytest.fixture(scope="module")
@@ -15,7 +19,7 @@ def dataset_manager(api_key_auth_client):
 
 def test_get_datasets(dataset_manager, user):
     """
-    Currently not supported by the user API. If we actually tried to perform this test, an exception would be raised
+    Get all the datasets from the API
     :param dataset_manager: Fixture that provides a user manager to work with
     :param user: If valid, we'll check the number of returned datasets exactly against the expected value
     """
@@ -28,16 +32,16 @@ def test_get_datasets(dataset_manager, user):
         assert len(datasets) >= 0
 
 
-def test_create_and_modify_and_delete_dataset(dataset_manager):
+def test_create_and_modify_and_delete_dataset_from_file(dataset_manager):
     """
-    Test creating a dataset, modifying it and then deleting it
+    Test creating a dataset from a local file, modifying it and then deleting it
     :param dataset_manager: Dataset manager to work with
     """
-    dataset = dataset_manager.create("test/test.csv")
-    assert dataset._id is not None
+    dataset = dataset_manager.create(IMPORT_FILE)
+    assert dataset.get_id() is not None
     assert dataset.privacy == PRIVATE
 
-    dataset_id = dataset._id
+    dataset_id = dataset.get_id()
     dataset = dataset_manager.get(dataset_id)
     dataset.privacy = PUBLIC
     dataset.save()
@@ -46,5 +50,37 @@ def test_create_and_modify_and_delete_dataset(dataset_manager):
     assert dataset.privacy == PUBLIC
 
     dataset.delete()
-    assert dataset._id is None
-    assert dataset_manager.get(dataset_id) is None
+    with pytest.raises(NotFoundException):
+        dataset_manager.get(dataset_id)
+
+
+def test_create_and_modify_and_delete_dataset_from_url(dataset_manager):
+    """
+    Test creating a dataset from a remote URL, modifying it and then deleting it
+    :param dataset_manager: Dataset manager to work with
+    """
+    dataset = dataset_manager.create(IMPORT_URL)
+    assert dataset.get_id() is not None
+    assert dataset.privacy == PRIVATE
+
+    dataset_id = dataset.get_id()
+    dataset = dataset_manager.get(dataset_id)
+    dataset.privacy = PUBLIC
+    dataset.save()
+
+    dataset = dataset_manager.get(dataset_id)
+    assert dataset.privacy == PUBLIC
+
+    dataset.delete()
+    with pytest.raises(NotFoundException):
+        dataset_manager.get(dataset_id)
+
+
+def test_create_and_modify_and_delete_dataset_as_sync_table(dataset_manager):
+    """
+    Test creating a dataset as a result of the creation of a sync table, modifying it and then deleting it
+    :param dataset_manager: Dataset manager to work with
+    """
+    with pytest.raises(AttributeError):
+        # Sync table is created but there is no way to get the corresponding dataset id
+        dataset_manager.create(IMPORT_URL, interval=3600)

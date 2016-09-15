@@ -2,23 +2,20 @@ import time
 import json
 from gettext import gettext as _
 
-from carto.core import CartoException
-from carto.api import FileImportJobManager, SyncTableJobManager
-from tables import TableManager
-
-from pyrestcli.resources import Resource, Manager
-from pyrestcli.paginators import DummyPaginator  # Use CARTO's
+from pyrestcli.resources import Resource
 from pyrestcli.fields import IntegerField, CharField, DateTimeField, BooleanField
 
-from .users import UserField
+from .exceptions import CartoException
+from .file_import import FileImportJobManager
+from .sync_tables import SyncTableJobManager
+from .tables import TableManager
+from .fields import TableField, UserField, PermissionField
+from .paginators import CartoPaginator
+from .resources import Manager
 
 
 API_VERSION = "v1"
 API_ENDPOINT = "{api_version}/viz/"
-
-PRIVATE = "PRIVATE"
-PUBLIC = "PUBLIC"
-LINK = "LINK"
 
 MAX_NUMBER_OF_RETRIES = 30
 INTERVAL_BETWEEN_RETRIES_S = 5
@@ -29,37 +26,38 @@ class Dataset(Resource):
     Represents a dataset in CARTO. Typically, that means there is a table in the PostgreSQL server associated to this object
     """
     active_child = None
-    active_layer_id = None
+    active_layer_id = CharField()
     attributions = None
+    auth_tokens = CharField(many=True)
     children = None
     created_at = DateTimeField()
-    description = None
-    display_name = None
+    description = CharField()
+    display_name = CharField()
     external_source = None
-    id = None
-    kind = None
+    id = CharField()
+    kind = CharField()
     license = None
     liked = BooleanField()
     likes = IntegerField()
-    locked = None
-    map_id = None
-    name = None
+    locked = BooleanField()
+    map_id = CharField()
+    name = CharField()
     next_id = None
-    parent_id = None
-    permission = None
+    parent_id = CharField()
+    permission = PermissionField()
     prev_id = None
     privacy = CharField()
     source = None
-    stats = None
+    stats = DateTimeField(many=True)
     synchronization = None
-    table = None
-    tags = DateTimeField(many=True)
-    title = None
+    table = TableField()
+    tags = CharField(many=True)
+    title = CharField()
     transition_options = None
-    type = None
-    updated_at = None
-    url = None
-    uses_builder_features = None
+    type = CharField()
+    updated_at = DateTimeField()
+    url = CharField()
+    uses_builder_features = BooleanField()
     user = UserField()
 
     class Meta:
@@ -71,21 +69,25 @@ class DatasetManager(Manager):
     """
     Manager for the Dataset class
     """
-    model_class = Dataset
+    resource_class = Dataset
     json_collection_attribute = "visualizations"
-    paginator_class = DummyPaginator
+    paginator_class = CartoPaginator
 
     def send(self, url, http_method, **client_args):
         """
-        Send API request
-        :param url: relative endpoint URL
-        :return: requests" response object
+        Send API request, taking into account that datasets are part of the visualization endpoint
+        :param url: Endpoint URL
+        :param http_method: The method used to make the request to the API
+        :param client_args: Arguments to be sent to the auth client
+        :return:
         """
+        client_args = client_args or {}
+
         if "params" not in client_args:
             client_args["params"] = {}
-        client_args["params"].update({"type": "table"})
+        client_args["params"].update({"type": "table", "exclude_shared": "true"})
 
-        return super(TableManager, self).send(url, http_method, **client_args)
+        return super(DatasetManager, self).send(url, http_method, **client_args)
 
     def create(self, url, interval=None, **import_args):
         """
@@ -105,7 +107,7 @@ class DatasetManager(Manager):
         import_job = manager.create(url) if interval is None else manager.create(url, interval)
         import_job.run(**import_args)
 
-        if import_job._id is None:
+        if import_job.get_id() is None:
             raise CartoException(_("Import API returned corrupt job details when creating dataset"))
 
         import_job.refresh()
@@ -121,12 +123,12 @@ class DatasetManager(Manager):
         if import_job.state == "failure":
             raise CartoException(_("Dataset creation was not successful because of failed import (error: {error}").format(error=json.dumps(import_job.get_error_text)))
 
-        if import_job.state != "complete" or import_job.success is False:
+        if (import_job.state != "complete" and import_job.state != "created") or import_job.success is False:
             raise CartoException(_("Dataset creation was not successful because of unknown import error"))
 
         table = TableManager(self.client).get(import_job.table_id)
 
         try:
-            return self.get(table.table_visualization["id"]) if table is not None else None
+            return self.get(table.table_visualization.get_id()) if table is not None else None
         except AttributeError:
             raise CartoException(_("Dataset creation was not successful because of unknown error"))
