@@ -1,3 +1,5 @@
+from pyrestcli.fields import CharField, DateTimeField
+
 from .resources import AsyncResource
 
 
@@ -10,6 +12,14 @@ class ExportJob(AsyncResource):
     Equivalent to a carto export in CARTO.
     Allows a CARTO export to be created using a visualization in the user's CARTO account
     """
+    id = CharField()
+    visualization_id = CharField()
+    user_id = CharField()
+    state = CharField()
+    url = CharField()
+    created_at = DateTimeField()
+    updated_at = DateTimeField()
+
     class Meta:
         collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
 

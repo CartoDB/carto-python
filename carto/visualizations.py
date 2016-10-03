@@ -1,13 +1,22 @@
+import time
+import json
+from gettext import gettext as _
+
 from pyrestcli.resources import Resource
 from pyrestcli.fields import IntegerField, CharField, DateTimeField, BooleanField
 
+from .exceptions import CartoException
 from .fields import TableField
 from .resources import Manager
 from .paginators import CartoPaginator
+from .export import ExportJob
 
 
 API_VERSION = "v1"
 API_ENDPOINT = "{api_version}/viz/"
+
+MAX_NUMBER_OF_RETRIES = 30
+INTERVAL_BETWEEN_RETRIES_S = 5
 
 
 class Visualization(Resource):
@@ -50,6 +59,28 @@ class Visualization(Resource):
     class Meta:
         collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
         name_field = "name"
+
+    def export(self):
+        export_job = ExportJob(self.client, self.get_id())
+        export_job.run()
+
+        export_job.refresh()
+
+        count = 0
+        while export_job.state in ("enqueued", "pending", "uploading", "unpacking", "importing", "guessing"):
+            if count >= MAX_NUMBER_OF_RETRIES:
+                raise CartoException(_("Maximum number of retries exceeded when polling the import API for visualization export"))
+            time.sleep(INTERVAL_BETWEEN_RETRIES_S)
+            export_job.refresh()
+            count += 1
+
+        if export_job.state == "failure":
+            raise CartoException(_("Visualization export was not successful (error: {error}").format(error=json.dumps(export_job.get_error_text)))
+
+        if (export_job.state != "complete" and export_job.state != "created"):
+            raise CartoException(_("Visualization export was not successful because of unknown import error"))
+
+        return export_job.url
 
 
 class VisualizationManager(Manager):
