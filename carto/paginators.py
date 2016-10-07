@@ -5,7 +5,7 @@ class CartoPaginator(Paginator):
     def __init__(self, json_collection_attribute, base_url, params=None):
         self.json_collection_attribute = json_collection_attribute
 
-        super(CartoPaginator, self).__init__(base_url, params)
+        super(CartoPaginator, self).__init__(base_url, params=params)
 
     def get_urls(self, initial_url):
         self.url = initial_url
