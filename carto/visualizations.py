@@ -1,5 +1,4 @@
 import time
-import json
 from gettext import gettext as _
 
 from pyrestcli.resources import Resource
@@ -67,7 +66,7 @@ class Visualization(Resource):
         export_job.refresh()
 
         count = 0
-        while export_job.state in ("enqueued", "pending", "uploading", "unpacking", "importing", "guessing"):
+        while export_job.state in ("exporting", "enqueued", "pending"):
             if count >= MAX_NUMBER_OF_RETRIES:
                 raise CartoException(_("Maximum number of retries exceeded when polling the import API for visualization export"))
             time.sleep(INTERVAL_BETWEEN_RETRIES_S)
@@ -75,10 +74,10 @@ class Visualization(Resource):
             count += 1
 
         if export_job.state == "failure":
-            raise CartoException(_("Visualization export was not successful (error: {error}").format(error=json.dumps(export_job.get_error_text)))
+            raise CartoException(_("Visualization export failed"))
 
         if (export_job.state != "complete" and export_job.state != "created"):
-            raise CartoException(_("Visualization export was not successful because of unknown import error"))
+            raise CartoException(_("Unexpected problem on visualization export (state: {state})").format(state=export_job.state))
 
         return export_job.url
 
