@@ -1,9 +1,7 @@
-from .auth import NoAuthClient
-from .core import CartoException
-
-
 SQL_API_URL = '{api_version}/sql'
 SQL_BATCH_API_URL = '{api_version}/sql/job/'
+
+MAX_GET_QUERY_LEN = 1024
 
 
 class SQLClient(object):
@@ -34,10 +32,10 @@ class SQLClient(object):
             if format not in ['json', 'geojson']:
                 parse_json = False
 
-        if len(sql) < self.auth_client.MAX_GET_QUERY_LEN and do_post is False:
+        if len(sql) < MAX_GET_QUERY_LEN and do_post is False:
             resp = self.auth_client.send(self.api_url, 'GET', params=params)
         else:
-            resp = self.auth_client.send(self.api_url, 'POST', body=params)
+            resp = self.auth_client.send(self.api_url, 'POST', data=params)
 
         return self.auth_client.get_response_data(resp, parse_json)
 
@@ -53,8 +51,6 @@ class BatchSQLClient(object):
         :return:
         """
         self.client = client
-        if isinstance(self.client, NoAuthClient):
-            raise CartoException("The client must be authenticated with an API key to access the batch sql api.")
         self.api_url = SQL_BATCH_API_URL.format(api_version=api_version)
         self.api_key = self.client.api_key
 
@@ -84,7 +80,7 @@ class BatchSQLClient(object):
     def create(self, sql_query):
         """
         Creates a new batch SQL query
-        :param sql_query: The query to be used 
+        :param sql_query: The query to be used
         :return: Response data, either as json or as a regular response.content object
         """
         header = {'content-type': 'application/json'}
@@ -129,8 +125,6 @@ class BatchSQLManager(object):
         :return:
         """
         self.client = client
-        if isinstance(self.client, NoAuthClient):
-            raise CartoException("The client must be authenticated with an API key to list the sql jobs.")
         self.api_key = self.client.api_key
         self.api_url = SQL_BATCH_API_URL.format(api_version=api_version)
 
