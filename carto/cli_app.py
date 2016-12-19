@@ -1,5 +1,6 @@
 from carto.sql import SQLClient
 from carto.auth import APIKeyAuthClient
+from carto.file_import import FileImportJob
 from carto.exceptions import CartoException
 
 import click
@@ -42,9 +43,9 @@ def cli(ctx, user_name, api_key):
 @click.command(help="Gets the number of records of a table")
 @click.argument('table_name')
 @click.pass_obj
-def count(cartodb, table_name):
+def count(carto_obj, table_name):
     # TODO use datamanager
-    rows = cartodb.execute_sql(
+    rows = carto_obj.execute_sql(
         'select count(*) from {}'.format(table_name))
     count = rows[0].get('count')
     click.echo(count)
@@ -53,10 +54,10 @@ def count(cartodb, table_name):
 @click.command(help='Gets the BBOX of a table')
 @click.argument('table_name')
 @click.pass_obj
-def bbox(cartodb, table_name):
+def bbox(carto_obj, table_name):
     # TODO check if table exists
 
-    rows = cartodb.execute_sql(
+    rows = carto_obj.execute_sql(
         '''
         with data as (select ST_Extent(the_geom) as bbox from {} )
         select
@@ -76,8 +77,8 @@ def bbox(cartodb, table_name):
 
 @click.command(help='List schemas')
 @click.pass_obj
-def schema_list(cartodb):
-    rows = cartodb.execute_sql('''
+def schema_list(carto_obj):
+    rows = carto_obj.execute_sql('''
         select nspname as user
         from pg_catalog.pg_namespace
         where not nspowner = 10 order by nspname
@@ -89,13 +90,13 @@ def schema_list(cartodb):
 
 @click.command(help='List users tables')
 @click.pass_obj
-def table_list(cartodb):
-    rows = cartodb.execute_sql('''
+def table_list(carto_obj):
+    rows = carto_obj.execute_sql('''
         select table_name
         from information_schema.tables
         where table_schema in (\'public\',\'{}\')
         order by table_name
-        '''.format(cartodb.user_name))
+        '''.format(carto_obj.user_name))
 
     for row in rows:
         click.echo(row.get('table_name'))
@@ -108,10 +109,10 @@ def table_list(cartodb):
 @click.option('--privacy', type=click.Choice(['private', 'link', 'public']),
               default='private', help="Define dataset privacy")
 @click.pass_obj
-def import_file(cartodb, file_path, create_vis, privacy):
-    fi = FileImport(
-        file_path, cartodb.client, create_vis=create_vis, privacy=privacy)
-    fi.run()
+def import_file(carto_obj, file_path, create_vis, privacy):
+    fi = FileImportJob(
+        file_path, carto_obj.client,)
+    fi.run(create_vis=create_vis, privacy=privacy)
     click.echo('Id:{}'.format(fi.id))
     click.echo('Status:{}'.format(fi.success))
 
@@ -151,5 +152,4 @@ cli.add_command(import_file)
 
 
 if __name__ == '__main__':
-    # Use environment variables starting as CARTODB
     cli()
