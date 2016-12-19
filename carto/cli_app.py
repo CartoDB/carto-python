@@ -30,10 +30,10 @@ class CARTOUser(object):
 
 @click.group()
 @click.option('--user-name', envvar='CARTO_USER_NAME',
-              help='Your CartoDB user. It can be omitted if CARTO_USER_NAME '+
+              help='Your CARTO user. It can be omitted if CARTO_USER_NAME '+
               'is available')
 @click.option('--api-key', envvar='CARTO_API_KEY',
-              help='CartoDB API KEY. It can be omitted if CARTO_API_KEY ' +
+              help='CARTO API KEY. It can be omitted if CARTO_API_KEY ' +
               'is available')
 @click.pass_context
 def cli(ctx, user_name, api_key):
