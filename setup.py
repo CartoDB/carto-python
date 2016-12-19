@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(name="carto",
     author="Daniel Carrión",
@@ -16,6 +16,6 @@ setup(name="carto",
     ],
     entry_points='''
         [console_scripts]
-        carto=carto.cli.app:cli
+        carto=carto.cli_app:cli
     ''',
 )
