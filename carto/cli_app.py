@@ -5,7 +5,7 @@ from carto.exceptions import CartoException
 import click
 
 
-class CartoDBUser(object):
+class CARTOUser(object):
 
     def __init__(self, user_name=None, api_key=None):
         self.user_name = user_name
@@ -28,15 +28,15 @@ class CartoDBUser(object):
 
 
 @click.group()
-@click.option('--user-name', envvar='CARTODB_USER_NAME',
-              help='Your CartoDB user. It can be omitted if CARTODB_USER_NAME '+
+@click.option('--user-name', envvar='CARTO_USER_NAME',
+              help='Your CartoDB user. It can be omitted if CARTO_USER_NAME '+
               'is available')
-@click.option('--api-key', envvar='CARTODB_API_KEY',
-              help='CartoDB API KEY. It can be omitted if CARTODB_API_KEY ' +
+@click.option('--api-key', envvar='CARTO_API_KEY',
+              help='CartoDB API KEY. It can be omitted if CARTO_API_KEY ' +
               'is available')
 @click.pass_context
 def cli(ctx, user_name, api_key):
-    ctx.obj = CartoDBUser(user_name, api_key)
+    ctx.obj = CARTOUser(user_name, api_key)
 
 
 @click.command(help="Gets the number of records of a table")
