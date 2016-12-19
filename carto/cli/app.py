@@ -1,4 +1,7 @@
-from carto import CartoException, APIKeyAuthClient, SQLCLient, FileImport
+from carto.sql import SQLClient
+from carto.auth import APIKeyAuthClient
+from carto.exceptions import CartoException
+
 import click
 
 
@@ -6,8 +9,10 @@ class CartoDBUser(object):
 
     def __init__(self, user_name=None, api_key=None):
         self.user_name = user_name
-        self.client = APIKeyAuthClient(api_key=api_key, user=user_name)
-        self.sql_client = SQLCLient(self.client)
+        self.client = APIKeyAuthClient(
+            "https://{}.carto.com/api/".format(user_name), api_key)
+        self.sql_client = SQLClient(self.client)
+
 
     def execute_sql(self, query):
         try:
@@ -19,6 +24,7 @@ class CartoDBUser(object):
                 raise CartoException("Your query does not return any row")
         except CartoException as e:
             raise
+
 
 
 @click.group()
@@ -37,6 +43,7 @@ def cli(ctx, user_name, api_key):
 @click.argument('table_name')
 @click.pass_obj
 def count(cartodb, table_name):
+    # TODO use datamanager
     rows = cartodb.execute_sql(
         'select count(*) from {}'.format(table_name))
     count = rows[0].get('count')
@@ -47,6 +54,8 @@ def count(cartodb, table_name):
 @click.argument('table_name')
 @click.pass_obj
 def bbox(cartodb, table_name):
+    # TODO check if table exists
+
     rows = cartodb.execute_sql(
         '''
         with data as (select ST_Extent(the_geom) as bbox from {} )
@@ -54,6 +63,7 @@ def bbox(cartodb, table_name):
             ST_XMax(bbox) xmax, ST_XMin(bbox) xmin,
             ST_YMax(bbox) ymax, ST_YMin(bbox) ymin
         from data'''.format(table_name))
+
 
     xmax = rows[0].get('xmax')
     ymax = rows[0].get('ymax')
