@@ -52,6 +52,7 @@ for i in all_datasets:
   for k, v in indexes.iteritems():
     if k == 'rows':
       print v
+     
 
 
 print '\nThere are: ' + str(sum) + ' datasets in this account'
