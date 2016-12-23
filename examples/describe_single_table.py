@@ -39,7 +39,7 @@ for i in all_datasets:
 
       print '\nName of the table: ' + str(i.table.name)
       print 'Total number of rows: ' + ' '+ str(i.table.row_count) + ' rows'
-      print 'Size of the table: ' + str(i.table.size) + ' Bytes'
+      print 'Size of the table: ' + str(i.table.size/1048576.00) + ' MB'
       
       print 'Privacy of the table: ' + str(i.table.privacy)
       print 'Geometry type: ' + str(i.table.geometry_types)
