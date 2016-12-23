@@ -27,8 +27,9 @@ all_datasets = dataset_manager.all()
 sum = 0
 
 for i in all_datasets:
+    print i.table.permission.__dict__
   sum = sum + 1
-  # show all features of each dataset
+  #show all features of each dataset
 
   print '\nName of the table: ' + str(i.table.name)
   print 'Total number of rows: ' + ' '+ str(i.table.row_count) + ' rows'
@@ -55,5 +56,5 @@ for i in all_datasets:
      
 
 
-print '\nThere are: ' + str(sum) + ' datasets in this account'
+# print '\nThere are: ' + str(sum) + ' datasets in this account'
 
