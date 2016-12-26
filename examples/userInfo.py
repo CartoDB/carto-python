@@ -27,10 +27,16 @@ for i in user.__dict__:
 
 sql = SQLClient(APIKeyAuthClient(CARTO_BASE_URL, CARTO_API_KEY))
 
-quota = sql.send("SELECT * FROM cdb_dataservices_client.cdb_service_quota_info()")
-for k, v in quota.iteritems():
-        if k == 'rows':
-          print '\n' + str(v)
+# show quota of user
 
+print '\nThe quotas of the user are:\n'
+quota = sql.send("SELECT * FROM cdb_dataservices_client.cdb_service_quota_info()")
+for k, v in quota.items():
+        if k == 'rows':
+          for itr in v:
+            for a,b in itr.items():
+              print str(a)+': ' + str(b)
+              if str(a) == 'monthly_quota':
+                print '\n'
 
 

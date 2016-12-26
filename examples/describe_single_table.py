@@ -91,11 +91,3 @@ for i in all_datasets:
       for t in triggers['rows']:
         print '\tThe name of the trigger is: '+ str(t['tgname'])
       print '\n'
-
-
-
-   
-
-
-
-

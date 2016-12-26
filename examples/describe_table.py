@@ -103,4 +103,3 @@ for i in all_datasets:
     print 'Table is Cartodbfyied'
 
 print '\nThere are: ' + str(sum) + ' datasets in this account'
-
