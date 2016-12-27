@@ -13,7 +13,7 @@ from carto.visualizations import VisualizationManager
 
 organization = 'cartoworkshops'
 CARTO_BASE_URL='https://carto-workshops.carto.com/api/'
-CARTO_API_KEY = 'dba84d3096d19b477cd2656da3edf616672ab530'
+CARTO_API_KEY = 'XXXX'
 
 # work with CARTO entities. DatasetManager encapsulates information of a table
 auth_client = APIKeyAuthClient(CARTO_BASE_URL, CARTO_API_KEY, organization)
