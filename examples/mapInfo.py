@@ -30,3 +30,7 @@ printer.pprint(mapa.__dict__)
 
 
 
+<<<<<<< HEAD
+=======
+printer.pprint(all_maps.table.__dict__)
+>>>>>>> a01bfe8fbef913642f20a36e9349b2a6cf87af7f

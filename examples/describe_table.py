@@ -28,12 +28,12 @@ sum = 0
 
 for i in all_datasets:
   sum = sum + 1
+
   #show all features of each dataset
 
   print '\nName of the table: ' + str(i.table.name)
   print 'Total number of rows: ' + ' '+ str(i.table.row_count) + ' rows'
   print 'Size of the table: ' + str(i.table.size/1048576.00) + ' MB'
-  
   print 'Privacy of the table: ' + str(i.table.privacy)
   print 'Geometry type: ' + str(i.table.geometry_types)
 
@@ -101,5 +101,48 @@ for i in all_datasets:
      
   if len(checkInd) == 3 and len(checkCol) == 3:
     print 'Table is Cartodbfyied'
+
+# create graph with the sizes of all datasets
+
+arr_size = []
+
+
+# create array with values of the table sizes
+for i in all_datasets:
+  arr_size.append(i.table.size)
+
+# define variables that have the max and min values of the array
+max_val = max(arr_size)/1048576.00
+min_val = min(arr_size)/1048576.00
+
+for i in all_datasets:
+  # create graphs
+  val = i.table.size/1048576.00
+  
+  norm = ((val-min_val)/(max_val-min_val))*100.00
+
+  # print graphs
+
+  if norm > 0 and norm <= 10:
+    print '{:|<10}'.format(str(i.table.name)+'\t') + ' ' + str(round(val,2)) + ' MB'
+  elif norm > 10 and norm <= 20:
+    print '{:|<20}'.format(str(i.table.name)+'\t') + ' ' + str(round(val,2)) + ' MB'
+  elif norm > 20 and norm <= 30: 
+    print '{:|<30}'.format(str(i.table.name)+'\t') + ' ' + str(round(val,2)) + ' MB'
+  elif norm > 30 and norm <= 40:
+    print '{:|<40}'.format(str(i.table.name)+'\t') + ' ' + str(round(val,2)) + ' MB'
+  elif norm > 40 and norm <= 50:
+    print '{:|<50}'.format(str(i.table.name)+'\t') + ' ' + str(round(val,2)) + ' MB'
+  elif norm > 50 and norm <= 60:
+    print '{:|<60}'.format(str(i.table.name)+'\t') + ' ' + str(round(val,2)) + ' MB'
+  elif norm > 60 and norm <= 70:
+    print '{:|<70}'.format(str(i.table.name)+'\t') + ' ' + str(round(val,2)) + ' MB'
+  elif norm > 70 and norm <= 80:
+    print '{:|<80}'.format(str(i.table.name)+'\t') + ' ' + str(round(val,2)) + ' MB'
+  elif norm > 80 and norm <= 90:
+    print '{:|<90}'.format(str(i.table.name)+'\t') + ' ' + str(round(val,2)) + ' MB'
+  elif norm > 90 and norm <= 100:
+    print '{:|<100}'.format(str(i.table.name)+'\t') + ' ' + str(round(val,2))  + ' MB'
+
 
 print '\nThere are: ' + str(sum) + ' datasets in this account'
