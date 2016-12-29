@@ -9,8 +9,8 @@ printer = pprint.PrettyPrinter(indent=4)
 from carto.sql import SQLClient
 import sys
 
-if len(sys.argv) <= 2:
-  print 'You have to pass 2 input arguments.Add username and table name as arguments in that order'
+if len(sys.argv) <= 1:
+  print 'You have to pass 1 input arguments.Add the PID of the query, run the running_queries.py script to know it'
 
 organization = 'cartoworkshops'
 CARTO_BASE_URL='https://carto-workshops.carto.com/api/'
@@ -25,5 +25,6 @@ dataset_manager = DatasetManager(auth_client)
 
 sql = SQLClient(APIKeyAuthClient(CARTO_BASE_URL, CARTO_API_KEY))
 
-queries = "SELECT pg_cancel_backend('"+sys.argv[1]+"');"
+queries = "SELECT pg_cancel_backend('"+sys.argv[1]+"') from pg_stat_activity where usename=current_user;"
+
 result = sql.send(queries)
