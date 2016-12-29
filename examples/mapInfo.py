@@ -25,12 +25,5 @@ all_maps = visualization_manager.all()
 
 mapa = visualization_manager.get(sys.argv[1])
 printer.pprint(mapa.__dict__)
+printer.pprint(mapa.table.__dict__)
 
-
-
-
-
-<<<<<<< HEAD
-=======
-printer.pprint(all_maps.table.__dict__)
->>>>>>> a01bfe8fbef913642f20a36e9349b2a6cf87af7f
