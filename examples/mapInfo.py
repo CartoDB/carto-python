@@ -12,7 +12,7 @@ import sys
 
 
 organization = 'cartoworkshops'
-CARTO_BASE_URL='https://carto-workshops.carto.com/api/'
+CARTO_BASE_URL = 'https://carto-workshops.carto.com/api/'
 CARTO_API_KEY = os.environ['CARTO_API_KEY']
 
 # work with CARTO entities. DatasetManager encapsulates information of a table
@@ -26,4 +26,3 @@ all_maps = visualization_manager.all()
 mapa = visualization_manager.get(sys.argv[1])
 printer.pprint(mapa.__dict__)
 printer.pprint(mapa.table.__dict__)
-

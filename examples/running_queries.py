@@ -10,7 +10,7 @@ from carto.sql import SQLClient
 import sys
 
 organization = 'cartoworkshops'
-CARTO_BASE_URL='https://carto-workshops.carto.com/api/'
+CARTO_BASE_URL = 'https://carto-workshops.carto.com/api/'
 CARTO_API_KEY = os.environ['CARTO_API_KEY']
 
 
@@ -22,10 +22,10 @@ dataset_manager = DatasetManager(auth_client)
 
 sql = SQLClient(APIKeyAuthClient(CARTO_BASE_URL, CARTO_API_KEY))
 
-queries = "SELECT pid, query from pg_stat_activity WHERE usename = current_user"
+queries = "select pid, query from pg_stat_activity \
+ WHERE usename = current_user"
 result = sql.send(queries)
 for key, value in result.items():
-  if key == 'rows':
-    for itr in value:
-      print itr
-
+    if key == 'rows':
+        for itr in value:
+            print itr
