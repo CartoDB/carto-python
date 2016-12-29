@@ -16,7 +16,6 @@ organization = 'cartoworkshops'
 CARTO_BASE_URL='https://'+sys.argv[1]+'.carto.com/api/'
 CARTO_API_KEY = os.environ['CARTO_API_KEY']
 
-print CARTO_API_KEY
 
 # Authenticate to CARTO account
 auth_client = APIKeyAuthClient(CARTO_BASE_URL, CARTO_API_KEY, organization)
@@ -64,7 +63,6 @@ for i in all_datasets:
 
       # get all functions of user account
       print '\nFunctions of the account: \n'
-      #functions = sql.send("SELECT proname FROM  pg_catalog.pg_namespace n JOIN pg_catalog.pg_proc p ON pronamespace = n.oid WHERE nspname = '"+ i.permission.owner.username +"'")
       functions = sql.send("select pg_proc.oid as _oid, pg_proc.*, pg_get_functiondef(pg_proc.oid) as definition from pg_proc, pg_roles where pg_proc.proowner = pg_roles.oid and pg_roles.rolname = '" + i.permission.owner.username +"'")
       for a, b in functions.items():
         if a == 'rows':
@@ -78,9 +76,7 @@ for i in all_datasets:
       for c,d in oid.items():
         if c == 'rows':
           for itr in d:
-            # print name and oid for each table
-            # print str(itr['relname']) + ', its oid is: ' +str(itr['_oid'])
-            
+
             # if the name of the table matches with the name of the input table
             # save the oid of the table in the table_oid variable
             if itr['relname'] == dataset_name:
