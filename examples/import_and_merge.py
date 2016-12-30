@@ -20,7 +20,7 @@ auth_client = APIKeyAuthClient(CARTO_BASE_URL, CARTO_API_KEY, organization)
 sql = SQLClient(APIKeyAuthClient(CARTO_BASE_URL, CARTO_API_KEY))
 
 # define path of the files
-path = '/Users/oboix/carto-python/examples/files'
+path = 'examples/files'
 
 # import files from the path to CARTO
 table_name = []
@@ -33,7 +33,7 @@ for i in listdir(path):
         fi.run()
 
         time.sleep(2)
-        
+
         fi.refresh()
 
         if fi.success == True:
@@ -59,13 +59,15 @@ base_table = table_name[0]
 
 # select all rows from table except cartodb_id to avoid possible errors
 
-columns_table = "select string_agg(column_name,',') FROM information_schema.columns" + \
- " where table_schema = 'carto-workshops' and table_name = '" + str(table_name[0]) +"' AND column_name <> 'cartodb_id'"
+columns_table = "select string_agg(column_name,',')" + \
+    " FROM information_schema.columns" + \
+    " where table_schema = 'carto-workshops' and table_name = '" + \
+    str(table_name[0]) + "' AND column_name <> 'cartodb_id'"
 
 print columns_table
 result_query = sql.send(columns_table)
 
-for k,v in result_query.items():
+for k, v in result_query.items():
     if k == 'rows':
         for itr in v:
             dict_col = itr
@@ -83,7 +85,9 @@ for i in table_name:
     elif i != base_table and index <= len(table_name):
         print i
         print 'First if index: ' + str(index)
-        query= "insert into " + base_table + "(" + dict_col['string_agg'] +") select " + dict_col['string_agg'] + " from " + table_name[index] + ";"
+        query = "insert into " + base_table + \
+            "(" + dict_col['string_agg'] + ") select " + \
+            dict_col['string_agg'] + " from " + table_name[index] + ";"
         sql.send(query)
         time.sleep(2)
         print query
@@ -93,7 +97,8 @@ for i in table_name:
     index = index + 1
 
 # cahnge name of base table
-change_name_query = "ALTER TABLE " + base_table + " RENAME TO " + base_table + "_merged"
+change_name_query = "ALTER TABLE " + base_table + \
+    " RENAME TO " + base_table + "_merged"
 sql.send(change_name_query)
 
 # remove not merged datasets
