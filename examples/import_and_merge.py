@@ -11,7 +11,7 @@ import time
 import logging
 
 organization = 'cartoworkshops'
-CARTO_API_KEY = '172a2e8659184e6c74db78a258a8de2340bd5f0b'
+CARTO_API_KEY = os.environ['CARTO_API_KEY']
 CARTO_BASE_URL = 'https://carto-workshops.carto.com/api/'
 
 # authenticate to CARTO
