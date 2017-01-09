@@ -3,12 +3,13 @@ from carto.exceptions import CartoException
 from carto.file_import import FileImportJob
 import warnings
 warnings.filterwarnings('ignore')
-from os import listdir
-from os.path import isfile, join
+import os
 from carto.sql import SQLClient
 from carto.datasets import DatasetManager
 import time
 import logging
+import glob
+import sys
 
 organization = 'cartoworkshops'
 CARTO_API_KEY = os.environ['CARTO_API_KEY']
@@ -26,21 +27,20 @@ sql = SQLClient(APIKeyAuthClient(CARTO_BASE_URL, CARTO_API_KEY))
 dataset_manager = DatasetManager(auth_client)
 
 # define path of the files
-path = '/Users/oboix/carto-python/examples/files'
+path = os.getcwd()
+
+file_folder = glob.glob(path +'/' + sys.argv[1])
 
 # import files from the path to CARTO
 table_name = []
-for i in listdir(path):
-    if isfile(join(path, i)) == True:
-       
-        # imports the file to CARTO
-        fi = FileImportJob(join(path, i), auth_client)
+
+for i in file_folder:
+        fi = FileImportJob(i, auth_client)
         fi.run()
 
         time.sleep(2)
 
         fi.refresh()
-
         if fi.success == True:
             while (fi.state != 'complete'):
                 fi.refresh()
