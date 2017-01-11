@@ -115,24 +115,3 @@ class BatchSQLClient(object):
         """
         confirmation = self.send(self.api_url + job_id, http_method="DELETE")
         return confirmation['status']
-
-
-class BatchSQLManager(object):
-    def __init__(self, client, api_version='v2'):
-        """
-        :param client: Client to make authorized requests (currently only APIKeyAuthClient is supported)
-        :param api_version: Current version is 'v2'. 'v1' can be used to avoid caching, but it's not guaranteed to work
-        :return:
-        """
-        self.client = client
-        self.api_key = self.client.api_key
-        self.api_url = SQL_BATCH_API_URL.format(api_version=api_version)
-
-    def all(self):
-        """
-        Get all batch SQL jobs
-        :return: A json object containing all of the ids of the Batch SQL queries
-        """
-        data = self.client.send(self.api_url, "GET")
-        data_json = self.client.get_response_data(data)
-        return data_json
