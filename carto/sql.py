@@ -73,7 +73,7 @@ class BatchSQLClient(object):
         :param http_header: The header used to make write requests to the API, by default is none
         :return: Response data, either as json or as a regular response.content object
         """
-        data = self.client.send(url, http_method=http_method, http_headers=http_header, json=json_body)
+        data = self.client.send(url, http_method=http_method, headers=http_header, json=json_body)
         data_json = self.client.get_response_data(data)
         return data_json
 
