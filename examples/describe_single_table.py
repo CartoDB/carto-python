@@ -4,13 +4,11 @@ from carto.datasets import DatasetManager
 import warnings
 warnings.filterwarnings('ignore')
 import os
-import pprint
-printer = pprint.PrettyPrinter(indent=4)
 from carto.sql import SQLClient
 import sys
 
 if len(sys.argv) <= 1:
-    print 'You have to pass an input argument with the table name'
+    print('You have to pass an input argument with the table name')
 
 organization = os.environ['CARTO_ORG']
 CARTO_BASE_URL = os.environ['CARTO_API_URL']
@@ -35,40 +33,35 @@ all_datasets = dataset_manager.all()
 for i in all_datasets:
     if (i.table.name == dataset_name):
         # show all features of each dataset
+        print('\nName of the table: {tabName}\nTotal number of rows: {tabRowCount:,} rows').format(tabName=str(i.table.name),tabRowCount=i.table.row_count)
+        print('Size of the table: {tableSize} MB').format(tableSize=str(round(i.table.size/1048576.00,2)))
+        print('Privacy of the table: {tabPrivacy} Geometry type: {tabGeom}').format(tabPrivacy=str(i.table.privacy),tabGeom=str(i.table.geometry_types))
 
-        print '\nName of the table: ' + str(i.table.name)
-        print 'Total number of rows: ' + ' ' + str(i.table.row_count) + ' rows'
-        print 'Size of the table: ' + str(i.table.size/1048576.00) + ' MB'
-
-        print 'Privacy of the table: ' + str(i.table.privacy)
-        print 'Geometry type: ' + str(i.table.geometry_types)
 
         columns_table = "select column_name, data_type FROM information_schema.columns \
         WHERE table_schema = '" + i.permission.owner.username + "'\
         AND table_name ='" + i.table.name + "';"
 
         # print columns_table
-        print '\nThe columns and their data types are: \n'
+        print('\nThe columns and their data types are: \n')
         columnAndTypes = sql.send(columns_table)
         for key, value in columnAndTypes.items():
             if key == 'rows':
                 for itr in value:
-                    print '\tThe column: ' + str(itr['column_name']) + ' \
-                    is: ' + str(itr['data_type']) + ' type'
+                    print('\t{columnName}: {dataType}').format(columnName=str(itr['column_name']),dataType=str(itr['data_type']))
 
         # get all indexes of the table
-        print '\nIndexes of the tables: \n'
+        print('\nIndexes of the tables: \n')
         indexes = sql.send("select indexname, indexdef from pg_indexes \
           where tablename = '" + i.table.name + "' \
           AND schemaname = '" + i.permission.owner.username + "'")
         for k, v in indexes.items():
             if k == 'rows':
                 for itr in v:
-                    print '\tThe index: ' + str(itr['indexname']) + ' \
-                    is: ' + str(itr['indexdef'])
+                    print('\t{indexName}: {indexDef}').format(indexName=str(itr['indexname']),indexDef=str(itr['indexdef']))
 
         # get all functions of user account
-        print '\nFunctions of the account: \n'
+        print('\nFunctions of the account: \n')
         functions = sql.send(
             "select pg_proc.oid as _oid, pg_proc.*, \
             pg_get_functiondef(pg_proc.oid) as definition \
@@ -77,10 +70,10 @@ for i in all_datasets:
         for a, b in functions.items():
             if a == 'rows':
                 for itr in b:
-                    print itr
+                    print(itr)
 
         # triggers
-        print '\nTriggers of the account: \n'
+        print('\nTriggers of the account: \n')
         # save oid of tables in an object
         oid = sql.send(
             "select pg_class.oid as _oid, pg_class.relname from \
@@ -90,7 +83,6 @@ for i in all_datasets:
         for c, d in oid.items():
             if c == 'rows':
                 for itr in d:
-
                     # if the name of the table matches with the name of the input table
                     # save the oid of the table in the table_oid variable
                     if itr['relname'] == dataset_name:
@@ -100,5 +92,5 @@ for i in all_datasets:
         triggers = sql.send(
             "SELECT tgname FROM pg_trigger WHERE tgrelid =" + str(table_oid))
         for t in triggers['rows']:
-            print '\tThe name of the trigger is: ' + str(t['tgname'])
-        print '\n'
+            print('\t{tgName}').format(tgName=str(t['tgname']))
+        print('\n')

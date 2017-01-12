@@ -4,8 +4,6 @@ from carto.datasets import DatasetManager
 import warnings
 warnings.filterwarnings('ignore')
 import os
-import pprint
-printer = pprint.PrettyPrinter(indent=4)
 from carto.sql import SQLClient
 
 
@@ -57,6 +55,10 @@ min_val = min(arr_size)/1048576.00
 # define count variable
 sum = 0
 
+
+#define list of tuples
+tupleList = []
+
 # start iterating over array
 for i in all_tables:
     # check column names
@@ -98,9 +100,9 @@ for i in all_tables:
 
     # if indexes and column names exists -> table cartodbified
     if len(checkInd) >= 3 and len(checkCol) >= 3:
-        cartodbfied = 'yes'
+        cartodbfied = 'YES'
     else:
-        cartodbfied = 'no'
+        cartodbfied = 'NO'
 
     # create graphs according on the table size
     try:
@@ -115,34 +117,42 @@ for i in all_tables:
 
         #Normalize values
         norm = ((val-min_val)/(max_val-min_val))*100.00
-
-        # print graphs
-        if norm >= 0 and norm <= 1:
-            print '{tableName:60}:\t {space:|<1} {size} {mb}; cartodbfied= {cartodbfied};'.format(tableName= str(i),space='',size = str(round(val, 2)), mb ='MB', cartodbfied= cartodbfied)
-        elif norm > 1 and norm <= 5:
-            print '{tableName:60}:\t {space:|<5} {size} {mb}; cartodbfied= {cartodbfied};'.format(tableName= str(i),space='',size = str(round(val, 2)), mb ='MB', cartodbfied= cartodbfied)
-        elif norm > 5 and norm <= 10:
-            print '{tableName:60}:\t {space:|<10} {size} {mb}; cartodbfied= {cartodbfied};'.format(tableName= str(i),space='',size = str(round(val, 2)), mb ='MB', cartodbfied= cartodbfied)
-        elif norm > 10 and norm <= 20:
-            print '{tableName:60}:\t {space:|<20} {size} {mb}; cartodbfied= {cartodbfied};'.format(tableName= str(i),space='',size = str(round(val, 2)), mb ='MB', cartodbfied= cartodbfied)
-        elif norm > 20 and norm <= 30:
-            print '{tableName:60}:\t {space:|<30} {size} {mb}; cartodbfied= {cartodbfied};'.format(tableName= str(i),space='',size = str(round(val, 2)), mb ='MB', cartodbfied= cartodbfied)
-        elif norm > 30 and norm <= 40:
-            print '{tableName:60}:\t {space:|<40} {size} {mb}; cartodbfied= {cartodbfied};'.format(tableName= str(i),space='',size = str(round(val, 2)), mb ='MB', cartodbfied= cartodbfied)
-        elif norm > 40 and norm <= 50:
-            print '{tableName:60}:\t {space:|<50} {size} {mb}; cartodbfied= {cartodbfied};'.format(tableName= str(i),space='',size = str(round(val, 2)), mb ='MB', cartodbfied= cartodbfied)
-        elif norm > 50 and norm <= 60:
-            print '{tableName:60}:\t {space:|<60} {size} {mb}; cartodbfied= {cartodbfied};'.format(tableName= str(i),space='',size = str(round(val, 2)), mb ='MB', cartodbfied= cartodbfied)
-        elif norm > 60 and norm <= 70:
-            print '{tableName:60}:\t {space:|<70} {size} {mb}; cartodbfied= {cartodbfied};'.format(tableName= str(i),space='',size = str(round(val, 2)), mb ='MB', cartodbfied= cartodbfied)
-        elif norm > 70 and norm <= 80:
-            print '{tableName:60}:\t {space:|<80} {size} {mb}; cartodbfied= {cartodbfied};'.format(tableName= str(i),space='',size = str(round(val, 2)), mb ='MB', cartodbfied= cartodbfied)
-        elif norm > 80 and norm <= 90:
-            print '{tableName:60}:\t {space:|<90} {size} {mb}; cartodbfied= {cartodbfied};'.format(tableName= str(i),space='',size = str(round(val, 2)), mb ='MB', cartodbfied= cartodbfied)
-        elif norm > 90 and norm <= 100:
-            print '{tableName:60}:\t {space:|<100} {size} {mb}; cartodbfied={cartodbfied};'.format(tableName= str(i),space='',size = str(round(val, 2)), mb ='MB', cartodbfied= cartodbfied)
+        
+        tupleList.append((i,val,norm,cartodbfied))
 
     except:
-        print 'Error at: ' + str(i)
+        print('Error at: ' + str(i))
 
-print '\nThere are: ' + str(sum) + ' datasets in this account'
+# order list of tuples by norm size. From bigger to smaller 
+sorted_by_norm=sorted(tupleList, key=lambda tup: tup[2], reverse=True)
+
+# print graphs
+for z in sorted_by_norm:
+    
+    if z[2] >= 0 and z[2] <= 1:
+        print('{tableName:60} {cartodbfied}:\t {space:|<1} {size} {mb};').format(tableName= z[0],space='',size = str(round(z[1], 2)), mb ='MB',  cartodbfied=z[3])
+    elif z[2] > 1 and z[2] <= 5:
+        print('{tableName:60} {cartodbfied}:\t {space:|<5} {size} {mb};').format(tableName= z[0],space='',size = str(round(z[1], 2)), mb ='MB',  cartodbfied=z[3])
+    elif z[2] > 5 and z[2] <= 10:
+        print('{tableName:60} {cartodbfied}:\t {space:|<10} {size} {mb};').format(tableName= z[0],space='',size = str(round(z[1], 2)), mb ='MB',  cartodbfied=z[3])
+    elif z[2] > 10 and z[2] <= 20:
+        print('{tableName:60} {cartodbfied}:\t {space:|<20} {size} {mb};').format(tableName= z[0],space='',size = str(round(z[1], 2)), mb ='MB',  cartodbfied=z[3])
+    elif z[2] > 20 and z[2] <= 30:
+        print('{tableName:60} {cartodbfied}:\t {space:|<30} {size} {mb};').format(tableName= z[0],space='',size = str(round(z[1], 2)), mb ='MB',  cartodbfied=z[3])
+    elif z[2] > 30 and z[2] <= 40:
+        print('{tableName:60} {cartodbfied}:\t {space:|<40} {size} {mb};').format(tableName= z[0],space='',size = str(round(z[1], 2)), mb ='MB',  cartodbfied=z[3])
+    elif z[2] > 40 and z[2] <= 50:
+        print('{tableName:60} {cartodbfied}:\t {space:|<50} {size} {mb};').format(tableName= z[0],space='',size = str(round(z[1], 2)), mb ='MB',  cartodbfied=z[3])
+    elif z[2] > 50 and z[2] <= 60:
+        print('{tableName:60} {cartodbfied}:\t {space:|<60} {size} {mb};').format(tableName= z[0],space='',size = str(round(z[1], 2)), mb ='MB',  cartodbfied=z[3])
+    elif z[2] > 60 and z[2] <= 70:
+        print('{tableName:60} {cartodbfied}:\t {space:|<70} {size} {mb};').format(tableName= z[0],space='',size = str(round(z[1], 2)), mb ='MB',  cartodbfied=z[3])
+    elif z[2] > 70 and z[2] <= 80:
+        print('{tableName:60} {cartodbfied}:\t {space:|<80} {size} {mb};').format(tableName= z[0],space='',size = str(round(z[1], 2)), mb ='MB',  cartodbfied=z[3])
+    elif z[2] > 80 and z[2] <= 90:
+        print('{tableName:60} {cartodbfied}:\t {space:|<90} {size} {mb};').format(tableName= z[0],space='',size = str(round(z[1], 2)), mb ='MB',  cartodbfied=z[3])
+    elif z[2] > 90 and z[2] <= 100:
+        print('{tableName:60} {cartodbfied}:\t {space:|<100} {size} {mb};').format(tableName= z[0],space='',size = str(round(z[1], 2)), mb ='MB',  cartodbfied=z[3])
+
+
+print('\nThere are: ' + str(sum) + ' datasets in this account')
