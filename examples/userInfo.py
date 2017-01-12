@@ -8,20 +8,30 @@ import pprint
 printer = pprint.PrettyPrinter(indent=4)
 from carto.sql import SQLClient
 
+# Logger (better than print)
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format=' %(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%I:%M:%S %p')
+logger = logging.getLogger()
 
-organization = 'cartoworkshops'
-CARTO_BASE_URL = 'https://carto-workshops.carto.com/api/'
+organization = os.environ['CARTO_ORG']
+CARTO_BASE_URL = os.environ['CARTO_API_URL']
 CARTO_API_KEY = os.environ['CARTO_API_KEY']
 
 # work with CARTO entities. DatasetManager encapsulates information of a table
 auth_client = APIKeyAuthClient(CARTO_BASE_URL, CARTO_API_KEY, organization)
 user_manager = UserManager(auth_client)
 
+try:
+    user = user_manager.get(os.environ['CARTO_USER'])
 
-user = user_manager.get('carto-workshops')
+    for i in user.__dict__:
+        print i + ':  ' + str(user.__dict__[i])
+except Exception as e:
+    logger.warn('User has no admin of its organization')
 
-for i in user.__dict__:
-    print i + ':  ' + str(user.__dict__[i])
 
 # SQL wrapper
 

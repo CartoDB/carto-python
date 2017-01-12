@@ -9,8 +9,8 @@ printer = pprint.PrettyPrinter(indent=4)
 from carto.sql import SQLClient
 
 
-organization = 'cartoworkshops'
-CARTO_BASE_URL = 'https://carto-workshops.carto.com/api/'
+organization = os.environ['CARTO_ORG']
+CARTO_BASE_URL = os.environ['CARTO_API_URL']
 CARTO_API_KEY = os.environ['CARTO_API_KEY']
 
 # Authenticate to CARTO account
@@ -57,13 +57,13 @@ min_val = min(arr_size)/1048576.00
 # define count variable
 sum = 0
 
-# start iterating over array 
+# start iterating over array
 for i in all_tables:
     # check column names
     checkCol = []
 
     sum = sum + 1
-   
+
     # check all columns name from table
     columns_table = "select column_name, data_type FROM information_schema.columns \
     WHERE table_schema = 'carto-workshops'" + \
@@ -88,7 +88,7 @@ for i in all_tables:
       AND schemaname = 'carto-workshops'")
     for k, v in indexes.items():
         if k == 'rows':
-            for itr in v: 
+            for itr in v:
                 if  'the_geom_webmercator_idx' in itr['indexname']:
                     checkInd.append(itr['indexname'])
                 elif 'the_geom_idx' in itr['indexname']:
@@ -143,6 +143,6 @@ for i in all_tables:
             print '{tableName:60}:\t {space:|<100} {size} {mb}; cartodbfied={cartodbfied};'.format(tableName= str(i),space='',size = str(round(val, 2)), mb ='MB', cartodbfied= cartodbfied)
 
     except:
-        print 'Error at: ' + str(i)        
+        print 'Error at: ' + str(i)
 
 print '\nThere are: ' + str(sum) + ' datasets in this account'

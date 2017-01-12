@@ -9,12 +9,11 @@ printer = pprint.PrettyPrinter(indent=4)
 from carto.sql import SQLClient
 import sys
 
-if len(sys.argv) <= 2:
-    print 'You have to pass 2 input arguments. \
-    Add username and table name as arguments in that order'
+if len(sys.argv) <= 1:
+    print 'You have to pass an input argument with the table name'
 
-organization = 'cartoworkshops'
-CARTO_BASE_URL = 'https://'+sys.argv[1]+'.carto.com/api/'
+organization = os.environ['CARTO_ORG']
+CARTO_BASE_URL = os.environ['CARTO_API_URL']
 CARTO_API_KEY = os.environ['CARTO_API_KEY']
 
 
@@ -27,7 +26,7 @@ dataset_manager = DatasetManager(auth_client)
 sql = SQLClient(APIKeyAuthClient(CARTO_BASE_URL, CARTO_API_KEY))
 
 
-dataset_name = sys.argv[2]
+dataset_name = sys.argv[1]
 
 # display and count all datasets of account
 all_datasets = dataset_manager.all()
