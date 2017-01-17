@@ -7,47 +7,64 @@ import os
 import pprint
 printer = pprint.PrettyPrinter(indent=4)
 from carto.sql import SQLClient
-import sys
 
-if len(sys.argv) <= 1:
-    print 'You have to pass 1 input arguments.Add query'
+# Logger (better than print)
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format=' %(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%I:%M:%S %p')
+logger = logging.getLogger()
 
-organization = 'cartoworkshops'
-CARTO_BASE_URL = 'https://carto-workshops.carto.com/api/'
-CARTO_API_KEY = os.environ['CARTO_API_KEY']
+
+# set input arguments
+import argparse
+parser = argparse.ArgumentParser(
+    description='Check if query can be optimized')
+parser.add_argument('queryUser',type=str,
+                    help= 'Set query to analyze')
+parser.add_argument('--organization', type=str,dest='organization',
+                    default=os.environ['CARTO_ORG'],
+                    help='Set the name of the organization account (defaults to env variable CARTO_ORG)')
+
+parser.add_argument('--base_url', type=str, dest='CARTO_BASE_URL',
+                    default=os.environ['CARTO_API_URL'],
+                    help='Set the base URL. For example: https://username.carto.com/api/ (defaults to env variable CARTO_API_URL)')
+
+parser.add_argument('--api_key', dest='CARTO_API_KEY',
+                    default=os.environ['CARTO_API_KEY'],
+                    help='Api key of the account (defaults to env variable CARTO_API_KEY)')
+
+args = parser.parse_args()
 
 
 # Authenticate to CARTO account
-auth_client = APIKeyAuthClient(CARTO_BASE_URL, CARTO_API_KEY, organization)
+auth_client = APIKeyAuthClient(args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
 dataset_manager = DatasetManager(auth_client)
 
 # SQL wrapper
 
-sql = SQLClient(APIKeyAuthClient(CARTO_BASE_URL, CARTO_API_KEY))
+sql = SQLClient(APIKeyAuthClient(args.CARTO_BASE_URL, args.CARTO_API_KEY))
 
-query = sql.send('EXPLAIN ANALYZE ' + str(sys.argv[1]))
+query = sql.send('EXPLAIN ANALYZE ' + args.queryUser)
 
-print sys.argv[1]
 for key, value in query.items():
     if key == 'rows':
         for itr in value:
-            print itr
+            logger.info(itr)
     if key == 'time':
-        print str(key) + ': ' + str(value)
+        logger.info(str(key) + ': ' + str(value))
 
-query_arr = str(sys.argv[1]).upper().split()
+query_arr = args.queryUser.upper().split()
 
 
 for i in query_arr:
     if i == '*':
-        print '\nPERFORMANCE WARNING: '
-        print 'Do you need all the columns? You can improve the performance \
-        by only selecting the needed columns instead of doing a SELECT * statement'
+        logger.warn('Do you need all columns? You can improve the performance ' + 
+            'by only selecting the needed columns instead of doing a \"SELECT *\" statement')
     if i == 'WHERE':
-        print '\nPERFORMANCE WARNING: '
-        print 'Have you applied indexes on the columns \
-        that you use after the WHERE statement?'
+        logger.warn('Have you applied indexes on the columns '+
+            'that you use after the WHERE statement?')
     if i == 'the_geom' or i == 'the_geom_webmercator':
-        print '\nPERFORMANCE WARNING: '
-        print 'If the geometry is a polygon, have you simplified the geometries \
-        with the ST_Simplify() function?'
+        logger.warn('If the geometry is a polygon, have you simplified the geometries '+
+            'with the ST_Simplify() function?')
