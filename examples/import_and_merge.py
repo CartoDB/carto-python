@@ -9,18 +9,45 @@ from carto.datasets import DatasetManager
 import time
 import logging
 import glob
-import sys
 
-organization = 'cartoworkshops'
-CARTO_API_KEY = os.environ['CARTO_API_KEY']
-CARTO_BASE_URL = 'https://carto-workshops.carto.com/api/'
+# Logger (better than print)
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format=' %(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%I:%M:%S %p')
+logger = logging.getLogger()
 
-# authenticate to CARTO
-auth_client = APIKeyAuthClient(CARTO_BASE_URL, CARTO_API_KEY, organization)
+# set input arguments
+import argparse
+parser = argparse.ArgumentParser(
+    description='Create a sync table from a URL')
+
+parser.add_argument('folder_name',type=str,
+                    help='Set the name of the folder where you store your files and' +
+                    ' the format of the files, for example:'+
+                    ' "examples/files/*.csv"')
+
+parser.add_argument('--organization', type=str,dest='organization',
+                    default=os.environ['CARTO_ORG'],
+                    help='Set the name of the organization account (defaults to env variable CARTO_ORG)')
+
+parser.add_argument('--base_url', type=str, dest='CARTO_BASE_URL',
+                    default=os.environ['CARTO_API_URL'],
+                    help='Set the base URL. For example: https://username.carto.com/api/ (defaults to env variable CARTO_API_URL)')
+
+parser.add_argument('--api_key', dest='CARTO_API_KEY',
+                    default=os.environ['CARTO_API_KEY'],
+                    help='Api key of the account (defaults to env variable CARTO_API_KEY)')
+
+args = parser.parse_args()
+
+# Set authentification to CARTO
+auth_client = APIKeyAuthClient(args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
 
 # SQL wrapper
 
-sql = SQLClient(APIKeyAuthClient(CARTO_BASE_URL, CARTO_API_KEY))
+sql = SQLClient(APIKeyAuthClient(args.CARTO_BASE_URL, args.CARTO_API_KEY))
 
 # Dataset manager
 
@@ -29,7 +56,7 @@ dataset_manager = DatasetManager(auth_client)
 # define path of the files
 path = os.getcwd()
 
-file_folder = glob.glob(path +'/' + sys.argv[1])
+file_folder = glob.glob(path +'/' + args.folder_name)
 
 # import files from the path to CARTO
 table_name = []
@@ -48,6 +75,7 @@ for i in file_folder:
                 
                 if fi.state == 'complete':
                     # print name of the imported table
+                    logger.info('Table imported: {table}'.format(table=fi.table_name))
                     table_name.append(fi.table_name)
                 if fi.state == 'failure':
                     logging.error("Import has failed")
@@ -115,3 +143,4 @@ for i in table_name:
         time.sleep(2)
     except:
         continue
+logger.info('Tables merged')

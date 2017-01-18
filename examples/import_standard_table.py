@@ -4,22 +4,44 @@ from carto.file_import import FileImportJob
 import warnings
 warnings.filterwarnings('ignore')
 import os
-import pprint
 import time
-printer = pprint.PrettyPrinter(indent=4)
 
-organization = os.environ['CARTO_ORG']
-CARTO_BASE_URL = os.environ['CARTO_API_URL']
-CARTO_API_KEY = os.environ['CARTO_API_KEY']
+# Logger (better than print)
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format=' %(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%I:%M:%S %p')
+logger = logging.getLogger()
 
-# work with CARTO entities. DatasetManager encapsulates information of a table
-auth_client = APIKeyAuthClient(CARTO_BASE_URL, CARTO_API_KEY, organization)
+# set input arguments
+import argparse
+parser = argparse.ArgumentParser(
+    description='Create a sync table from a URL')
+
+parser.add_argument('url',type=str,
+                    help='Set the URL of data to sync. Add it in double quotes')
+
+parser.add_argument('--organization', type=str,dest='organization',
+                    default=os.environ['CARTO_ORG'],
+                    help='Set the name of the organization account (defaults to env variable CARTO_ORG)')
+
+parser.add_argument('--base_url', type=str, dest='CARTO_BASE_URL',
+                    default=os.environ['CARTO_API_URL'],
+                    help='Set the base URL. For example: https://username.carto.com/api/ (defaults to env variable CARTO_API_URL)')
+
+parser.add_argument('--api_key', dest='CARTO_API_KEY',
+                    default=os.environ['CARTO_API_KEY'],
+                    help='Api key of the account (defaults to env variable CARTO_API_KEY)')
+
+args = parser.parse_args()
+
+# Set authentification to CARTO
+auth_client = APIKeyAuthClient(args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
 
 
 # imports the file to CARTO
-fi = FileImportJob(
-    "https://data.cityofnewyork.us/api/geospatial/r8nu-ymqj?" +
-    "method=export&format=Shapefile", auth_client)
+fi = FileImportJob(args.url, auth_client)
 fi.run()
 
 
@@ -33,13 +55,13 @@ if fi.success == True:
             time.sleep(1)
         fi.refresh()
         # print status
-        print fi.state
+        logger.info(fi.state)
         if fi.state == 'complete':
             # print name of the imported table
-            print fi.table_name
+            logger.info('Name of table: ' + str(fi.table_name))
         if fi.state == 'failure':
-            print "Import has failed"
-            print fi.get_error_text
+            logger.error("Import has failed")
+            logger.error(fi.get_error_text)
             break
 else:
-    print "Import has failed"
+    logger.error("Import has failed")

@@ -7,24 +7,42 @@ import os
 import time
 import logging
 
-# Define logger
-
+# Logger (better than print)
+import logging
 logging.basicConfig(
-    level=logging.DEBUG,
-    format=' %(asctime)s - %(levelname)s - %(message)s')
+    level=logging.INFO,
+    format=' %(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%I:%M:%S %p')
+logger = logging.getLogger()
 
+# set input arguments
+import argparse
+parser = argparse.ArgumentParser(
+    description='Create a sync table from a URL')
 
-organization = os.environ['CARTO_ORG']
-CARTO_BASE_URL = os.environ['CARTO_API_URL']
-CARTO_API_KEY = os.environ['CARTO_API_KEY']
+parser.add_argument('url',type=str,
+                    help='Set the URL of data to sync. Add it in double quotes')
+parser.add_argument('sync_time',type=int,
+                    help='Set the time to sync your table in seconds (min: 900s)')
+parser.add_argument('--organization', type=str,dest='organization',
+                    default=os.environ['CARTO_ORG'],
+                    help='Set the name of the organization account (defaults to env variable CARTO_ORG)')
 
-# work with CARTO entities. DatasetManager encapsulates information of a table
-auth_client = APIKeyAuthClient(CARTO_BASE_URL, CARTO_API_KEY, organization)
+parser.add_argument('--base_url', type=str, dest='CARTO_BASE_URL',
+                    default=os.environ['CARTO_API_URL'],
+                    help='Set the base URL. For example: https://username.carto.com/api/ (defaults to env variable CARTO_API_URL)')
+
+parser.add_argument('--api_key', dest='CARTO_API_KEY',
+                    default=os.environ['CARTO_API_KEY'],
+                    help='Api key of the account (defaults to env variable CARTO_API_KEY)')
+
+args = parser.parse_args()
+
+# Set authentification to CARTO
+auth_client = APIKeyAuthClient(args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
 syncTableManager = SyncTableJobManager(auth_client)
 
-syncTable = syncTableManager.create(
-    'https://data.cityofnewyork.us/api/geospatial/r8nu-ymqj' +
-    '?method=export&format=Shapefile', 900)
+syncTable = syncTableManager.create(args.url,args.sync_time)
 
 
 # return the id of the sync
@@ -35,12 +53,12 @@ while(syncTable.state != 'created'):
     syncTable.refresh()
     logging.debug(syncTable.state)
     if (syncTable.state == 'failure'):
-        logging.debug('The error code is: ' + str(syncTable.error_code))
-        logging.debug('The error message is: ' + str(error_message))
+        logging.warn('The error code is: ' + str(syncTable.error_code))
+        logging.warn('The error message is: ' + str(error_message))
         break
 
     if (syncTable.state == 'created'):
-        logging.debug(syncTable.name)
+        logging.info(syncTable.name)
         break
 
 # force sync
