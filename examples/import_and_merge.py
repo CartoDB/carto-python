@@ -23,27 +23,33 @@ import argparse
 parser = argparse.ArgumentParser(
     description='Create a sync table from a URL')
 
-parser.add_argument('folder_name',type=str,
-                    help='Set the name of the folder where you store your files and' +
-                    ' the format of the files, for example:'+
+parser.add_argument('folder_name', type=str,
+                    help='Set the name of the folder where' +
+                    ' you store your files and' +
+                    ' the format of the files, for example:' +
                     ' "examples/files/*.csv"')
 
-parser.add_argument('--organization', type=str,dest='organization',
+parser.add_argument('--organization', type=str, dest='organization',
                     default=os.environ['CARTO_ORG'],
-                    help='Set the name of the organization account (defaults to env variable CARTO_ORG)')
+                    help='Set the name of the organization' +
+                    ' account (defaults to env variable CARTO_ORG)')
 
 parser.add_argument('--base_url', type=str, dest='CARTO_BASE_URL',
                     default=os.environ['CARTO_API_URL'],
-                    help='Set the base URL. For example: https://username.carto.com/api/ (defaults to env variable CARTO_API_URL)')
+                    help='Set the base URL. For example:' +
+                    ' https://username.carto.com/api/ ' +
+                    '(defaults to env variable CARTO_API_URL)')
 
 parser.add_argument('--api_key', dest='CARTO_API_KEY',
                     default=os.environ['CARTO_API_KEY'],
-                    help='Api key of the account (defaults to env variable CARTO_API_KEY)')
+                    help='Api key of the account' +
+                    ' (defaults to env variable CARTO_API_KEY)')
 
 args = parser.parse_args()
 
 # Set authentification to CARTO
-auth_client = APIKeyAuthClient(args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
+auth_client = APIKeyAuthClient(
+    args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
 
 # SQL wrapper
 
@@ -56,35 +62,34 @@ dataset_manager = DatasetManager(auth_client)
 # define path of the files
 path = os.getcwd()
 
-file_folder = glob.glob(path +'/' + args.folder_name)
+file_folder = glob.glob(path + '/' + args.folder_name)
 
 # import files from the path to CARTO
 table_name = []
 
 for i in file_folder:
-        fi = FileImportJob(i, auth_client)
-        fi.run()
+    fi = FileImportJob(i, auth_client)
+    fi.run()
 
-        time.sleep(2)
+    time.sleep(2)
 
-        fi.refresh()
-        if fi.success == True:
-            while (fi.state != 'complete'):
-                fi.refresh()
-                time.sleep(2)
-                
-                if fi.state == 'complete':
-                    # print name of the imported table
-                    logger.info('Table imported: {table}'.format(table=fi.table_name))
-                    table_name.append(fi.table_name)
-                if fi.state == 'failure':
-                    logging.error("Import has failed")
-                    logging.error(fi.get_error_text)
-                    break
-        else:
-            logging.error("Import has failed")
-            
+    fi.refresh()
+    if fi.success == True:
+        while (fi.state != 'complete'):
+            fi.refresh()
+            time.sleep(2)
 
+            if fi.state == 'complete':
+                # print name of the imported table
+                logger.info(
+                    'Table imported: {table}'.format(table=fi.table_name))
+                table_name.append(fi.table_name)
+            if fi.state == 'failure':
+                logging.error("Import has failed")
+                logging.error(fi.get_error_text)
+                break
+    else:
+        logging.error("Import has failed")
 
 
 # define base table to insert all rows from other files
@@ -112,16 +117,16 @@ index = 1
 for i in table_name:
 
     if i == base_table:
-        
+
         continue
     elif i != base_table and index <= len(table_name):
-        
+
         query = "insert into " + base_table + \
             "(" + dict_col['string_agg'] + ") select " + \
             dict_col['string_agg'] + " from " + table_name[index] + ";"
         sql.send(query)
         time.sleep(2)
-        
+
     else:
         break
     index = index + 1

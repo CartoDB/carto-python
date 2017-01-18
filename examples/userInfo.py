@@ -20,27 +20,32 @@ import argparse
 parser = argparse.ArgumentParser(
     description='Return information from a specific user')
 
-parser.add_argument('--organization', type=str,dest='organization',
+parser.add_argument('--organization', type=str, dest='organization',
                     default=os.environ['CARTO_ORG'],
-                    help='Set the name of the organization account (defaults to env variable CARTO_ORG)')
+                    help='Set the name of the organization' +
+                    ' account (defaults to env variable CARTO_ORG)')
 
 parser.add_argument('--base_url', type=str, dest='CARTO_BASE_URL',
                     default=os.environ['CARTO_API_URL'],
-                    help='Set the base URL. For example: https://username.carto.com/api/ (defaults to env variable CARTO_API_URL)')
+                    help='Set the base URL. For example:' +
+                    ' https://username.carto.com/api/ ' +
+                    '(defaults to env variable CARTO_API_URL)')
 
 parser.add_argument('--api_key', dest='CARTO_API_KEY',
                     default=os.environ['CARTO_API_KEY'],
-                    help='Api key of the account (defaults to env variable CARTO_API_KEY)')
+                    help='Api key of the account' +
+                    ' (defaults to env variable CARTO_API_KEY)')
 
 parser.add_argument('--username', dest='CARTO_USER',
                     default=os.environ['CARTO_USER'],
-                    help= 'define username of the organization to check (defaults to env variable CARTO_USER)')
+                    help='define username of the organization' +
+                    ' to check (defaults to env variable CARTO_USER)')
 args = parser.parse_args()
 
 
-
 # Set authentification to CARTO
-auth_client = APIKeyAuthClient(args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
+auth_client = APIKeyAuthClient(
+    args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
 user_manager = UserManager(auth_client)
 
 userInfo = []
@@ -52,15 +57,15 @@ try:
         userInfo.append([
             i,
             str(user.__dict__[i])
-            ])
-    
-    table_user = PrettyTable(['Attribute','Value'])
+        ])
+
+    table_user = PrettyTable(['Attribute', 'Value'])
     table_user.align['Attribute'] = 'l'
     table_user.align['Value'] = 'l'
     for row in userInfo:
         table_user.add_row(row)
     print(table_user)
-        #print('{name}: {value}').format(name=i,value=str(user.__dict__[i]))
+    #print('{name}: {value}').format(name=i,value=str(user.__dict__[i]))
 except Exception as e:
     logger.warn('User has no admin of its organization')
 
@@ -84,10 +89,11 @@ for k, v in quota.items():
                 itr['provider'],
                 itr['soft_limit'],
                 itr['monthly_quota']
-                ])
+            ])
 
 
-table = PrettyTable(['Service','Provider','Soft limit','Used quota','Monthly quota'])
+table = PrettyTable(
+    ['Service', 'Provider', 'Soft limit', 'Used quota', 'Monthly quota'])
 table.align['Used quota'] = 'l'
 table.align['Provider'] = 'r'
 table.align['Soft limit'] = 'r'

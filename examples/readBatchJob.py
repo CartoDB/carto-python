@@ -1,11 +1,11 @@
 from carto.auth import APIKeyAuthClient
 from carto.exceptions import CartoException
-from carto.sync_tables import SyncTableJobManager
+from carto.sql import BatchSQLClient
 import warnings
 warnings.filterwarnings('ignore')
 import os
-import time
-import logging
+import pprint
+printer = pprint.PrettyPrinter(indent=4)
 
 # Logger (better than print)
 import logging
@@ -18,14 +18,9 @@ logger = logging.getLogger()
 # set input arguments
 import argparse
 parser = argparse.ArgumentParser(
-    description='Create a sync table from a URL')
-
-parser.add_argument('url', type=str,
-                    help='Set the URL of data to sync.' +
-                    ' Add it in double quotes')
-parser.add_argument('sync_time', type=int,
-                    help='Set the time to sync your' +
-                    ' table in seconds (min: 900s)')
+    description='Read a Batch SQL API job')
+parser.add_argument('job_id', type=str,
+                    help='Set the id of the job to check')
 parser.add_argument('--organization', type=str, dest='organization',
                     default=os.environ['CARTO_ORG'],
                     help='Set the name of the organization' +
@@ -47,29 +42,14 @@ args = parser.parse_args()
 # Set authentification to CARTO
 auth_client = APIKeyAuthClient(
     args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
-syncTableManager = SyncTableJobManager(auth_client)
 
-syncTable = syncTableManager.create(args.url, args.sync_time)
+batchSQLClient = BatchSQLClient(auth_client)
 
 
-# return the id of the sync
-logging.debug((syncTable.get_id()))
+# create a batch api job
 
-while(syncTable.state != 'created'):
-    time.sleep(5)
-    syncTable.refresh()
-    logging.debug(syncTable.state)
-    if (syncTable.state == 'failure'):
-        logging.warn('The error code is: ' + str(syncTable.error_code))
-        logging.warn('The error message is: ' + str(error_message))
-        break
+readJob = batchSQLClient.read(args.job_id)
 
-    if (syncTable.state == 'created'):
-        logging.info(syncTable.name)
-        break
 
-# force sync
-syncTable.refresh()
-syncTable.force_sync()
-
-logging.debug(syncTable.state)
+for a, b in readJob.items():
+    logger.info('{key}: {value}'.format(key=a, value=b))

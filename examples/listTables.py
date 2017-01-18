@@ -9,25 +9,31 @@ from carto.sql import SQLClient
 # set input arguments
 import argparse
 parser = argparse.ArgumentParser(
-    description='Return graph of tables ordered by size and indicating if they are cartodbfied or not')
+    description='Return graph of tables ordered by size' +
+    ' and indicating if they are cartodbfied or not')
 
-parser.add_argument('--organization', type=str,dest='organization',
+parser.add_argument('--organization', type=str, dest='organization',
                     default=os.environ['CARTO_ORG'],
-                    help='Set the name of the organization account (defaults to env variable CARTO_ORG)')
+                    help='Set the name of the organization' +
+                    ' account (defaults to env variable CARTO_ORG)')
 
 parser.add_argument('--base_url', type=str, dest='CARTO_BASE_URL',
                     default=os.environ['CARTO_API_URL'],
-                    help='Set the base URL. For example: https://username.carto.com/api/ (defaults to env variable CARTO_API_URL)')
+                    help='Set the base URL. For example:' +
+                    ' https://username.carto.com/api/ ' +
+                    '(defaults to env variable CARTO_API_URL)')
 
 parser.add_argument('--api_key', dest='CARTO_API_KEY',
                     default=os.environ['CARTO_API_KEY'],
-                    help='Api key of the account (defaults to env variable CARTO_API_KEY)')
+                    help='Api key of the account' +
+                    ' (defaults to env variable CARTO_API_KEY)')
 
 args = parser.parse_args()
 
 
 # Authenticate to CARTO account
-auth_client = APIKeyAuthClient(args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
+auth_client = APIKeyAuthClient(
+    args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
 dataset_manager = DatasetManager(auth_client)
 
 # SQL wrapper
@@ -39,7 +45,10 @@ sql = SQLClient(APIKeyAuthClient(args.CARTO_BASE_URL, args.CARTO_API_KEY))
 all_tables = []
 
 tables = sql.send(
-    "select pg_class.relname from pg_class, pg_roles, pg_namespace where pg_roles.oid = pg_class.relowner and pg_roles.rolname = current_user and pg_namespace.oid = pg_class.relnamespace and pg_class.relkind = 'r'")
+    "select pg_class.relname from pg_class, pg_roles, pg_namespace" +
+    " where pg_roles.oid = pg_class.relowner and " +
+    "pg_roles.rolname = current_user " +
+    "and pg_namespace.oid = pg_class.relnamespace and pg_class.relkind = 'r'")
 
 for k, v in tables.items():
     if k == 'rows':

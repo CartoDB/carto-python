@@ -19,28 +19,34 @@ logger = logging.getLogger()
 # set input arguments
 import argparse
 parser = argparse.ArgumentParser(
-    description='Return columns and its types, indexes, functions and triggers of a specific table')
+    description='Return columns and its types, indexes,' +
+    ' functions and triggers of a specific table')
 
-parser.add_argument('dataset_name',type=str,
+parser.add_argument('dataset_name', type=str,
                     help='Set the name of the table to explore')
 
-parser.add_argument('--organization', type=str,dest='organization',
+parser.add_argument('--organization', type=str, dest='organization',
                     default=os.environ['CARTO_ORG'],
-                    help='Set the name of the organization account (defaults to env variable CARTO_ORG)')
+                    help='Set the name of the organization' +
+                    ' account (defaults to env variable CARTO_ORG)')
 
 parser.add_argument('--base_url', type=str, dest='CARTO_BASE_URL',
                     default=os.environ['CARTO_API_URL'],
-                    help='Set the base URL. For example: https://username.carto.com/api/ (defaults to env variable CARTO_API_URL)')
+                    help='Set the base URL. For example:' +
+                    ' https://username.carto.com/api/ ' +
+                    '(defaults to env variable CARTO_API_URL)')
 
 parser.add_argument('--api_key', dest='CARTO_API_KEY',
                     default=os.environ['CARTO_API_KEY'],
-                    help='Api key of the account (defaults to env variable CARTO_API_KEY)')
+                    help='Api key of the account' +
+                    ' (defaults to env variable CARTO_API_KEY)')
 
 args = parser.parse_args()
 
 
 # Authenticate to CARTO account
-auth_client = APIKeyAuthClient(args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
+auth_client = APIKeyAuthClient(
+    args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
 dataset_manager = DatasetManager(auth_client)
 
 # SQL wrapper
@@ -55,10 +61,12 @@ all_datasets = dataset_manager.all()
 for i in all_datasets:
     if (i.table.name == args.dataset_name):
         # show all features of each dataset
-        print('\nName of the table: {tabName}\nTotal number of rows: {tabRowCount:,} rows').format(tabName=str(i.table.name),tabRowCount=i.table.row_count)
-        print('Size of the table: {tableSize} MB').format(tableSize=str(round(i.table.size/1048576.00,2)))
-        print('Privacy of the table: {tabPrivacy}\nGeometry type: {tabGeom}').format(tabPrivacy=str(i.table.privacy),tabGeom=str(i.table.geometry_types))
-
+        print('\nName of the table: {tabName}\nTotal number of rows: {tabRowCount:,} rows').format(
+            tabName=str(i.table.name), tabRowCount=i.table.row_count)
+        print('Size of the table: {tableSize} MB').format(
+            tableSize=str(round(i.table.size/1048576.00, 2)))
+        print('Privacy of the table: {tabPrivacy}\nGeometry type: {tabGeom}').format(
+            tabPrivacy=str(i.table.privacy), tabGeom=str(i.table.geometry_types))
 
         columns_table = "select column_name, data_type FROM information_schema.columns \
         WHERE table_schema = '" + i.permission.owner.username + "'\
@@ -70,7 +78,8 @@ for i in all_datasets:
         for key, value in columnAndTypes.items():
             if key == 'rows':
                 for itr in value:
-                    print('\t{columnName}: {dataType}\n').format(columnName=str(itr['column_name']),dataType=str(itr['data_type']))
+                    print('\t{columnName}: {dataType}\n').format(
+                        columnName=str(itr['column_name']), dataType=str(itr['data_type']))
 
         # get all indexes of the table
         print('\nIndexes of the tables: \n')
@@ -80,7 +89,8 @@ for i in all_datasets:
         for k, v in indexes.items():
             if k == 'rows':
                 for itr in v:
-                    print('\t{indexName}: {indexDef}\n').format(indexName=str(itr['indexname']),indexDef=str(itr['indexdef']))
+                    print('\t{indexName}: {indexDef}\n').format(
+                        indexName=str(itr['indexname']), indexDef=str(itr['indexdef']))
 
         # get all functions of user account
         print('\nFunctions of the account: \n')
