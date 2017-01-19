@@ -15,7 +15,7 @@ The examples that this folder contains are:
 
 - File [importSyncTable.py](https://github.com/CartoDB/carto-python/blob/examples/examples/importSyncTable.py). You would need to set the URL and the sync interval as input arguments. It displays the import status while the file is being imported.
 
-- File [userInfo.py](https://github.com/CartoDB/carto-python/blob/examples/examples/userInfo.py) displays information of the user (username, db_size_in_bytes, avatar_url, public_visualization_count, quota_in_bytes, base_url, number of tables, number of visualizations and the email address if the accout). Using the query `SELECT * FROM cdb_dataservices_client.cdb_service_quota_info()`, the file displays also the different states of the Data Services (geocoding, routing, isolines and data observatory quotas and used quota)
+- File [userInfo.py](https://github.com/CartoDB/carto-python/blob/examples/examples/userInfo.py) displays information of the user (username, db_size_in_bytes, avatar_url, public_visualization_count, quota_in_bytes, base_url, number of tables, number of visualizations and the email address if the account). It also displays also the different states of the Data Services (geocoding, routing, isolines and data observatory quotas and used quota)
 
 
 - File [mapInfo.py](https://github.com/CartoDB/carto-python/blob/examples/examples/mapInfo.py) displays all properties of single map.
@@ -26,7 +26,7 @@ The examples that this folder contains are:
 
 - File [checkQuery.py](https://github.com/CartoDB/carto-python/blob/examples/examples/checkQuery.py) checks the query planner of the input query with the PostgreSQL Explain Analyze operation. Depending on the query give tips to optimize the query.
 
-- File [importMergeFiles.py](https://github.com/CartoDB/carto-python/blob/examples/examples/importMergeFiles.py). It imports several files and merge them into a single dataset. The script imports several files from the files folder named `files` using the CARTO Import API and saving the names of the imported files into an array. Then, using the CARTO SQL API and the INSERT INTO SELECT operation, it merges the different files into a single one. Finally using the SQL DROP TABLE operation, it deletes the files that have been imported except the merged one.
+- File [importMergeFiles.py](https://github.com/CartoDB/carto-python/blob/examples/examples/importMergeFiles.py). It imports several files from a folder and merge them into a single dataset within the CARTO account.
 
 - File [createBatchJob.py](https://github.com/CartoDB/carto-python/blob/examples/examples/createBatchJob.py) creates a new SQL Batch API job.
 
