@@ -73,7 +73,7 @@ class BatchSQLClient(object):
         :param http_header: The header used to make write requests to the API, by default is none
         :return: Response data, either as json or as a regular response.content object
         """
-        data = self.client.send(url, http_method=http_method, http_headers=http_header, json=json_body)
+        data = self.client.send(url, http_method=http_method, headers=http_header, json=json_body)
         data_json = self.client.get_response_data(data)
         return data_json
 
@@ -115,24 +115,3 @@ class BatchSQLClient(object):
         """
         confirmation = self.send(self.api_url + job_id, http_method="DELETE")
         return confirmation['status']
-
-
-class BatchSQLManager(object):
-    def __init__(self, client, api_version='v2'):
-        """
-        :param client: Client to make authorized requests (currently only APIKeyAuthClient is supported)
-        :param api_version: Current version is 'v2'. 'v1' can be used to avoid caching, but it's not guaranteed to work
-        :return:
-        """
-        self.client = client
-        self.api_key = self.client.api_key
-        self.api_url = SQL_BATCH_API_URL.format(api_version=api_version)
-
-    def all(self):
-        """
-        Get all batch SQL jobs
-        :return: A json object containing all of the ids of the Batch SQL queries
-        """
-        data = self.client.send(self.api_url, "GET")
-        data_json = self.client.get_response_data(data)
-        return data_json
