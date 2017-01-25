@@ -4,8 +4,6 @@ from carto.sql import BatchSQLClient
 import warnings
 warnings.filterwarnings('ignore')
 import os
-import pprint
-printer = pprint.PrettyPrinter(indent=4)
 
 # Logger (better than print)
 import logging
@@ -18,8 +16,13 @@ logger = logging.getLogger()
 # set input arguments
 import argparse
 parser = argparse.ArgumentParser(
-    description='Cancel a Batch SQL API job')
-parser.add_argument('job_id', type=str,
+    description='Create a Batch SQL API job')
+parser.add_argument('operation', type=str,default=None,
+                    help='Set the batch operation that you want to apply'+\
+                    'Options: "create", "read", "update", "cancel"')
+parser.add_argument('--query', type=str,dest='query',
+                    help='Set the query that you want to apply')
+parser.add_argument('--job_id', type=str,dest='job_id',
                     help='Set the id of the job to check')
 parser.add_argument('--organization', type=str, dest='organization',
                     default=os.environ['CARTO_ORG'],
@@ -37,6 +40,7 @@ parser.add_argument('--api_key', dest='CARTO_API_KEY',
                     help='Api key of the account' +
                     ' (defaults to env variable CARTO_API_KEY)')
 
+
 args = parser.parse_args()
 
 # Set authentification to CARTO
@@ -45,11 +49,23 @@ auth_client = APIKeyAuthClient(
 
 batchSQLClient = BatchSQLClient(auth_client)
 
-
-# create a batch api job
-
-cancelJob = batchSQLClient.cancel(args.job_id)
-
-
-for a, b in readJob.items():
-    logger.info('{key}: {value}'.format(key=a, value=b))
+# Batch SQL API operations
+if args.operation == 'create':
+    # create a batch api job
+    createJob = batchSQLClient.create(args.query)
+    for a, b in createJob.items():
+        logger.info('{key}: {value}'.format(key=a, value=b))
+elif args.operation == 'read':
+    readJob = batchSQLClient.read(args.job_id)
+    for a, b in readJob.items():
+        logger.info('{key}: {value}'.format(key=a, value=b))
+elif args.operation == 'update':
+    updateJob = batchSQLClient.update(args.job_id, args.query)
+    for a, b in updateJob.items():
+        logger.info('{key}: {value}'.format(key=a, value=b))
+elif args.operation == 'cancel':
+    cancelJob = batchSQLClient.cancel(args.job_id)
+    for a, b in readJob.items():
+        logger.info('{key}: {value}'.format(key=a, value=b))
+else:
+    logger.info("You have not written a correct operation option")

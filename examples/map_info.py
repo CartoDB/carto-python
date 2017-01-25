@@ -1,9 +1,13 @@
 from carto.auth import APIKeyAuthClient
 from carto.exceptions import CartoException
-from carto.sql import BatchSQLClient
+from carto.users import UserManager
 import warnings
 warnings.filterwarnings('ignore')
 import os
+import pprint
+printer = pprint.PrettyPrinter(indent=4)
+from carto.sql import SQLClient
+from carto.visualizations import VisualizationManager
 
 # Logger (better than print)
 import logging
@@ -16,11 +20,12 @@ logger = logging.getLogger()
 # set input arguments
 import argparse
 parser = argparse.ArgumentParser(
-    description='Cancel a Batch SQL API job')
-parser.add_argument('job_id', type=str,
-                    help='Set the id of the job to check')
-parser.add_argument('query', type=str,
-                    help='Set the query that you want to apply')
+    description='Return the names of all maps or' +
+    ' display information from a specific map')
+
+parser.add_argument('--map', type=str, dest='map_name',
+                    default=None,
+                    help='Set the name of the map to explore')
 parser.add_argument('--organization', type=str, dest='organization',
                     default=os.environ['CARTO_ORG'],
                     help='Set the name of the organization' +
@@ -42,14 +47,15 @@ args = parser.parse_args()
 # Set authentification to CARTO
 auth_client = APIKeyAuthClient(
     args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
+visualization_manager = VisualizationManager(auth_client)
 
-batchSQLClient = BatchSQLClient(auth_client)
-
-
-# create a batch api job
-
-updateJob = batchSQLClient.update(args.job_id, args.query)
-
-
-for a, b in updateJob.items():
-    logger.info('{key}: {value}'.format(key=a, value=b))
+# Render map info or the name of the maps
+if args.map_name == None:
+    for a_map in visualization_manager.all():
+        logging.info(a_map.name)
+else:
+    mapa = visualization_manager.get(args.map_name)
+    a = mapa.export()
+    logger.info('URL to download the map is: ' + a)
+    printer.pprint(mapa.__dict__)
+    printer.pprint(mapa.table.__dict__)

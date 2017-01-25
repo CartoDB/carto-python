@@ -23,6 +23,9 @@ import argparse
 parser = argparse.ArgumentParser(
     description='Create a sync table from a URL')
 
+parser.add_argument('username', type=str, 
+                    help='Set the username of account.')
+
 parser.add_argument('folder_name', type=str,
                     help='Set the name of the folder where' +
                     ' you store your files and' +
@@ -34,12 +37,6 @@ parser.add_argument('--organization', type=str, dest='organization',
                     help='Set the name of the organization' +
                     ' account (defaults to env variable CARTO_ORG)')
 
-parser.add_argument('--base_url', type=str, dest='CARTO_BASE_URL',
-                    default=os.environ['CARTO_API_URL'],
-                    help='Set the base URL. For example:' +
-                    ' https://username.carto.com/api/ ' +
-                    '(defaults to env variable CARTO_API_URL)')
-
 parser.add_argument('--api_key', dest='CARTO_API_KEY',
                     default=os.environ['CARTO_API_KEY'],
                     help='Api key of the account' +
@@ -47,13 +44,15 @@ parser.add_argument('--api_key', dest='CARTO_API_KEY',
 
 args = parser.parse_args()
 
+base_url = 'https://'+ args.username+'.carto.com/api/'
+
 # Set authentification to CARTO
 auth_client = APIKeyAuthClient(
-    args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
+    base_url, args.CARTO_API_KEY, args.organization)
 
 # SQL wrapper
 
-sql = SQLClient(APIKeyAuthClient(args.CARTO_BASE_URL, args.CARTO_API_KEY))
+sql = SQLClient(APIKeyAuthClient(base_url, args.CARTO_API_KEY))
 
 # Dataset manager
 
@@ -96,10 +95,9 @@ for i in file_folder:
 base_table = table_name[0]
 
 # select all rows from table except cartodb_id to avoid possible errors
-
 columns_table = "select string_agg(column_name,',')" + \
     " FROM information_schema.columns" + \
-    " where table_schema = 'carto-workshops' and table_name = '" + \
+    " where table_schema = '" + args.username + "' and table_name = '" + \
     str(table_name[0]) + "' AND column_name <> 'cartodb_id'"
 
 
