@@ -6,7 +6,7 @@ Take into account that the Python SDK is a Work In Progress project and some exa
 The examples that this folder contains are:
 
 
-- File [listTables.py](https://github.com/CartoDB/carto-python/blob/examples/examples/list_tables.py): it lists all tables from a specific account indicating the name, size and if the table has been cartodbfied or not.
+- File [list_tables.py](https://github.com/CartoDB/carto-python/blob/examples/examples/list_tables.py): it lists all tables from a specific account indicating the name, size and if the table has been cartodbfied or not.
 
 - File [table_info.py](https://github.com/CartoDB/carto-python/blob/examples/examples/table_info.py) Returns information about the table such as columns and its types, triggers, functions and indexes applied on the table.  
 
