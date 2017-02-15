@@ -9,6 +9,7 @@ from carto.datasets import DatasetManager
 import time
 import logging
 import glob
+import re
 
 # Logger (better than print)
 import logging
@@ -22,9 +23,6 @@ logger = logging.getLogger()
 import argparse
 parser = argparse.ArgumentParser(
     description='Create a sync table from a URL')
-
-parser.add_argument('username', type=str,
-                    help='Set the username of account.')
 
 parser.add_argument('folder_name', type=str,
                     help='Set the name of the folder where' +
@@ -53,6 +51,12 @@ args = parser.parse_args()
 # Set authentification to CARTO
 auth_client = APIKeyAuthClient(
     args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
+
+# get username from base_url
+substring = re.search('https://(.+?).carto.com', args.CARTO_BASE_URL)
+if substring:
+    username = substring.group(1)
+
 
 # SQL wrapper
 
@@ -101,7 +105,7 @@ base_table = table_name[0]
 # select all rows from table except cartodb_id to avoid possible errors
 columns_table = "select string_agg(column_name,',')" + \
     " FROM information_schema.columns" + \
-    " where table_schema = '" + args.username + "' and table_name = '" + \
+    " where table_schema = '" + username + "' and table_name = '" + \
     str(table_name[0]) + "' AND column_name <> 'cartodb_id'"
 
 
@@ -150,4 +154,6 @@ for i in table_name:
         time.sleep(2)
     except:
         continue
+
 logger.info('Tables merged')
+print('\nURL of dataset is: https://{org}.carto.com/u/{username}/dataset/{data}').format(org=args.organization,username=username ,data=(base_table + "_merged"))

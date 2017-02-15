@@ -5,6 +5,7 @@ import warnings
 warnings.filterwarnings('ignore')
 import os
 import time
+import re
 
 # Logger (better than print)
 import logging
@@ -45,6 +46,10 @@ args = parser.parse_args()
 auth_client = APIKeyAuthClient(
     args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
 
+# get username from base_url
+substring = re.search('https://(.+?).carto.com', args.CARTO_BASE_URL)
+if substring:
+    username = substring.group(1)
 
 # imports the file to CARTO
 fi = FileImportJob(args.url, auth_client)
@@ -65,6 +70,7 @@ if fi.success == True:
         if fi.state == 'complete':
             # print name of the imported table
             logger.info('Name of table: ' + str(fi.table_name))
+            print('\nURL of dataset is: https://{org}.carto.com/u/{username}/dataset/{data}').format(org=args.organization,username=username ,data=str(fi.table_name))
         if fi.state == 'failure':
             logger.error("Import has failed")
             logger.error(fi.get_error_text)
