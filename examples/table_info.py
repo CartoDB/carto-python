@@ -5,6 +5,7 @@ import warnings
 warnings.filterwarnings('ignore')
 import os
 from carto.sql import SQLClient
+from prettytable import PrettyTable
 
 
 # Logger (better than print)
@@ -57,16 +58,31 @@ sql = SQLClient(APIKeyAuthClient(args.CARTO_BASE_URL, args.CARTO_API_KEY))
 # display and count all datasets of account
 all_datasets = dataset_manager.all()
 
-
+# set the arrays to store the values that will be used to display tables
+results_col = []
+results_index = []
+results_func = []
+results_trig = []
 for i in all_datasets:
     if (i.table.name == args.dataset_name):
-        # show all features of each dataset
-        print('\nName of the table: {tabName}\nTotal number of rows: {tabRowCount:,} rows').format(
-            tabName=str(i.table.name), tabRowCount=i.table.row_count)
-        print('Size of the table: {tableSize} MB').format(
-            tableSize=str(round(i.table.size/1048576.00, 2)))
-        print('Privacy of the table: {tabPrivacy}\nGeometry type: {tabGeom}').format(
-            tabPrivacy=str(i.table.privacy), tabGeom=str(i.table.geometry_types))
+        print('\nGeneral information')
+        table_general = PrettyTable([
+            'Table name',
+            'Number of rows',
+            'Size of the table (MB)',
+            'Privacy of the table',
+            'Geometry type'
+        ])
+
+        table_general.add_row([
+            i.table.name,
+            i.table.row_count,
+            str(round(i.table.size/1048576.00, 2)),
+            str(i.table.privacy),
+            str(i.table.geometry_types)
+        ])
+
+        print(table_general)
 
         columns_table = "select column_name, data_type FROM information_schema.columns \
         WHERE table_schema = '" + i.permission.owner.username + "'\
@@ -78,9 +94,18 @@ for i in all_datasets:
         for key, value in columnAndTypes.items():
             if key == 'rows':
                 for itr in value:
-                    print('\t{columnName}: {dataType}\n').format(
-                        columnName=str(itr['column_name']), dataType=str(itr['data_type']))
+                    results_col.append([
+                        itr['column_name'],
+                        itr['data_type']
+                    ])
+        table_col = PrettyTable(
+            ['Column name', 'Data type'])
+        table_col.align['Column name'] = 'l'
+        table_col.align['Data type'] = 'r'
+        for row in results_col:
+            table_col.add_row(row)
 
+        print(table_col)
         # get all indexes of the table
         print('\nIndexes of the tables: \n')
         indexes = sql.send("select indexname, indexdef from pg_indexes \
@@ -89,8 +114,15 @@ for i in all_datasets:
         for k, v in indexes.items():
             if k == 'rows':
                 for itr in v:
-                    print('\t{indexName}: {indexDef}\n').format(
-                        indexName=str(itr['indexname']), indexDef=str(itr['indexdef']))
+                    results_index.append([itr['indexname'],itr['indexdef']])
+        table_index = PrettyTable(
+            ['Index name', 'Index definition'])
+        table_index.align['Index name'] = 'l'
+        table_index.align['Index definition'] = 'r'
+        for row_ind in results_index:
+            table_index.add_row(row_ind)
+        print(table_index)
+
 
         # get all functions of user account
         print('\nFunctions of the account: \n')
@@ -102,7 +134,12 @@ for i in all_datasets:
         for a, b in functions.items():
             if a == 'rows':
                 for itr in b:
-                    logger.info(itr)
+                    results_func.append(itr)
+        table_func = PrettyTable(['Function name'])
+        for row in results_func:
+            table_func.add_row([row])
+
+        print(table_func)
 
         # triggers
         print('\nTriggers of the account: \n')
@@ -123,6 +160,12 @@ for i in all_datasets:
         # get triggers of the table
         triggers = sql.send(
             "SELECT tgname FROM pg_trigger WHERE tgrelid =" + str(table_oid))
+
         for t in triggers['rows']:
-            print('\t{tgName}\n').format(tgName=str(t['tgname']))
-        print('\n')
+            results_trig.append(str(t['tgname']))
+        table_trigger = PrettyTable(['Trigger Name'])
+
+        for row in results_trig:
+            table_trigger.add_row([row])
+
+        print(table_trigger)
