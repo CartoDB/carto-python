@@ -18,8 +18,8 @@ import argparse
 parser = argparse.ArgumentParser(
     description='Create a Batch SQL API job')
 parser.add_argument('operation', type=str,default=None,
-                    help='Set the batch operation that you want to apply'+\
-                    'Options: "create", "read", "update", "cancel"')
+                    choices=['create','read','update','cancel'],
+                    help='Set the batch operation that you want to apply')
 parser.add_argument('--query', type=str,dest='query',
                     help='Set the query that you want to apply')
 parser.add_argument('--job_id', type=str,dest='job_id',
