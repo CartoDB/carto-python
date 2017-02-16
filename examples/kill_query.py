@@ -23,7 +23,7 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument('pid', type=str,
                     default=None,
-                    help='Set the pid to kill')
+                    help='Set the pid of the query to kill')
 parser.add_argument('--organization', type=str, dest='organization',
                     default=os.environ['CARTO_ORG'],
                     help='Set the name of the organization' +
