@@ -4,9 +4,16 @@ from carto.datasets import DatasetManager
 import warnings
 warnings.filterwarnings('ignore')
 import os
-import pprint
-printer = pprint.PrettyPrinter(indent=4)
 from carto.sql import SQLClient
+
+# Logger (better than print)
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format=' %(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%I:%M:%S %p')
+logger = logging.getLogger()
+
 
 # set input arguments
 import argparse
@@ -14,9 +21,9 @@ parser = argparse.ArgumentParser(
     description='Return the names of all maps or' +
     ' display information from a specific map')
 
-parser.add_argument('query', type=str,
+parser.add_argument('pid', type=str,
                     default=None,
-                    help='Set the name of the map to explore')
+                    help='Set the pid to kill')
 parser.add_argument('--organization', type=str, dest='organization',
                     default=os.environ['CARTO_ORG'],
                     help='Set the name of the organization' +
@@ -45,7 +52,11 @@ dataset_manager = DatasetManager(auth_client)
 
 sql = SQLClient(APIKeyAuthClient(args.CARTO_BASE_URL, args.CARTO_API_KEY))
 
-queries = "SELECT pg_cancel_backend('" + args.query + \
+queries = "SELECT pg_cancel_backend('" + args.pid + \
     "') from pg_stat_activity where usename=current_user;"
 
-result = sql.send(queries)
+try:
+    sql.send(queries)
+    logger.info('Query killed')
+except:
+    logger.warn('Something went wrong')
