@@ -15,7 +15,7 @@ from .resources import Manager
 
 
 API_VERSION = "v1"
-API_ENDPOINT = "{api_version}/viz/"
+API_ENDPOINT = "api/{api_version}/viz/"
 
 MAX_NUMBER_OF_RETRIES = 30
 INTERVAL_BETWEEN_RETRIES_S = 5

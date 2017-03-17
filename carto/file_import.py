@@ -5,7 +5,7 @@ from .paginators import CartoPaginator
 
 
 API_VERSION = "v1"
-API_ENDPOINT = '{api_version}/imports/'
+API_ENDPOINT = 'api/{api_version}/imports/'
 
 
 class FileImportJob(AsyncResource):

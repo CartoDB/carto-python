@@ -7,7 +7,7 @@ from .resources import Manager
 
 
 API_VERSION = "v1"
-API_ENDPOINT = "{api_version}/tables/"
+API_ENDPOINT = "api/{api_version}/tables/"
 
 
 class Table(Resource):

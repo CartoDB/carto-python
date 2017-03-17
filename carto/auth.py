@@ -1,6 +1,12 @@
+import re
+import sys
 import warnings
 from pyrestcli.auth import BaseAuthClient
 
+if sys.version_info >= (3,0):
+    from urllib.parse import urlparse
+else:
+    from urlparse import urlparse
 
 class APIKeyAuthClient(BaseAuthClient):
     """
@@ -20,6 +26,19 @@ class APIKeyAuthClient(BaseAuthClient):
 
         self.organization = organization
         self.api_key = api_key
+        self.base_url = base_url
+
+        url_info = urlparse(base_url)
+        # Cloud multiuser organization:
+        #   /u/<username>/api
+        # On-Prem:
+        #   /user/<username>/api
+        m = re.search('^/u(?:ser)?/(.*?)/api', url_info.path)
+        if m is None:
+            # Cloud personal account
+            # <username>.carto.com
+            m = re.search('^(.*?)\..*', url_info.netloc)
+        self.username = m.group(1)
 
         super(APIKeyAuthClient, self).__init__(base_url, proxies=proxies)
 

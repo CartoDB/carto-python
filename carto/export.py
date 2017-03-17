@@ -4,7 +4,7 @@ from .resources import AsyncResource
 
 
 API_VERSION = "v3"
-API_ENDPOINT = '{api_version}/visualization_exports/'
+API_ENDPOINT = 'api/{api_version}/visualization_exports/'
 
 
 class ExportJob(AsyncResource):

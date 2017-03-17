@@ -1,5 +1,5 @@
-SQL_API_URL = '{api_version}/sql'
-SQL_BATCH_API_URL = '{api_version}/sql/job/'
+SQL_API_URL = 'api/{api_version}/sql'
+SQL_BATCH_API_URL = 'api/{api_version}/sql/job/'
 
 MAX_GET_QUERY_LEN = 1024
 
@@ -16,6 +16,10 @@ class SQLClient(object):
         """
         self.auth_client = auth_client
         self.api_url = SQL_API_URL.format(api_version=api_version)
+
+        self.api_key = self.auth_client.api_key
+        self.base_url = self.auth_client.base_url
+        self.username = self.auth_client.username
 
     def send(self, sql, parse_json=True, do_post=True, format=None):
         """
