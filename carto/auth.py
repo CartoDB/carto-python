@@ -26,14 +26,17 @@ class APIKeyAuthClient(BaseAuthClient):
 
         self.organization = organization
         self.api_key = api_key
-        self.base_url = base_url
+
+        # Make sure there is a trailing / for urljoin
+        if not base_url.endswith('/'):
+            base_url += '/'
 
         url_info = urlparse(base_url)
         # Cloud multiuser organization:
-        #   /u/<username>/api
+        #   /u/<username>
         # On-Prem:
-        #   /user/<username>/api
-        m = re.search('^/u(?:ser)?/(.*?)/api', url_info.path)
+        #   /user/<username>
+        m = re.search('^/u(?:ser)?/(.*)/$', url_info.path)
         if m is None:
             # Cloud personal account
             # <username>.carto.com
