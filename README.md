@@ -25,6 +25,20 @@ If using, the development version, you might want to install Carto's dependencie
 
     pip install -r requirements.txt
 
+Test Suite
+==========
+
+cd into the repo folder, create and enable virtualenv, install pytest and run tests:
+
+```
+cd carto-python
+virtualenv env
+source env/bin/activate
+pip install -e .
+pip install pytest
+py.test tests
+```
+
 Authentication
 ==============
 
