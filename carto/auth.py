@@ -36,11 +36,14 @@ class APIKeyAuthClient(BaseAuthClient):
         #   /u/<username>
         # On-Prem:
         #   /user/<username>
-        m = re.search('^/u(?:ser)?/(.*)/$', url_info.path)
+        m = re.search('^/u(?:ser)?/([^/]+)/.*$', url_info.path)
         if m is None:
             # Cloud personal account
             # <username>.carto.com
-            m = re.search('^(.*?)\..*', url_info.netloc)
+            netloc = url_info.netloc
+            if netloc.startswith('www.'):
+                netloc = netloc.split('www.')[1]
+            m = re.search('^(.*?)\..*', netloc)
         self.username = m.group(1)
 
         super(APIKeyAuthClient, self).__init__(base_url, proxies=proxies)
