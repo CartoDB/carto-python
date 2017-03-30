@@ -8,7 +8,7 @@ from carto.users import UserManager
 from secret import USERNAME, API_KEY, ORGANIZATION
 
 
-BASE_URL = "https://{organization}.carto.com/user/{user}/api/".format(organization=ORGANIZATION, user=USERNAME)
+BASE_URL = "https://{organization}.carto.com/user/{user}/".format(organization=ORGANIZATION, user=USERNAME)
 
 
 @pytest.fixture(scope="session")

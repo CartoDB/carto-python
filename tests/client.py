@@ -7,6 +7,31 @@ from carto import CartoException, APIKeyAuthClient, NoAuthClient, FileImport, UR
 from secret import API_KEY, USERNAME, EXISTING_POINT_DATASET, EXPORT_VIZ_ID, IMPORT_FILE, IMPORT_URL, NAMED_MAP_AUTH_TOKEN, NAMED_MAP_DEFINITION, NAMED_MAP_INSTANTIATION, BATCH_SQL_SINGLE_QUERY, BATCH_SQL_MULTI_QUERY
 
 
+class APIKeyAuthClientTest(unittest.TestCase):
+    def test_cloud_personal_url(self):
+        user1 = APIKeyAuthClient('https://user1.carto.com/a/b/c', API_KEY).username
+        user2 = APIKeyAuthClient('https://www.user2.carto.com', API_KEY).username
+        user3 = APIKeyAuthClient('http://www.user3.carto.com/a/b/c', API_KEY).username
+        self.assertEqual(user1, 'user1')
+        self.assertEqual(user2, 'user2')
+        self.assertEqual(user3, 'user3')
+
+    def test_cloud_organization_url(self):
+        user1 = APIKeyAuthClient('https://carto.com/u/user1/a/b/c', API_KEY).username
+        user2 = APIKeyAuthClient('https://www.carto.com/u/user2', API_KEY).username
+        user3 = APIKeyAuthClient('http://www.carto.com/u/user3/a/b/c', API_KEY).username
+        self.assertEqual(user1, 'user1')
+        self.assertEqual(user2, 'user2')
+        self.assertEqual(user3, 'user3')
+
+    def test_on_prem_url(self):
+        user1 = APIKeyAuthClient('https://carto.com/user/user1/a/b/c', API_KEY).username
+        user2 = APIKeyAuthClient('https://www.carto.com/user/user2', API_KEY).username
+        user3 = APIKeyAuthClient('http://www.carto.com/user/user3/a/b/c', API_KEY).username
+        self.assertEqual(user1, 'user1')
+        self.assertEqual(user2, 'user2')
+        self.assertEqual(user3, 'user3')
+
 class SQLClientTest(unittest.TestCase):
     def setUp(self):
         self.client = APIKeyAuthClient(API_KEY, USERNAME)
