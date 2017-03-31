@@ -9,6 +9,7 @@ from secret import USERNAME, API_KEY, ORGANIZATION
 
 
 BASE_URL = "https://{organization}.carto.com/user/{user}/".format(organization=ORGANIZATION, user=USERNAME)
+USR_BASE_URL = "https://{user}.carto.com/".format(user=USERNAME)
 
 
 @pytest.fixture(scope="session")
@@ -18,6 +19,15 @@ def api_key_auth_client():
     :return: APIKeyAuthClient instance
     """
     return APIKeyAuthClient(BASE_URL, API_KEY, ORGANIZATION)
+
+
+@pytest.fixture(scope="session")
+def api_key_auth_client_usr():
+    """
+    Returns a API key authentication client that can be used to send authenticated test requests to CARTO
+    :return: APIKeyAuthClient instance
+    """
+    return APIKeyAuthClient(USR_BASE_URL, API_KEY)
 
 
 @pytest.fixture(scope="session")
