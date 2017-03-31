@@ -17,9 +17,9 @@ class SQLClient(object):
         self.auth_client = auth_client
         self.api_url = SQL_API_URL.format(api_version=api_version)
 
-        self.api_key = self.auth_client.api_key
+        self.api_key = self.auth_client.api_key if hasattr(self.auth_client, "api_key") else None
         self.base_url = self.auth_client.base_url
-        self.username = self.auth_client.username
+        self.username = self.auth_client.username if hasattr(self.auth_client, "username") else None
 
     def send(self, sql, parse_json=True, do_post=True, format=None):
         """
@@ -56,7 +56,7 @@ class BatchSQLClient(object):
         """
         self.client = client
         self.api_url = SQL_BATCH_API_URL.format(api_version=api_version)
-        self.api_key = self.client.api_key
+        self.api_key = self.client.api_key if hasattr(self.client, "api_key") else None
 
     def update_from_dict(self, data_dict):
         """
