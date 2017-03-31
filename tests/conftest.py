@@ -36,7 +36,7 @@ def no_auth_client():
     Returns an authentication client that can be used to send anonymous test requests to CARTO
     :return: NoAuthClient instance
     """
-    return NoAuthClient()
+    return NoAuthClient(USR_BASE_URL)
 
 
 @pytest.fixture(scope="session")

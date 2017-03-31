@@ -3,8 +3,8 @@ import requests
 
 from pyrestcli.exceptions import NotFoundException
 
-from carto.maps import NamedMap, NamedMapManager
-from secret import NAMED_MAP_DEFINITION, NAMED_MAP_AUTH_TOKEN, NAMED_MAP_INSTANTIATION
+from carto.maps import NamedMap, NamedMapManager, AnonymousMap
+from secret import NAMED_MAP_DEFINITION, NAMED_MAP_AUTH_TOKEN, NAMED_MAP_INSTANTIATION, ANONYMOUS_MAP_DEFINITION
 
 
 @pytest.fixture(scope="module")
@@ -16,9 +16,16 @@ def named_map_manager(api_key_auth_client_usr):
     """
     return NamedMapManager(api_key_auth_client_usr)
 
+
+@pytest.fixture(scope="module")
+def no_auth_client_fixture(no_auth_client):
+    return no_auth_client
+
+
 def test_get_named_map_error(named_map_manager):
     with pytest.raises(NotFoundException):
         named_map_manager.get('non-existent')
+
 
 def test_named_map_methods(named_map_manager):
     # Create named map
@@ -42,6 +49,7 @@ def test_named_map_methods(named_map_manager):
     # Delete named map
     assert named.delete() is requests.codes.no_content
 
+
 def test_named_map_manager(named_map_manager):
     # Get all named maps
     initial_maps = named_map_manager.all()
@@ -58,3 +66,9 @@ def test_named_map_manager(named_map_manager):
 
     # Delete named map simply to avoid polluting the user's account
     assert named.delete() is requests.codes.no_content
+
+
+def test_create_anonymous_map(no_auth_client_fixture):
+    anonymous = AnonymousMap(no_auth_client_fixture)
+    anonymous.instantiate(ANONYMOUS_MAP_DEFINITION)
+    assert anonymous.layergroupid is not None

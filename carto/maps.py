@@ -4,7 +4,8 @@ from pyrestcli.resources import Manager, Resource
 
 
 API_VERSION = "v1"
-API_ENDPOINT = "api/{api_version}/map/named/"
+NAMED_API_ENDPOINT = "api/{api_version}/map/named/"
+ANONYMOUS_API_ENDPOINT = "api/{api_version}/map/"
 
 
 class NamedMap(Resource):
@@ -12,7 +13,7 @@ class NamedMap(Resource):
     Equivalent to creating a named map in CARTO.
     """
     class Meta:
-        collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
+        collection_endpoint = NAMED_API_ENDPOINT.format(api_version=API_VERSION)
         id_field = "template_id"
         name_field = "name"
 
@@ -52,6 +53,21 @@ class NamedMap(Resource):
                 setattr(self, k, v)
         except Exception as e:
             setattr(self, self.Meta.id_field, attribute_dict)
+
+
+class AnonymousMap(Resource):
+    """
+    Equivalent to creating an anonymous map in CARTO.
+    """
+    class Meta:
+        collection_endpoint = ANONYMOUS_API_ENDPOINT.format(api_version=API_VERSION)
+
+    def instantiate(self, params):
+        self.send(self.Meta.collection_endpoint, "POST", json=params)
+
+    def update_from_dict(self, attribute_dict):
+        for k, v in attribute_dict.items():
+            setattr(self, k, v)
 
 
 class NamedMapManager(Manager):
