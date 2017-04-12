@@ -12,28 +12,30 @@ class FileImportJob(AsyncResource):
     """
     This class provides support for one-time uploading and importing of remote and local files into CARTO
     """
-    item_queue_id = CharField()
-    id = CharField()
-    user_id = CharField()
-    table_id = CharField()
-    data_type = CharField()
-    table_name = CharField()
-    state = CharField()
-    error_code = IntegerField()
-    queue_id = CharField()
-    tables_created_count = IntegerField()
-    synchronization_id = CharField()
-    type_guessing = BooleanField()
-    quoted_fields_guessing = BooleanField()
+    collision_strategy = CharField()
     content_guessing = BooleanField()
-    create_visualization = BooleanField()
-    visualization_id = CharField()
-    user_defined_limits = CharField()
-    get_error_text = None
+    create_vis = BooleanField()
+    data_type = CharField()
     display_name = CharField()
-    success = BooleanField()
-    warnings = None
+    error_code = IntegerField()
+    get_error_text = None
+    id = CharField()
     is_raster = BooleanField()
+    item_queue_id = CharField()
+    privacy = CharField()
+    quoted_fields_guessing = BooleanField()
+    queue_id = CharField()
+    state = CharField()
+    success = BooleanField()
+    synchronization_id = CharField()
+    tables_created_count = IntegerField()
+    table_id = CharField()
+    table_name = CharField()
+    type_guessing = BooleanField()
+    user_defined_limits = CharField()
+    user_id = CharField()
+    visualization_id = CharField()
+    warnings = None
 
     class Meta:
         collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
@@ -63,6 +65,14 @@ class FileImportJob(AsyncResource):
         """
         if self.url:
             import_params["url"] = self.url
+
+        try:
+            for field in self.fields:
+                val = getattr(self, field, None)
+                if val is not None:
+                    import_params[field] = val
+        except Exception as e:
+            pass
 
         super(FileImportJob, self).run(params=import_params, files=self.files)
         self.id_field = "id"
