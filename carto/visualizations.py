@@ -47,6 +47,7 @@ class Visualization(Resource):
     stats = None
     synchronization = None
     table = TableField()
+    related_tables = TableField(many=True)
     tags = None
     title = CharField()
     transition_options = None
