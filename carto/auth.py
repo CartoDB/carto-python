@@ -13,11 +13,12 @@ class APIKeyAuthClient(BaseAuthClient):
     This class provides you with authenticated access to CARTO's APIs using your API key
     You can find your API key by clicking on the API key section of the user dropdown menu
     """
-    def __init__(self, base_url, api_key, organization=None):
+    def __init__(self, base_url, api_key, organization=None, session=None):
         """
         :param base_url: Base URL. API endpoint paths will always be relative to this URL
         :param api_key: API key
         :param organization: For enterprise users, organization user belongs to
+        :param session: requests' session object
         :return:
         """
         if not base_url.startswith("https"):
@@ -45,7 +46,7 @@ class APIKeyAuthClient(BaseAuthClient):
             m = re.search('^(.*?)\..*', netloc)
         self.username = m.group(1)
 
-        super(APIKeyAuthClient, self).__init__(base_url)
+        super(APIKeyAuthClient, self).__init__(base_url, session=session)
 
     def send(self, relative_path, http_method, **requests_args):
         """
