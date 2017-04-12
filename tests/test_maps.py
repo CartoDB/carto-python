@@ -28,6 +28,10 @@ def test_get_named_map_error(named_map_manager):
 
 
 def test_named_map_methods(named_map_manager):
+    n = NamedMap(named_map_manager.client)
+    n.template_id = 'python_sdk_test_map'
+    n.delete()
+
     # Create named map
     named = named_map_manager.create(template=NAMED_MAP_DEFINITION)
     assert named.template_id is not None
