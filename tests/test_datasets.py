@@ -37,7 +37,7 @@ def test_create_and_modify_and_delete_dataset_from_file(dataset_manager):
     Test creating a dataset from a local file, modifying it and then deleting it
     :param dataset_manager: Dataset manager to work with
     """
-    dataset = dataset_manager.create(IMPORT_FILE)
+    dataset = dataset_manager.create(IMPORT_URL, create_vis=True)
     assert dataset.get_id() is not None
     assert dataset.privacy == PRIVATE
 

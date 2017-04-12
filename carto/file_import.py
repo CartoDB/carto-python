@@ -12,48 +12,45 @@ class FileImportJob(AsyncResource):
     """
     This class provides support for one-time uploading and importing of remote and local files into CARTO
     """
-    collision_strategy = CharField()
-    content_guessing = BooleanField()
-    create_vis = BooleanField()
-    data_type = CharField()
-    display_name = CharField()
-    error_code = IntegerField()
-    get_error_text = None
-    id = CharField()
-    is_raster = BooleanField()
     item_queue_id = CharField()
-    privacy = CharField()
-    quoted_fields_guessing = BooleanField()
-    queue_id = CharField()
-    state = CharField()
-    success = BooleanField()
-    synchronization_id = CharField()
-    tables_created_count = IntegerField()
-    table_id = CharField()
-    table_name = CharField()
-    type_guessing = BooleanField()
-    user_defined_limits = CharField()
+    id = CharField()
     user_id = CharField()
+    table_id = CharField()
+    data_type = CharField()
+    table_name = CharField()
+    state = CharField()
+    error_code = IntegerField()
+    queue_id = CharField()
+    tables_created_count = IntegerField()
+    synchronization_id = CharField()
+    type_guessing = BooleanField()
+    quoted_fields_guessing = BooleanField()
+    content_guessing = BooleanField()
+    create_visualization = BooleanField()
     visualization_id = CharField()
+    user_defined_limits = CharField()
+    get_error_text = None
+    display_name = CharField()
+    success = BooleanField()
     warnings = None
+    is_raster = BooleanField()
 
     class Meta:
         collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
         id_field = "item_queue_id"
 
-    def __init__(self, auth_client=None, url=None):
+    def __init__(self, url, auth_client):
         """
         :param auth_client: Client to make authorized requests (currently only APIKeyAuthClient is supported)
         :param url: URL can be a pointer to a remote location or a path to a local file
         :return:
         """
-        if url is not None:
-            if url.startswith("http"):
-                self.url = url
-                self.files = None
-            else:
-                self.url = None
-                self.files = {'file': open(url, 'rb')}
+        if url.startswith("http"):
+            self.url = url
+            self.files = None
+        else:
+            self.url = None
+            self.files = {'file': open(url, 'rb')}
 
         super(FileImportJob, self).__init__(auth_client)
 
@@ -65,14 +62,6 @@ class FileImportJob(AsyncResource):
         """
         if self.url:
             import_params["url"] = self.url
-
-        try:
-            for field in self.fields:
-                val = getattr(self, field, None)
-                if val is not None:
-                    import_params[field] = val
-        except Exception as e:
-            pass
 
         super(FileImportJob, self).run(params=import_params, files=self.files)
         self.id_field = "id"
@@ -110,8 +99,8 @@ class FileImportJobManager(Manager):
         :param url: URL can be a pointer to a remote location or a path to a local file
         :params kwargs: Attributes (field names and values) of the new resource
         """
-        resource = self.resource_class(self.client, url)
+        resource = self.resource_class(url, self.client)
         resource.update_from_dict(kwargs)
-        resource.run(force_create=True)
+        resource.save(force_create=True)
 
         return resource
