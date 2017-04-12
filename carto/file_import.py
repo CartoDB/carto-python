@@ -39,18 +39,19 @@ class FileImportJob(AsyncResource):
         collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
         id_field = "item_queue_id"
 
-    def __init__(self, url, auth_client):
+    def __init__(self, auth_client=None, url=None):
         """
         :param auth_client: Client to make authorized requests (currently only APIKeyAuthClient is supported)
         :param url: URL can be a pointer to a remote location or a path to a local file
         :return:
         """
-        if url.startswith("http"):
-            self.url = url
-            self.files = None
-        else:
-            self.url = None
-            self.files = {'file': open(url, 'rb')}
+        if url is not None:
+            if url.startswith("http"):
+                self.url = url
+                self.files = None
+            else:
+                self.url = None
+                self.files = {'file': open(url, 'rb')}
 
         super(FileImportJob, self).__init__(auth_client)
 
@@ -99,8 +100,8 @@ class FileImportJobManager(Manager):
         :param url: URL can be a pointer to a remote location or a path to a local file
         :params kwargs: Attributes (field names and values) of the new resource
         """
-        resource = self.resource_class(url, self.client)
+        resource = self.resource_class(self.client, url)
         resource.update_from_dict(kwargs)
-        resource.save(force_create=True)
+        resource.run(force_create=True)
 
         return resource
