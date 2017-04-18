@@ -62,3 +62,5 @@ target/
 *.swp
 secret.py
 env
+
+.idea/*
