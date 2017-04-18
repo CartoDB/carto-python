@@ -28,7 +28,7 @@ parser.add_argument('folder_name', type=str,
                     help='Set the name of the folder where' +
                     ' you store your files and' +
                     ' the format of the files, for example:' +
-                    ' "examples/files/*.csv"')
+                    ' "files/*.csv"')
 
 parser.add_argument('--organization', type=str, dest='organization',
                     default=os.environ['CARTO_ORG'],
