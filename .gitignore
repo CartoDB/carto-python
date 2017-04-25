@@ -64,3 +64,4 @@ secret.py
 env
 
 .idea/*
+.DS_Store
