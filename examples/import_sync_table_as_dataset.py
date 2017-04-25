@@ -9,7 +9,7 @@ import time
 import logging
 import re
 
-# python import_sync_table.py "http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/110m/cultural/ne_110m_admin_0_countries.zip" 900
+# python import_sync_table_as_dataset.py "http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/110m/cultural/ne_110m_admin_0_countries.zip" 900
 # Logger (better than print)
 import logging
 logging.basicConfig(
