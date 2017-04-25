@@ -65,3 +65,4 @@ env
 
 .idea/*
 .DS_Store
+variables.sh
