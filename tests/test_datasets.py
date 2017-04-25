@@ -81,6 +81,10 @@ def test_create_and_modify_and_delete_dataset_as_sync_table(dataset_manager):
     Test creating a dataset as a result of the creation of a sync table, modifying it and then deleting it
     :param dataset_manager: Dataset manager to work with
     """
-    with pytest.raises(AttributeError):
-        # Sync table is created but there is no way to get the corresponding dataset id
-        dataset_manager.create(IMPORT_URL, interval=3600)
+    dataset = dataset_manager.create(IMPORT_URL, interval=3600)
+    assert dataset.get_id() is not None
+
+    dataset_id = dataset.get_id()
+    dataset.delete()
+    with pytest.raises(NotFoundException):
+        dataset_manager.get(dataset_id)

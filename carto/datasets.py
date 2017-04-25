@@ -113,7 +113,7 @@ class DatasetManager(Manager):
         import_job.refresh()
 
         count = 0
-        while import_job.state in ("enqueued", "pending", "uploading", "unpacking", "importing", "guessing"):
+        while import_job.state in ("enqueued", "pending", "uploading", "unpacking", "importing", "guessing") or (isinstance(manager, SyncTableJobManager) and import_job.state == "created"):
             if count >= MAX_NUMBER_OF_RETRIES:
                 raise CartoException(_("Maximum number of retries exceeded when polling the import API for dataset creation"))
             time.sleep(INTERVAL_BETWEEN_RETRIES_S)
@@ -123,12 +123,16 @@ class DatasetManager(Manager):
         if import_job.state == "failure":
             raise CartoException(_("Dataset creation was not successful because of failed import (error: {error}").format(error=json.dumps(import_job.get_error_text)))
 
-        if (import_job.state != "complete" and import_job.state != "created") or import_job.success is False:
+        if (import_job.state != "complete" and import_job.state != "created" and import_job.state != "success") or import_job.success is False:
             raise CartoException(_("Dataset creation was not successful because of unknown import error"))
 
-        table = TableManager(self.client).get(import_job.table_id)
+        if hasattr(import_job, "visualization_id") and import_job.visualization_id is not None:
+            visualization_id = import_job.visualization_id
+        else:
+            table = TableManager(self.client).get(import_job.table_id)
+            visualization_id = table.table_visualization.get_id() if table is not None else None
 
         try:
-            return self.get(table.table_visualization.get_id()) if table is not None else None
+            return self.get(visualization_id) if visualization_id is not None else None
         except AttributeError:
             raise CartoException(_("Dataset creation was not successful because of unknown error"))

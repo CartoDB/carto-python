@@ -10,7 +10,7 @@ from .paginators import CartoPaginator
 
 
 API_VERSION = "v1"
-API_ENDPOINT = 'api/{api_version}/synchronizations'
+API_ENDPOINT = 'api/{api_version}/synchronizations/'
 API_FORCE_SYNC_SUFFIX = 'sync_now'
 
 
