@@ -7,6 +7,7 @@ warnings.filterwarnings('ignore')
 import os
 import time
 import logging
+import re
 
 # python import_sync_table.py "http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/110m/cultural/ne_110m_admin_0_countries.zip" 900
 # Logger (better than print)
@@ -49,28 +50,14 @@ args = parser.parse_args()
 # Set authentification to CARTO
 auth_client = APIKeyAuthClient(
     args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
-syncTableManager = SyncTableJobManager(auth_client)
-syncTable = syncTableManager.create(args.url, args.sync_time)
+dataset_manager = DatasetManager(auth_client)
+table = dataset_manager.create(args.url, args.sync_time)
 
+# get username from base_url
+substring = re.search('https://(.+?).carto.com', args.CARTO_BASE_URL)
+if substring:
+    username = substring.group(1)
 
 # return the id of the sync
-logging.debug((syncTable.get_id()))
-
-while(syncTable.state != 'success'):
-    time.sleep(5)
-    syncTable.refresh()
-    logging.debug(syncTable.state)
-    if (syncTable.state == 'failure'):
-        logging.warn('The error code is: ' + str(syncTable.error_code))
-        logging.warn('The error message is: ' + str(syncTable.error_message))
-        break
-
-    if (syncTable.state == 'created'):
-        logging.info(syncTable.name)
-        break
-
-# force sync
-syncTable.refresh()
-syncTable.force_sync()
-
-logging.debug(syncTable.state)
+logger.info('Name of table: ' + str(table.name))
+print('\nURL of dataset is: https://{org}.carto.com/u/{username}/dataset/{data}').format(org=args.organization,username=username ,data=str(table.name))
