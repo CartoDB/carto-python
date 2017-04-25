@@ -6,6 +6,8 @@ warnings.filterwarnings('ignore')
 import os
 from carto.sql import SQLClient
 
+# python check_query.py "select * from tornados"
+
 # Logger (better than print)
 import logging
 logging.basicConfig(

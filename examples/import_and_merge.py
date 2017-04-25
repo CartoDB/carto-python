@@ -11,6 +11,8 @@ import logging
 import glob
 import re
 
+# python import_and_merge.py "files/*.csv"
+
 # Logger (better than print)
 import logging
 logging.basicConfig(
