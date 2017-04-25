@@ -7,6 +7,7 @@ import os
 from carto.sql import SQLClient
 from prettytable import PrettyTable
 
+# python table_info.py tornados_11
 
 # Logger (better than print)
 import logging
