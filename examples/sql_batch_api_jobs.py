@@ -65,7 +65,7 @@ elif args.operation == 'update':
         logger.info('{key}: {value}'.format(key=a, value=b))
 elif args.operation == 'cancel':
     cancelJob = batchSQLClient.cancel(args.job_id)
-    for a, b in readJob.items():
+    for a, b in cancelJob.items():
         logger.info('{key}: {value}'.format(key=a, value=b))
 else:
     logger.info("You have not written a correct operation option")
