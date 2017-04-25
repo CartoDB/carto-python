@@ -6,6 +6,7 @@ import os
 import time
 import re
 
+# python import_standard_table.py files/barris_barcelona_1_part_1.csv
 # Logger (better than print)
 import logging
 logging.basicConfig(
