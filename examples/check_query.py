@@ -31,7 +31,7 @@ parser.add_argument('--organization', type=str, dest='organization',
 parser.add_argument('--base_url', type=str, dest='CARTO_BASE_URL',
                     default=os.environ['CARTO_API_URL'],
                     help='Set the base URL. For example:' +
-                    ' https://username.carto.com/api/ ' +
+                    ' https://username.carto.com/ ' +
                     '(defaults to env variable CARTO_API_URL)')
 
 parser.add_argument('--api_key', dest='CARTO_API_KEY',
