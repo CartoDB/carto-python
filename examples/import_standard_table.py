@@ -1,6 +1,5 @@
 from carto.auth import APIKeyAuthClient
-from carto.exceptions import CartoException
-from carto.file_import import FileImportJob
+from carto.datasets import DatasetManager
 import warnings
 warnings.filterwarnings('ignore')
 import os
@@ -18,10 +17,10 @@ logger = logging.getLogger()
 # set input arguments
 import argparse
 parser = argparse.ArgumentParser(
-    description='Create a sync table from a URL')
+    description='Create a table from a URL')
 
 parser.add_argument('url', type=str,
-                    help='Set the URL of data to sync.' +
+                    help='Set the URL of data to load.' +
                     ' Add it in double quotes')
 
 parser.add_argument('--organization', type=str, dest='organization',
@@ -52,28 +51,7 @@ if substring:
     username = substring.group(1)
 
 # imports the file to CARTO
-fi = FileImportJob(args.url, auth_client)
-fi.run()
-
-
-fi.refresh()
-
-if fi.success == True:
-    while (fi.state != 'complete'):
-        if fi.state == 'importing':
-            time.sleep(5)
-        else:
-            time.sleep(1)
-        fi.refresh()
-        # print status
-        logger.info(fi.state)
-        if fi.state == 'complete':
-            # print name of the imported table
-            logger.info('Name of table: ' + str(fi.table_name))
-            print('\nURL of dataset is: https://{org}.carto.com/u/{username}/dataset/{data}').format(org=args.organization,username=username ,data=str(fi.table_name))
-        if fi.state == 'failure':
-            logger.error("Import has failed")
-            logger.error(fi.get_error_text)
-            break
-else:
-    logger.error("Import has failed")
+dataset_manager = DatasetManager(auth_client)
+table = dataset_manager.create(args.url)
+logger.info('Name of table: ' + str(table.name))
+print('\nURL of dataset is: https://{org}.carto.com/u/{username}/dataset/{data}').format(org=args.organization,username=username ,data=str(table.name))
