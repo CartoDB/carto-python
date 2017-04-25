@@ -2,3 +2,4 @@ requirements.txt
 bin
 include
 pip*json
+.idea

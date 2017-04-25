@@ -75,29 +75,10 @@ file_folder = glob.glob(path + '/' + args.folder_name)
 table_name = []
 
 for i in file_folder:
-    fi = FileImportJob(i, auth_client)
-    fi.run()
-
-    time.sleep(2)
-
-    fi.refresh()
-    if fi.success == True:
-        while (fi.state != 'complete'):
-            fi.refresh()
-            time.sleep(2)
-
-            if fi.state == 'complete':
-                # print name of the imported table
-                logger.info(
-                    'Table imported: {table}'.format(table=fi.table_name))
-                table_name.append(fi.table_name)
-            if fi.state == 'failure':
-                logging.error("Import has failed")
-                logging.error(fi.get_error_text)
-                break
-    else:
-        logging.error("Import has failed")
-
+    table = dataset_manager.create(i)
+    logger.info(
+        'Table imported: {table}'.format(table=table.name))
+    table_name.append(table.name)
 
 # define base table to insert all rows from other files
 base_table = table_name[0]
