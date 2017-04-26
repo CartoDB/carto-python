@@ -1,5 +1,6 @@
 from pyrestcli.fields import IntegerField, CharField, BooleanField
 
+from .exceptions import CartoException
 from .resources import AsyncResource, Manager
 from .paginators import CartoPaginator
 
@@ -76,9 +77,13 @@ class FileImportJobManager(Manager):
         """
         Get a filtered list of file imports
         :return: A list of file imports, with only the id set (you need to refresh them if you want all the attributes to be filled in)
+        :raise CartoException:
         """
-        response = self.send(self.get_collection_endpoint(), "get")
-        resource_ids = self.client.get_response_data(response, self.Meta.parse_json)[self.json_collection_attribute] if self.json_collection_attribute is not None else self.client.get_response_data(response, self.Meta.parse_json)
+        try:
+            response = self.send(self.get_collection_endpoint(), "get")
+            resource_ids = self.client.get_response_data(response, self.Meta.parse_json)[self.json_collection_attribute] if self.json_collection_attribute is not None else self.client.get_response_data(response, self.Meta.parse_json)
+        except Exception as e:
+            raise CartoException(e)
 
         resources = []
 

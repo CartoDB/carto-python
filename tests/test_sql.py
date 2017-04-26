@@ -1,8 +1,6 @@
 import pytest
 import requests
 
-from pyrestcli.exceptions import NotFoundException, BadRequestException
-
 from carto.exceptions import CartoException
 from carto.sql import SQLClient, BatchSQLClient
 from secret import EXISTING_POINT_DATASET, BATCH_SQL_SINGLE_QUERY, BATCH_SQL_MULTI_QUERY
@@ -18,15 +16,15 @@ requests_log.propagate = True
 
 def test_sql_error(api_key_auth_client_usr):
     sql = SQLClient(api_key_auth_client_usr)
-    
-    with pytest.raises(BadRequestException):
+
+    with pytest.raises(CartoException):
         sql.send('select * from non_existing_dataset')
 
 
 def test_sql_error_get(api_key_auth_client_usr):
     sql = SQLClient(api_key_auth_client_usr)
-    
-    with pytest.raises(BadRequestException):
+
+    with pytest.raises(CartoException):
         sql.send('select * from non_existing_dataset', {'do_post': False})
 
 
@@ -52,21 +50,21 @@ def test_no_api_key(no_auth_client):
 
 def test_no_auth_sql_error(no_auth_client):
     sql = SQLClient(no_auth_client)
-    
-    with pytest.raises(BadRequestException):
+
+    with pytest.raises(CartoException):
         sql.send('select * from non_existing_dataset')
 
 
 def test_no_auth_sql_error_get(no_auth_client):
     sql = SQLClient(no_auth_client)
-    
-    with pytest.raises(BadRequestException):
+
+    with pytest.raises(CartoException):
         sql.send('select * from non_existing_dataset', {'do_post': False})
 
 
 def test_batch_create(api_key_auth_client_usr):
     sql = BatchSQLClient(api_key_auth_client_usr)
-    
+
     # Create query
     data = sql.create(BATCH_SQL_SINGLE_QUERY)
 
@@ -76,7 +74,7 @@ def test_batch_create(api_key_auth_client_usr):
     # Cancel if not finished
     try:
         confirmation = sql.cancel(job_id)
-    except BadRequestException:
+    except CartoException:
         pass
     else:
         assert confirmation == 'cancelled'
@@ -94,7 +92,7 @@ def test_batch_multi_sql(api_key_auth_client_usr):
     # Cancel if not finished
     try:
         confirmation = sql.cancel(job_id)
-    except BadRequestException:
+    except CartoException:
         pass
     else:
         assert confirmation == 'cancelled'

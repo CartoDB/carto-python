@@ -62,13 +62,13 @@ def test_create_and_delete_user(user_manager):
     Test creating a user and then deleting it
     :param user_manager: User manager to work with
     """
-    new_user = user_manager.create(username="test-carto-python-sdk-1r2t3", password="test_8g7d6", email="test_carto_python_sdk_1r2t3@test.com")
-    assert new_user.username == "test-carto-python-sdk-1r2t3"
+    new_user = user_manager.create(username="test-carto-python-sdk-1r2t31", password="test_8g7d6", email="test_carto_python_sdk_1r2t31@test.com")
+    assert new_user.username == "test-carto-python-sdk-1r2t31"
 
     time.sleep(10)  # We need to wait until a GET request will find the recently created user
-    new_user = user_manager.get("test-carto-python-sdk-1r2t3")
-    assert new_user.username == "test-carto-python-sdk-1r2t3"
+    new_user = user_manager.get("test-carto-python-sdk-1r2t31")
+    assert new_user.username == "test-carto-python-sdk-1r2t31"
 
     new_user.delete()
     with pytest.raises(NotFoundException):
-        user_manager.get("test-carto-python-sdk-1r2t3")
+        user_manager.get("test-carto-python-sdk-1r2t31")

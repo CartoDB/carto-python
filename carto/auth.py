@@ -2,6 +2,7 @@ import re
 import sys
 import warnings
 from pyrestcli.auth import BaseAuthClient
+from .exceptions import CartoException
 
 if sys.version_info >= (3,0):
     from urllib.parse import urlparse
@@ -55,13 +56,17 @@ class APIKeyAuthClient(BaseAuthClient):
         :param http_method: HTTP method
         :param requests_args: kwargs to be sent to requests
         :return:
+        :raise CartoException:
         """
-        http_method = http_method.lower()
-        if (http_method == "post" or http_method == "put") and "json" in requests_args:
-            requests_args["json"].update({"api_key": self.api_key})
-        else:
-            if "params" not in requests_args:
-                requests_args["params"] = {}
-            requests_args["params"].update({"api_key": self.api_key})
+        try:
+            http_method = http_method.lower()
+            if (http_method == "post" or http_method == "put") and "json" in requests_args:
+                requests_args["json"].update({"api_key": self.api_key})
+            else:
+                if "params" not in requests_args:
+                    requests_args["params"] = {}
+                requests_args["params"].update({"api_key": self.api_key})
 
-        return super(APIKeyAuthClient, self).send(relative_path, http_method, **requests_args)
+            return super(APIKeyAuthClient, self).send(relative_path, http_method, **requests_args)
+        except Exception as e:
+            raise CartoException(e)

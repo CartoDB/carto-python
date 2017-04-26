@@ -2,6 +2,7 @@ import json
 
 from pyrestcli.resources import Manager, Resource
 
+from .exceptions import CartoException
 
 API_VERSION = "v1"
 NAMED_API_ENDPOINT = "api/{api_version}/map/named/"
@@ -36,12 +37,16 @@ class NamedMap(Resource):
         Allows you to fetch the map tiles of a created map
         :param params: The json with the styling info for the named map
         :return:
+        :raise CartoException:
         """
-        if (auth is not None):
-            endpoint = self.Meta.collection_endpoint + self.template_id + "?auth_token=" + auth
-            self.send(endpoint, "POST", json=params)
-        else:
-            self.send(self.Meta.collection_endpoint + self.template_id, "POST", json=params)
+        try:
+            if (auth is not None):
+                endpoint = self.Meta.collection_endpoint + self.template_id + "?auth_token=" + auth
+                self.send(endpoint, "POST", json=params)
+            else:
+                self.send(self.Meta.collection_endpoint + self.template_id, "POST", json=params)
+        except Exception as e:
+            raise CartoException(e)
 
     def update_from_dict(self, attribute_dict):
         if 'template' in attribute_dict:
@@ -63,7 +68,10 @@ class AnonymousMap(Resource):
         collection_endpoint = ANONYMOUS_API_ENDPOINT.format(api_version=API_VERSION)
 
     def instantiate(self, params):
-        self.send(self.Meta.collection_endpoint, "POST", json=params)
+        try:
+            self.send(self.Meta.collection_endpoint, "POST", json=params)
+        except Exception as e:
+            raise CartoException(e)
 
     def update_from_dict(self, attribute_dict):
         for k, v in attribute_dict.items():
@@ -78,5 +86,5 @@ class NamedMapManager(Manager):
         resource = self.resource_class(self.client)
         resource.update_from_dict(kwargs['template'])
         resource.save(force_create=True)
-        
+
         return resource

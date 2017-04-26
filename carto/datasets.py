@@ -80,14 +80,18 @@ class DatasetManager(Manager):
         :param http_method: The method used to make the request to the API
         :param client_args: Arguments to be sent to the auth client
         :return:
+        :raise CartoException:
         """
-        client_args = client_args or {}
+        try:
+            client_args = client_args or {}
 
-        if "params" not in client_args:
-            client_args["params"] = {}
-        client_args["params"].update({"type": "table", "exclude_shared": "true"})
+            if "params" not in client_args:
+                client_args["params"] = {}
+            client_args["params"].update({"type": "table", "exclude_shared": "true"})
 
-        return super(DatasetManager, self).send(url, http_method, **client_args)
+            return super(DatasetManager, self).send(url, http_method, **client_args)
+        except Exception as e:
+            raise CartoException(e)
 
     def create(self, url, interval=None, **import_args):
         """
@@ -96,6 +100,7 @@ class DatasetManager(Manager):
         :param interval: If not None, CARTO will try to set up a sync table against the (remote) URL
         :param import_args: Arguments to be sent to the import job when run
         :return: New dataset object
+        :raise CartoException:
         """
         url = url.lower()
 

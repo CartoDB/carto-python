@@ -98,12 +98,16 @@ class VisualizationManager(Manager):
         :param http_method: The method used to make the request to the API
         :param client_args: Arguments to be sent to the auth client
         :return:
+        :raise CartoException:
         """
-        if "params" not in client_args:
-            client_args["params"] = {}
-        client_args["params"].update({"type": "derived", "exclude_shared": "true"})
+        try:
+            if "params" not in client_args:
+                client_args["params"] = {}
+            client_args["params"].update({"type": "derived", "exclude_shared": "true"})
 
-        return super(VisualizationManager, self).send(url, http_method, **client_args)
+            return super(VisualizationManager, self).send(url, http_method, **client_args)
+        except Exception as e:
+            raise CartoException(e)
 
     def create(self, **kwargs):
         """

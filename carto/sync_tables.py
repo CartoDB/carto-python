@@ -5,6 +5,7 @@ except ImportError:
 
 from pyrestcli.fields import IntegerField, CharField, BooleanField, DateTimeField
 
+from .exceptions import CartoException
 from .resources import AsyncResource, Manager
 from .paginators import CartoPaginator
 
@@ -76,11 +77,15 @@ class SyncTableJob(AsyncResource):
         """
         Get the relative path to the specific API resource
         :return: Relative path to the resource
+        :raise CartoException:
         """
         return urljoin(self.get_resource_endpoint(), API_FORCE_SYNC_SUFFIX)
 
     def force_sync(self):
-        self.send(self.get_resource_endpoint(), "put")
+        try:
+            self.send(self.get_resource_endpoint(), "put")
+        except Exception as e:
+            raise CartoException(e)
 
 
 class SyncTableJobManager(Manager):

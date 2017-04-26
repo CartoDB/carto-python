@@ -9,8 +9,12 @@ class AsyncResource(Resource):
         Actually creates the async job on the CARTO server
         :param import_params: To be send to the Import API, see CARTO's docs on Import API for an updated list of accepted params
         :return:
+        :raise CartoException:
         """
-        self.send(self.get_collection_endpoint(), http_method="POST", **client_params)
+        try:
+            self.send(self.get_collection_endpoint(), http_method="POST", **client_params)
+        except Exception as e:
+            raise CartoException(e)
 
     def refresh(self):
         """

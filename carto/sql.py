@@ -1,3 +1,5 @@
+from .exceptions import CartoException
+
 SQL_API_URL = 'api/{api_version}/sql'
 SQL_BATCH_API_URL = 'api/{api_version}/sql/job/'
 
@@ -29,19 +31,23 @@ class SQLClient(object):
         :param do_post: Set it to True to force post request
         :param format: Any of the data export formats allowed by CARTO's SQL API
         :return: response data, either as json or as a regular response.content object
+        :raise CartoException:
         """
-        params = {'q': sql}
-        if format:
-            params['format'] = format
-            if format not in ['json', 'geojson']:
-                parse_json = False
+        try:
+            params = {'q': sql}
+            if format:
+                params['format'] = format
+                if format not in ['json', 'geojson']:
+                    parse_json = False
 
-        if len(sql) < MAX_GET_QUERY_LEN and do_post is False:
-            resp = self.auth_client.send(self.api_url, 'GET', params=params)
-        else:
-            resp = self.auth_client.send(self.api_url, 'POST', data=params)
+            if len(sql) < MAX_GET_QUERY_LEN and do_post is False:
+                resp = self.auth_client.send(self.api_url, 'GET', params=params)
+            else:
+                resp = self.auth_client.send(self.api_url, 'POST', data=params)
 
-        return self.auth_client.get_response_data(resp, parse_json)
+            return self.auth_client.get_response_data(resp, parse_json)
+        except Exception as e:
+            raise CartoException(e)
 
 
 class BatchSQLClient(object):
@@ -76,9 +82,13 @@ class BatchSQLClient(object):
         :param json_body: The information that needs to be sent, by default is set to None
         :param http_header: The header used to make write requests to the API, by default is none
         :return: Response data, either as json or as a regular response.content object
+        :raise CartoException:
         """
-        data = self.client.send(url, http_method=http_method, headers=http_header, json=json_body)
-        data_json = self.client.get_response_data(data)
+        try:
+            data = self.client.send(url, http_method=http_method, headers=http_header, json=json_body)
+            data_json = self.client.get_response_data(data)
+        except Exception as e:
+            raise CartoException(e)
         return data_json
 
     def create(self, sql_query):
@@ -86,6 +96,7 @@ class BatchSQLClient(object):
         Creates a new batch SQL query
         :param sql_query: The query to be used
         :return: Response data, either as json or as a regular response.content object
+        :raise CartoException:
         """
         header = {'content-type': 'application/json'}
         data = self.send(self.api_url, http_method="POST", json_body={"query": sql_query}, http_header=header)
@@ -96,6 +107,7 @@ class BatchSQLClient(object):
         Reads the information for a specific Batch API request
         :param job_id: The id of the job to be read from
         :return: Response data, either as json or as a regular response.content object
+        :raise CartoException:
         """
         data = self.send(self.api_url + job_id, http_method="GET")
         return data
@@ -106,6 +118,7 @@ class BatchSQLClient(object):
         :param job_id: The id of the job to be updated
         :param sql_query: The new sql query for the job
         :return: Response data, either as json or as a regular response.content object
+        :raise CartoException:
         """
         header = {'content-type': 'application/json'}
         data = self.send(self.api_url + job_id, http_method="PUT", json_body={"query": sql_query}, http_header=header)
@@ -116,6 +129,7 @@ class BatchSQLClient(object):
         Cancels a job
         :param job_id: The id of the job to be cancelled
         :return: A status code depending on whether the cancel request was successful
+        :raise CartoException:
         """
         confirmation = self.send(self.api_url + job_id, http_method="DELETE")
         return confirmation['status']
