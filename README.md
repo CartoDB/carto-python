@@ -162,8 +162,10 @@ API Documentation
 
 API documentation is written with Sphinx. To build the API docs:
 
-- pip install sphinx
-- cd doc
-- make html
+```
+pip install sphinx
+cd doc
+make html
+```
 
 Docs are generated inside the `doc/build/hmtl` folder
