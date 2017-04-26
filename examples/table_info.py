@@ -1,16 +1,17 @@
+import argparse
 from carto.auth import APIKeyAuthClient
-from carto.exceptions import CartoException
 from carto.datasets import DatasetManager
+from carto.exceptions import CartoException
+from carto.sql import SQLClient
+import logging
+import os
+from prettytable import PrettyTable
 import warnings
 warnings.filterwarnings('ignore')
-import os
-from carto.sql import SQLClient
-from prettytable import PrettyTable
 
 # python table_info.py tornados_11
 
 # Logger (better than print)
-import logging
 logging.basicConfig(
     level=logging.INFO,
     format=' %(asctime)s - %(levelname)s - %(message)s',
@@ -19,7 +20,6 @@ logger = logging.getLogger()
 
 
 # set input arguments
-import argparse
 parser = argparse.ArgumentParser(
     description='Return columns and its types, indexes,' +
     ' functions and triggers of a specific table')

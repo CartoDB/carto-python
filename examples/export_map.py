@@ -1,15 +1,14 @@
+import argparse
 from carto.auth import APIKeyAuthClient
-import warnings
-warnings.filterwarnings('ignore')
-import os
 from carto.visualizations import VisualizationManager
 import logging
-import re
+import os
+import warnings
+warnings.filterwarnings('ignore')
 
-# python export.py "results_1ertour_2012_1 map"
+# python export_map.py "results_1ertour_2012_1 map"
 
 # Logger (better than print)
-import logging
 logging.basicConfig(
     level=logging.INFO,
     format=' %(asctime)s - %(levelname)s - %(message)s',
@@ -17,7 +16,6 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 # set input arguments
-import argparse
 parser = argparse.ArgumentParser(
     description='Export a visualization')
 
@@ -45,11 +43,6 @@ args = parser.parse_args()
 # Set authentification to CARTO
 auth_client = APIKeyAuthClient(
     args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
-
-# get username from base_url
-substring = re.search('https://(.+?).carto.com', args.CARTO_BASE_URL)
-if substring:
-    username = substring.group(1)
 
 visualization = VisualizationManager(auth_client).get(args.map_name)
 

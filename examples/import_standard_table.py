@@ -1,15 +1,15 @@
+import argparse
 from carto.auth import APIKeyAuthClient
 from carto.datasets import DatasetManager
+import logging
+import os
+import re
 import warnings
 warnings.filterwarnings('ignore')
-import os
-import time
-import re
 
 # python import_standard_table.py files/barris_barcelona_1_part_1.csv
 
 # Logger (better than print)
-import logging
 logging.basicConfig(
     level=logging.INFO,
     format=' %(asctime)s - %(levelname)s - %(message)s',
@@ -17,7 +17,6 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 # set input arguments
-import argparse
 parser = argparse.ArgumentParser(
     description='Create a table from a URL')
 

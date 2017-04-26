@@ -1,16 +1,15 @@
+import argparse
 from carto.auth import APIKeyAuthClient
+from carto.maps import NamedMapManager, NamedMap
+import json
+import logging
+import os
 import warnings
 warnings.filterwarnings('ignore')
-import os
-from carto.maps import NamedMapManager, NamedMap
-import logging
-import re
-import json
 
 # python instantiate_named_map.py "python_sdk_test_map" "files/instantiate_map.json" "example_token"
 
 # Logger (better than print)
-import logging
 logging.basicConfig(
     level=logging.INFO,
     format=' %(asctime)s - %(levelname)s - %(message)s',
@@ -18,7 +17,6 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 # set input arguments
-import argparse
 parser = argparse.ArgumentParser(
     description='Instantiates a named map')
 
@@ -52,11 +50,6 @@ args = parser.parse_args()
 # Set authentification to CARTO
 auth_client = APIKeyAuthClient(
     args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
-
-# get username from base_url
-substring = re.search('https://(.+?).carto.com', args.CARTO_BASE_URL)
-if substring:
-    username = substring.group(1)
 
 named_map_manager = NamedMapManager(auth_client)
 named_map = named_map_manager.get(args.named_map_id)

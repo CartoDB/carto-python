@@ -1,20 +1,20 @@
+import argparse
 from carto.auth import APIKeyAuthClient
+from carto.datasets import DatasetManager
 from carto.exceptions import CartoException
 from carto.file_import import FileImportJob
+from carto.sql import SQLClient
+import glob
+import logging
+import os
+import re
+import time
 import warnings
 warnings.filterwarnings('ignore')
-import os
-from carto.sql import SQLClient
-from carto.datasets import DatasetManager
-import time
-import logging
-import glob
-import re
 
 # python import_and_merge.py "files/*.csv"
 
 # Logger (better than print)
-import logging
 logging.basicConfig(
     level=logging.INFO,
     format=' %(asctime)s - %(levelname)s - %(message)s',
@@ -22,7 +22,6 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 # set input arguments
-import argparse
 parser = argparse.ArgumentParser(
     description='Import a folder with CSV files (same structure) and merge them into one dataset')
 
@@ -59,13 +58,10 @@ substring = re.search('https://(.+?).carto.com', args.CARTO_BASE_URL)
 if substring:
     username = substring.group(1)
 
-
 # SQL wrapper
-
 sql = SQLClient(APIKeyAuthClient(args.CARTO_BASE_URL, args.CARTO_API_KEY))
 
 # Dataset manager
-
 dataset_manager = DatasetManager(auth_client)
 
 # define path of the files
@@ -121,15 +117,12 @@ for i in table_name:
     index = index + 1
 
 # change name of base table
-
 myTable = dataset_manager.get(base_table)
 myTable.name = base_table + "_merged"
 myTable.save()
 time.sleep(2)
 
-
 # remove not merged datasets
-
 for i in table_name:
     try:
         myTable = dataset_manager.get(i)

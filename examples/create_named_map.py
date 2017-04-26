@@ -1,16 +1,15 @@
+import argparse
 from carto.auth import APIKeyAuthClient
+from carto.maps import NamedMapManager, NamedMap
+import json
+import logging
+import os
 import warnings
 warnings.filterwarnings('ignore')
-import os
-from carto.maps import NamedMapManager, NamedMap
-import logging
-import re
-import json
 
 # python create_named_map.py "files/named_map.json"
 
 # Logger (better than print)
-import logging
 logging.basicConfig(
     level=logging.INFO,
     format=' %(asctime)s - %(levelname)s - %(message)s',
@@ -18,7 +17,6 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 # set input arguments
-import argparse
 parser = argparse.ArgumentParser(
     description='Creates a named map')
 

@@ -1,14 +1,14 @@
+import argparse
 from carto.auth import APIKeyAuthClient
-from carto.exceptions import CartoException
 from carto.datasets import DatasetManager
-import warnings
-warnings.filterwarnings('ignore')
+from carto.exceptions import CartoException
+from carto.sql import SQLClient
 import os
 import re
-from carto.sql import SQLClient
+import warnings
+warnings.filterwarnings('ignore')
 
 # set input arguments
-import argparse
 parser = argparse.ArgumentParser(
     description='Return graph of tables ordered by size' +
     ' and indicating if they are cartodbfied or not')
@@ -31,14 +31,12 @@ parser.add_argument('--api_key', dest='CARTO_API_KEY',
 
 args = parser.parse_args()
 
-
 # Authenticate to CARTO account
 auth_client = APIKeyAuthClient(
     args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
 dataset_manager = DatasetManager(auth_client)
 
 # SQL wrapper
-
 sql = SQLClient(APIKeyAuthClient(args.CARTO_BASE_URL, args.CARTO_API_KEY))
 
 # get username from base_url
@@ -47,7 +45,6 @@ if substring:
     username = substring.group(1)
 
 # check all table name of account
-
 all_tables = []
 
 tables = sql.send(
@@ -63,7 +60,6 @@ for k, v in tables.items():
 
 
 # define array to store all the table sizes
-
 arr_size = []
 
 

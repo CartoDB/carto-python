@@ -1,15 +1,14 @@
+import argparse
 from carto.auth import APIKeyAuthClient
-import warnings
-warnings.filterwarnings('ignore')
-import os
 from carto.datasets import DatasetManager
 import logging
-import re
+import os
+import warnings
+warnings.filterwarnings('ignore')
 
 # python change_dataset_privacy.py tornados LINK
 
 # Logger (better than print)
-import logging
 logging.basicConfig(
     level=logging.INFO,
     format=' %(asctime)s - %(levelname)s - %(message)s',
@@ -17,7 +16,6 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 # set input arguments
-import argparse
 parser = argparse.ArgumentParser(
     description='Import a folder with CSV files (same structure) and merge them into one dataset')
 
@@ -48,11 +46,6 @@ args = parser.parse_args()
 # Set authentification to CARTO
 auth_client = APIKeyAuthClient(
     args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
-
-# get username from base_url
-substring = re.search('https://(.+?).carto.com', args.CARTO_BASE_URL)
-if substring:
-    username = substring.group(1)
 
 dataset_manager = DatasetManager(auth_client)
 dataset = dataset_manager.get(args.dataset_name)

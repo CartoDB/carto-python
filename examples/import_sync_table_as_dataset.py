@@ -1,17 +1,16 @@
+import argparse
 from carto.auth import APIKeyAuthClient
 from carto.exceptions import CartoException
-from carto.sync_tables import SyncTableJobManager
 from carto.datasets import DatasetManager
+import logging
+import os
+import re
 import warnings
 warnings.filterwarnings('ignore')
-import os
-import time
-import logging
-import re
 
 # python import_sync_table_as_dataset.py "http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/110m/cultural/ne_110m_admin_0_countries.zip" 900
+
 # Logger (better than print)
-import logging
 logging.basicConfig(
     level=logging.INFO,
     format=' %(asctime)s - %(levelname)s - %(message)s',
@@ -19,16 +18,17 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 # set input arguments
-import argparse
 parser = argparse.ArgumentParser(
     description='Create a sync table from a URL')
 
 parser.add_argument('url', type=str,
                     help='Set the URL of data to sync.' +
                     ' Add it in double quotes')
+
 parser.add_argument('sync_time', type=int,
                     help='Set the time to sync your' +
                     ' table in seconds (min: 900s)')
+
 parser.add_argument('--organization', type=str, dest='organization',
                     default=os.environ['CARTO_ORG'],
                     help='Set the name of the organization' +

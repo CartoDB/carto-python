@@ -1,16 +1,15 @@
+import argparse
 from carto.auth import APIKeyAuthClient
+from carto.maps import AnonymousMap
+import json
+import logging
+import os
 import warnings
 warnings.filterwarnings('ignore')
-import os
-from carto.maps import AnonymousMap
-import logging
-import re
-import json
 
 # python create_anonymous_map.py "files/anonymous_map.json"
 
 # Logger (better than print)
-import logging
 logging.basicConfig(
     level=logging.INFO,
     format=' %(asctime)s - %(levelname)s - %(message)s',
@@ -18,7 +17,6 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 # set input arguments
-import argparse
 parser = argparse.ArgumentParser(
     description='Creates an anonymous map')
 
@@ -48,8 +46,6 @@ auth_client = APIKeyAuthClient(
     args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
 
 anonymous = AnonymousMap(auth_client)
-
-
 with open(args.anonymous_map_json) as anonymous_map_json:
     template = json.load(anonymous_map_json)
 

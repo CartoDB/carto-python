@@ -1,13 +1,14 @@
+import argparse
 from carto.auth import APIKeyAuthClient
-from carto.exceptions import CartoException
 from carto.datasets import DatasetManager
+from carto.exceptions import CartoException
+from carto.sql import SQLClient
+import logging
+import os
 import warnings
 warnings.filterwarnings('ignore')
-import os
-from carto.sql import SQLClient
 
 # Logger (better than print)
-import logging
 logging.basicConfig(
     level=logging.INFO,
     format=' %(asctime)s - %(levelname)s - %(message)s',
@@ -15,7 +16,6 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 # set input arguments
-import argparse
 parser = argparse.ArgumentParser(
     description='Return the running queries of the account')
 
@@ -44,7 +44,6 @@ auth_client = APIKeyAuthClient(
 dataset_manager = DatasetManager(auth_client)
 
 # SQL wrapper
-
 sql = SQLClient(APIKeyAuthClient(args.CARTO_BASE_URL, args.CARTO_API_KEY))
 
 queries = "select pid, query from pg_stat_activity \

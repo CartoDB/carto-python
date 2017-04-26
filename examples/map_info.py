@@ -1,17 +1,18 @@
+import argparse
 from carto.auth import APIKeyAuthClient
 from carto.exceptions import CartoException
+from carto.sql import SQLClient
 from carto.users import UserManager
-import warnings
-warnings.filterwarnings('ignore')
+from carto.visualizations import VisualizationManager
+import logging
 import os
 import pprint
-printer = pprint.PrettyPrinter(indent=4)
-from carto.sql import SQLClient
-from carto.visualizations import VisualizationManager
 import urllib
+import warnings
+warnings.filterwarnings('ignore')
+printer = pprint.PrettyPrinter(indent=4)
 
 # Logger (better than print)
-import logging
 logging.basicConfig(
     level=logging.INFO,
     format=' %(asctime)s - %(levelname)s - %(message)s',
@@ -19,7 +20,6 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 # set input arguments
-import argparse
 parser = argparse.ArgumentParser(
     description='Return the names of all maps or' +
     ' display information from a specific map')
@@ -27,9 +27,11 @@ parser = argparse.ArgumentParser(
 parser.add_argument('--map', type=str, dest='map_name',
                     default=None,
                     help='Set the name of the map to explore and display its information on the console')
+
 parser.add_argument('--export', type=str, dest='export_map',
                     default=None,
                     help='Set the name of the map and export it')
+
 parser.add_argument('--organization', type=str, dest='organization',
                     default=os.environ['CARTO_ORG'],
                     help='Set the name of the organization' +

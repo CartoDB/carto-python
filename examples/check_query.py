@@ -1,28 +1,28 @@
+import argparse
 from carto.auth import APIKeyAuthClient
-from carto.exceptions import CartoException
 from carto.datasets import DatasetManager
+from carto.exceptions import CartoException
+from carto.sql import SQLClient
+import logging
+import os
 import warnings
 warnings.filterwarnings('ignore')
-import os
-from carto.sql import SQLClient
 
 # python check_query.py "select version()"
 
 # Logger (better than print)
-import logging
 logging.basicConfig(
     level=logging.INFO,
     format=' %(asctime)s - %(levelname)s - %(message)s',
     datefmt='%I:%M:%S %p')
 logger = logging.getLogger()
 
-
 # set input arguments
-import argparse
 parser = argparse.ArgumentParser(
     description='Check if query can be optimized')
 parser.add_argument('queryUser', type=str,
                     help='Set query to analyze')
+
 parser.add_argument('--organization', type=str, dest='organization',
                     default=os.environ['CARTO_ORG'],
                     help='Set the name of the organization' +
@@ -41,14 +41,12 @@ parser.add_argument('--api_key', dest='CARTO_API_KEY',
 
 args = parser.parse_args()
 
-
 # Authenticate to CARTO account
 auth_client = APIKeyAuthClient(
     args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
 dataset_manager = DatasetManager(auth_client)
 
 # SQL wrapper
-
 sql = SQLClient(APIKeyAuthClient(args.CARTO_BASE_URL, args.CARTO_API_KEY))
 
 query = sql.send('EXPLAIN ANALYZE ' + args.queryUser)
