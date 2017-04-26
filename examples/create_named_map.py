@@ -7,7 +7,7 @@ import logging
 import re
 import json
 
-# python create_named_map.py files/named_map.json
+# python create_named_map.py "files/named_map.json"
 
 # Logger (better than print)
 import logging
