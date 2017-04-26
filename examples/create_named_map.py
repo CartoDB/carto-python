@@ -47,11 +47,6 @@ args = parser.parse_args()
 auth_client = APIKeyAuthClient(
     args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
 
-# get username from base_url
-substring = re.search('https://(.+?).carto.com', args.CARTO_BASE_URL)
-if substring:
-    username = substring.group(1)
-
 named_map_manager = NamedMapManager(auth_client)
 n = NamedMap(named_map_manager.client)
 
