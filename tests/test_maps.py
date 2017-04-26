@@ -51,7 +51,7 @@ def test_named_map_methods(named_map_manager):
     assert named.view is None
 
     # Delete named map
-    assert named.delete() is requests.codes.no_content
+    assert named.delete().status_code is requests.codes.no_content
 
 
 def test_named_map_manager(named_map_manager):
@@ -59,7 +59,7 @@ def test_named_map_manager(named_map_manager):
     initial_maps = named_map_manager.all()
 
     # Create named map
-    named = named_map_manager.create(template=NAMED_MAP_DEFINITION)  
+    named = named_map_manager.create(template=NAMED_MAP_DEFINITION)
     assert named.template_id is not None
 
     # Get all named maps again
@@ -69,7 +69,7 @@ def test_named_map_manager(named_map_manager):
     assert len(initial_maps) + 1 == len(final_maps)
 
     # Delete named map simply to avoid polluting the user's account
-    assert named.delete() is requests.codes.no_content
+    assert named.delete().status_code is requests.codes.no_content
 
 
 def test_create_anonymous_map(no_auth_client_fixture):
