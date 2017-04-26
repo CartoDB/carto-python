@@ -24,7 +24,7 @@ logger = logging.getLogger()
 # set input arguments
 import argparse
 parser = argparse.ArgumentParser(
-    description='Create a sync table from a URL')
+    description='Import a folder with CSV files (same structure) and merge them into one dataset')
 
 parser.add_argument('folder_name', type=str,
                     help='Set the name of the folder where' +
