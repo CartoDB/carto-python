@@ -1,3 +1,15 @@
+"""
+Module for working with map visualizations
+
+.. module:: carto.visualizations
+   :platform: Unix, Windows
+   :synopsis: Module for working with map visualizations
+
+.. moduleauthor:: Daniel Carrion <daniel@carto.com>
+.. moduleauthor:: Alberto Romeu <daniel@carto.com>
+
+
+"""
 import time
 from gettext import gettext as _
 
@@ -61,6 +73,16 @@ class Visualization(Resource):
         name_field = "name"
 
     def export(self):
+        """
+        Make the actual request to the Import API (exporting is part of the Import API) to export a map visualization as a .carto file
+
+        :return: A URL pointing to the .carto file
+        :rtype: str
+
+        :raise: CartoException
+
+        .. note:: The export is asynchronous, but this method waits for the export to complete. See `MAX_NUMBER_OF_RETRIES` and `INTERVAL_BETWEEN_RETRIES_S`
+        """
         export_job = ExportJob(self.client, self.get_id())
         export_job.run()
 
@@ -93,12 +115,18 @@ class VisualizationManager(Manager):
 
     def send(self, url, http_method, **client_args):
         """
-        Send API request, taking into account that visualizations are only a subset of the resources available at the visualization endpoint
+        Sends API request, taking into account that visualizations are only a subset of the resources available at the visualization endpoint
+
         :param url: Endpoint URL
         :param http_method: The method used to make the request to the API
         :param client_args: Arguments to be sent to the auth client
+        :type url: str
+        :type http_method: str
+        :type client_args: kwargs
+
         :return:
-        :raise CartoException:
+
+        :raise: CartoException
         """
         try:
             if "params" not in client_args:

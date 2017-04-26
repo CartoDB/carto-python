@@ -1,3 +1,16 @@
+"""
+Module for working with named and anonymous maps
+
+.. module:: carto.maps
+   :platform: Unix, Windows
+   :synopsis: Module for working with named and anonymous maps
+
+.. moduleauthor:: Daniel Carrion <daniel@carto.com>
+.. moduleauthor:: Alberto Romeu <daniel@carto.com>
+
+
+"""
+
 import json
 
 from pyrestcli.resources import Manager, Resource
@@ -35,9 +48,15 @@ class NamedMap(Resource):
     def instantiate(self, params, auth=None):
         """
         Allows you to fetch the map tiles of a created map
+
         :param params: The json with the styling info for the named map
+        :param auth: The auth client
+        :type params: dict
+        :type auth: :class:`carto.auth.APIKeyAuthClient`
+
         :return:
-        :raise CartoException:
+
+        :raise: CartoException
         """
         try:
             if (auth is not None):
@@ -49,6 +68,10 @@ class NamedMap(Resource):
             raise CartoException(e)
 
     def update_from_dict(self, attribute_dict):
+        """
+        Method overriden from the base class
+
+        """
         if 'template' in attribute_dict:
             self.update_from_dict(attribute_dict['template'])
             setattr(self, self.Meta.id_field, attribute_dict['template']['name'])
@@ -68,6 +91,16 @@ class AnonymousMap(Resource):
         collection_endpoint = ANONYMOUS_API_ENDPOINT.format(api_version=API_VERSION)
 
     def instantiate(self, params):
+        """
+        Allows you to fetch the map tiles of a created map
+
+        :param params: The json with the styling info for the named map
+        :type params: dict
+
+        :return:
+
+        :raise: CartoException
+        """
         try:
             self.send(self.Meta.collection_endpoint, "POST", json=params)
         except Exception as e:
@@ -79,10 +112,24 @@ class AnonymousMap(Resource):
 
 
 class NamedMapManager(Manager):
+    """
+    Manager for the NamedMap class
+    """
     resource_class = NamedMap
     json_collection_attribute = "template_ids"
 
     def create(self, **kwargs):
+        """
+        Creates a named map
+
+        :param kwargs: Attributes for creating the named map. Specifically an attribute `template` must contain the JSON object defining the named map
+        :type kwargs: kwargs
+
+        :return: New named map object
+        :rtype: NamedMap
+
+        :raise: CartoException
+        """
         resource = self.resource_class(self.client)
         resource.update_from_dict(kwargs['template'])
         resource.save(force_create=True)

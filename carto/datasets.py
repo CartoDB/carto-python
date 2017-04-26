@@ -1,3 +1,16 @@
+"""
+Module for working with CARTO datasets
+
+.. module:: carto.datasets
+   :platform: Unix, Windows
+   :synopsis: Module for working with CARTO datasets
+
+.. moduleauthor:: Daniel Carrion <daniel@carto.com>
+.. moduleauthor:: Alberto Romeu <daniel@carto.com>
+
+
+"""
+
 import time
 import json
 from gettext import gettext as _
@@ -75,12 +88,18 @@ class DatasetManager(Manager):
 
     def send(self, url, http_method, **client_args):
         """
-        Send API request, taking into account that datasets are part of the visualization endpoint
+        Sends an API request, taking into account that datasets are part of the visualization endpoint.
+
         :param url: Endpoint URL
         :param http_method: The method used to make the request to the API
         :param client_args: Arguments to be sent to the auth client
-        :return:
-        :raise CartoException:
+        :type url: str
+        :type http_method: str
+        :type client_args: kwargs
+
+        :return: A request response object
+
+        :raise: CartoException
         """
         try:
             client_args = client_args or {}
@@ -96,11 +115,18 @@ class DatasetManager(Manager):
     def create(self, url, interval=None, **import_args):
         """
         Creating a table means uploading a file or setting up a sync table
+
         :param url: URL to the file (both remote URLs or local paths are supported)
         :param interval: If not None, CARTO will try to set up a sync table against the (remote) URL
         :param import_args: Arguments to be sent to the import job when run
+        :type url: str
+        :type interval: int
+        :type import_args: kwargs
+
         :return: New dataset object
-        :raise CartoException:
+        :rtype: Dataset
+
+        :raise: CartoException
         """
         url = url.lower()
 

@@ -1,3 +1,16 @@
+"""
+Module for authenticated access to CARTO's APIs
+
+.. module:: carto.auth
+   :platform: Unix, Windows
+   :synopsis: Module for authenticated access to CARTO's APIs
+
+.. moduleauthor:: Daniel Carrion <daniel@carto.com>
+.. moduleauthor:: Alberto Romeu <daniel@carto.com>
+
+
+"""
+
 import re
 import sys
 import warnings
@@ -11,15 +24,21 @@ else:
 
 class APIKeyAuthClient(BaseAuthClient):
     """
-    This class provides you with authenticated access to CARTO's APIs using your API key
+    This class provides you with authenticated access to CARTO's APIs using your API key.
+
     You can find your API key by clicking on the API key section of the user dropdown menu
     """
     def __init__(self, base_url, api_key, organization=None, session=None):
         """
+        Init method
+
         :param base_url: Base URL. API endpoint paths will always be relative to this URL
         :param api_key: API key
         :param organization: For enterprise users, organization user belongs to
         :param session: requests' session object
+        :type api_key: str
+        :type organization: str
+
         :return:
         """
         if not base_url.startswith("https"):
@@ -51,12 +70,19 @@ class APIKeyAuthClient(BaseAuthClient):
 
     def send(self, relative_path, http_method, **requests_args):
         """
-        Make a API-key-authorized request
+        Makes an API-key-authorized request
+
         :param relative_path: URL path relative to self.base_url
         :param http_method: HTTP method
         :param requests_args: kwargs to be sent to requests
+        :type relative_path: str
+        :type http_method: str
+        :type requests_args: kwargs
+
         :return:
-        :raise CartoException:
+            A request response object
+        :raise:
+            CartoException
         """
         try:
             http_method = http_method.lower()

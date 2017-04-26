@@ -1,3 +1,15 @@
+"""
+Extensions for pyrestcli Resource and Manager classes
+
+.. module:: carto.resources
+   :platform: Unix, Windows
+   :synopsis: Extensions for pyrestcli Resource and Manager classes
+
+.. moduleauthor:: Daniel Carrion <daniel@carto.com>
+.. moduleauthor:: Alberto Romeu <daniel@carto.com>
+
+
+"""
 from pyrestcli.resources import Resource, Manager as PyRestCliManager
 
 from .exceptions import CartoException
@@ -7,9 +19,14 @@ class AsyncResource(Resource):
     def run(self, **client_params):
         """
         Actually creates the async job on the CARTO server
-        :param import_params: To be send to the Import API, see CARTO's docs on Import API for an updated list of accepted params
+
+
+        :param client_params: To be send to the CARTO API. See CARTO's documentation depending on the subclass you are using
+        :type client_params: kwargs
+
+
         :return:
-        :raise CartoException:
+        :raise: CartoException
         """
         try:
             self.send(self.get_collection_endpoint(), http_method="POST", **client_params)
@@ -18,7 +35,9 @@ class AsyncResource(Resource):
 
     def refresh(self):
         """
-        Updates the information of the async job against the CARTO server
+        Updates the information of the async job against the CARTO server. After calling the :func:`refresh` method you should check the `state` attribute of your resource
+
+
         :return:
         """
         if self.get_resource_endpoint() is None:
@@ -30,11 +49,11 @@ class AsyncResource(Resource):
 class Manager(PyRestCliManager):
     """
     Manager class for resources
-    We need to pass the json_collection_attribute to the paginator
     """
     def __init__(self, auth_client):
         """
         :param auth_client: Client to make (non)authorized requests
+
         :return:
         """
         self.paginator = self.paginator_class(self.json_collection_attribute, auth_client.base_url)

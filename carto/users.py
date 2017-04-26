@@ -1,3 +1,15 @@
+"""
+Module for working with users
+
+.. module:: carto.users
+   :platform: Unix, Windows
+   :synopsis: Module for working with users
+
+.. moduleauthor:: Daniel Carrion <daniel@carto.com>
+.. moduleauthor:: Alberto Romeu <daniel@carto.com>
+
+
+"""
 from gettext import gettext as _
 try:
     from urllib.parse import urljoin
@@ -19,6 +31,7 @@ API_ENDPOINT = "api/{api_version}/organization/{organization}/users/"
 class User(Resource):
     """
     Represents an enterprise CARTO user, i.e. a user that belongs to an organization
+
     Currently, CARTO's user API only supports enterprise users
     """
     username = CharField()

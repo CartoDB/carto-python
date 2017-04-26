@@ -1,3 +1,16 @@
+"""
+Module for exporting visualizations
+
+.. module:: carto.export
+   :platform: Unix, Windows
+   :synopsis: Module for exporting visualizations
+
+.. moduleauthor:: Daniel Carrion <daniel@carto.com>
+.. moduleauthor:: Alberto Romeu <daniel@carto.com>
+
+
+"""
+
 from pyrestcli.fields import CharField, DateTimeField
 
 from .resources import AsyncResource
@@ -9,7 +22,8 @@ API_ENDPOINT = 'api/{api_version}/visualization_exports/'
 
 class ExportJob(AsyncResource):
     """
-    Equivalent to a carto export in CARTO.
+    Equivalent to a .carto export in CARTO.
+
     Allows a CARTO export to be created using a visualization in the user's CARTO account
     """
     id = CharField()
@@ -25,8 +39,12 @@ class ExportJob(AsyncResource):
 
     def __init__(self, client, visualization_id):
         """
+
         :param client: Client to make authorized requests
         :param visualization_id: The id of the visualization (or dataset!!!) that will be exported
+        :type client: :class:`carto.auth.APIKeyAuthClient`
+        :type visualization_id: str
+
         :return:
         """
         self.visualization_id = visualization_id
@@ -35,9 +53,14 @@ class ExportJob(AsyncResource):
 
     def run(self, **export_params):
         """
-        Make the actual request to the Import API (exporting is part of the Import API)
+        Make the actual request to the Import API (exporting is part of the Import API).
+
         :param export_params: Any additional parameters to be sent to the Import API
+        :type export_params: kwargs
+
         :return:
+
+        .. note:: The export is asynchronous, so you should take care of the progression, by calling the :func:`carto.resources.AsyncResource.refresh` method and check the export job :py:attr:`~state` attribute. See :func:`carto.visualizations.Visualization.export` method implementation for more details
         """
         export_params["visualization_id"] = self.visualization_id
 

@@ -3,8 +3,9 @@ carto-python
 
 Python SDK for Carto's APIs:
 
-* [SQL API](http://developers.cartodb.com/documentation/sql-api.html)
-* [Import API](http://docs.cartodb.com/cartodb-platform/import-api.html)
+* [SQL API](https://carto.com/docs/carto-engine/sql-api)
+* [Maps API](https://carto.com/docs/carto-engine/maps-api)
+* [Import API](https://carto.com/docs/carto-engine/import-api)
 
 carto-python is a full, backwards incompatible rewrite of the deprecated [cartodb-python](https://github.com/CartoDB/cartodb-python/) SDK. Since the
 initial rewrite, carto-python has been loaded with a lot of new features, not present in old cartodb-python.
@@ -28,7 +29,7 @@ If using, the development version, you might want to install Carto's dependencie
 Test Suite
 ==========
 
-cd into the repo folder, create and enable virtualenv, install pytest and run tests:
+Create a `secret.py` from `secret.py.example, fill the variables, cd into the repo folder, create and enable virtualenv, install pytest and run tests:
 
 ```
 cd carto-python
@@ -154,11 +155,15 @@ while im.state != "complete" and im.state != "failure":
     im.update()
 ```
 
-Please refer to the source code documentation to find out about the rest of the parameters accepted by constructors and methods.
+Please refer to the source code documentation and the examples folder to find out about the rest of the parameters accepted by constructors and methods.
 
-Running tests
-=============
+API Documentation
+=================
 
-Clone the repo, create a secret.py from secret.py.example, fill the variables and execute:
+API documentation is written with Sphinx. To build the API docs:
 
-    python setup.py test
+- pip install sphinx
+- cd doc
+- make html
+
+Docs are generated inside the `doc/build/hmtl` folder

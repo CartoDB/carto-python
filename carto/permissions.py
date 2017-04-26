@@ -1,3 +1,15 @@
+"""
+Entity classes for defining permissions
+
+.. module:: carto.permissions
+   :platform: Unix, Windows
+   :synopsis: Entity classes for defining permissions
+
+.. moduleauthor:: Daniel Carrion <daniel@carto.com>
+.. moduleauthor:: Alberto Romeu <daniel@carto.com>
+
+
+"""
 from pyrestcli.resources import Resource
 from pyrestcli.fields import CharField, DateTimeField
 
