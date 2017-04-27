@@ -52,13 +52,11 @@ class APIKeyAuthClient(BaseAuthClient):
             base_url += '/'
 
         url_info = urlparse(base_url)
-        # Cloud multiuser organization:
-        #   /u/<username>
         # On-Prem:
         #   /user/<username>
-        m = re.search('^/u(?:ser)?/([^/]+)/.*$', url_info.path)
+        m = re.search('^/user/([^/]+)/.*$', url_info.path)
         if m is None:
-            # Cloud personal account
+            # Cloud personal account (org and standalone)
             # <username>.carto.com
             netloc = url_info.netloc
             if netloc.startswith('www.'):
