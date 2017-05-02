@@ -1,9 +1,9 @@
 import pytest
-import requests
 
 from carto.exceptions import CartoException
 from carto.sql import SQLClient, BatchSQLClient
-from secret import EXISTING_POINT_DATASET, BATCH_SQL_SINGLE_QUERY, BATCH_SQL_MULTI_QUERY
+from secret import EXISTING_POINT_DATASET, BATCH_SQL_SINGLE_QUERY, \
+    BATCH_SQL_MULTI_QUERY
 
 import logging
 

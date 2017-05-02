@@ -4,14 +4,16 @@ import requests
 from pyrestcli.exceptions import NotFoundException
 
 from carto.maps import NamedMap, NamedMapManager, AnonymousMap
-from secret import NAMED_MAP_DEFINITION, NAMED_MAP_AUTH_TOKEN, NAMED_MAP_INSTANTIATION, ANONYMOUS_MAP_DEFINITION
+from secret import NAMED_MAP_DEFINITION, NAMED_MAP_AUTH_TOKEN, \
+    NAMED_MAP_INSTANTIATION, ANONYMOUS_MAP_DEFINITION
 
 
 @pytest.fixture(scope="module")
 def named_map_manager(api_key_auth_client_usr):
     """
     Returns a named map manager instance that can be reused in tests
-    :param api_key_auth_client: Fixture that provides a valid APIKeyAuthClient object
+    :param api_key_auth_client: Fixture that provides a valid APIKeyAuthClient
+                                object
     :return: NamedMap instance
     """
     return NamedMapManager(api_key_auth_client_usr)

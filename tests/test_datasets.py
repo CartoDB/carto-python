@@ -4,14 +4,15 @@ from pyrestcli.exceptions import NotFoundException
 from carto.datasets import DatasetManager
 from carto.permissions import PRIVATE, PUBLIC
 
-from secret import IMPORT_FILE, IMPORT_URL
+from secret import IMPORT_URL
 
 
 @pytest.fixture(scope="module")
 def dataset_manager(api_key_auth_client):
     """
     Returns a dataset manager that can be reused in tests
-    :param api_key_auth_client: Fixture that provides a valid APIKeyAuthClient object
+    :param api_key_auth_client: Fixture that provides a valid
+                                APIKeyAuthClient object
     :return: DataManager instance
     """
     return DatasetManager(api_key_auth_client)
@@ -21,7 +22,8 @@ def test_get_datasets(dataset_manager, user):
     """
     Get all the datasets from the API
     :param dataset_manager: Fixture that provides a user manager to work with
-    :param user: If valid, we'll check the number of returned datasets exactly against the expected value
+    :param user: If valid, we'll check the number of returned datasets exactly
+                    against the expected value
     """
     datasets = dataset_manager.all()
 
