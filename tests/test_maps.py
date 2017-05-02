@@ -52,6 +52,9 @@ def test_named_map_methods(named_map_manager):
     named.save()
     assert named.view is None
 
+    url = named.get_tile_url(0, 0, 0, layer_id="all")
+    assert url is not None
+
     # Delete named map
     assert named.delete().status_code is requests.codes.no_content
 
@@ -77,4 +80,8 @@ def test_named_map_manager(named_map_manager):
 def test_create_anonymous_map(no_auth_client_fixture):
     anonymous = AnonymousMap(no_auth_client_fixture)
     anonymous.instantiate(ANONYMOUS_MAP_DEFINITION)
+
+    url = anonymous.get_tile_url(0, 0, 0, layer_id="all")
+    assert url is not None
+
     assert anonymous.layergroupid is not None
