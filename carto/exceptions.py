@@ -11,6 +11,7 @@ Module for carto-python exceptions definitions
 
 """
 
+
 class CartoException(Exception):
     """
     Any Exception produced by carto-python should be wrapped around this class
