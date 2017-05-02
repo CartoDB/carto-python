@@ -1,9 +1,11 @@
 import argparse
-from carto.auth import APIKeyAuthClient
-from carto.datasets import DatasetManager
 import logging
 import os
 import warnings
+
+from carto.auth import APIKeyAuthClient
+from carto.datasets import DatasetManager
+
 warnings.filterwarnings('ignore')
 
 # python change_dataset_privacy.py tornados LINK
@@ -17,7 +19,8 @@ logger = logging.getLogger()
 
 # set input arguments
 parser = argparse.ArgumentParser(
-    description='Import a folder with CSV files (same structure) and merge them into one dataset')
+    description='Import a folder with CSV files (same structure) and merge \
+    them into one dataset')
 
 parser.add_argument('dataset_name', type=str,
                     help='The name of the dataset in CARTO')

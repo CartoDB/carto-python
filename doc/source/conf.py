@@ -151,6 +151,3 @@ texinfo_documents = [
      author, 'carto-python', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-
-
