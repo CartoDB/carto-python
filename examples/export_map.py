@@ -1,9 +1,11 @@
 import argparse
-from carto.auth import APIKeyAuthClient
-from carto.visualizations import VisualizationManager
 import logging
 import os
 import warnings
+
+from carto.auth import APIKeyAuthClient
+from carto.visualizations import VisualizationManager
+
 warnings.filterwarnings('ignore')
 
 # python export_map.py "results_1ertour_2012_1 map"

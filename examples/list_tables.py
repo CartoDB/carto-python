@@ -1,11 +1,12 @@
 import argparse
-from carto.auth import APIKeyAuthClient
-from carto.datasets import DatasetManager
-from carto.exceptions import CartoException
-from carto.sql import SQLClient
 import os
 import re
 import warnings
+
+from carto.auth import APIKeyAuthClient
+from carto.datasets import DatasetManager
+from carto.sql import SQLClient
+
 warnings.filterwarnings('ignore')
 
 # set input arguments
@@ -95,7 +96,7 @@ for i in all_tables:
 
     # check all columns name from table
     columns_table = "select column_name, data_type FROM information_schema.columns \
-        WHERE table_schema ='"+ username + "' \
+        WHERE table_schema ='" + username + "' \
         AND table_name ='" + i + "';"
 
     # apply and get results from SQL API request
@@ -114,7 +115,7 @@ for i in all_tables:
     # apply and get results from SQL API request
     indexes = sql.send("select indexname, indexdef from pg_indexes \
       where tablename = '" + i + "' \
-      AND schemaname = '" +username+ "';")
+      AND schemaname = '" + username + "';")
     for k, v in indexes.items():
         if k == 'rows':
             for itr in v:
@@ -159,41 +160,65 @@ print('Tables of the account ordered by size:\n')
 for z in sorted_by_norm:
 
     if z[2] >= 0 and z[2] <= 1:
-        print('{tableName:60} {cartodbfied}:\t {space:|<1} {size} {mb};').format(
-            tableName=z[0], space='', size=str(round(z[1], 2)), mb='MB',  cartodbfied=z[3])
+        print('{tableName:60} {cartodbfied}:\t {space:|<1} {size} {mb};'). \
+            format(
+                tableName=z[0], space='', size=str(round(z[1], 2)), mb='MB',
+                cartodbfied=z[3])
     elif z[2] > 1 and z[2] <= 5:
-        print('{tableName:60} {cartodbfied}:\t {space:|<5} {size} {mb};').format(
-            tableName=z[0], space='', size=str(round(z[1], 2)), mb='MB',  cartodbfied=z[3])
+        print('{tableName:60} {cartodbfied}:\t {space:|<5} {size} {mb};'). \
+            format(
+                tableName=z[0], space='', size=str(round(z[1], 2)), mb='MB',
+                cartodbfied=z[3])
     elif z[2] > 5 and z[2] <= 10:
-        print('{tableName:60} {cartodbfied}:\t {space:|<10} {size} {mb};').format(
-            tableName=z[0], space='', size=str(round(z[1], 2)), mb='MB',  cartodbfied=z[3])
+        print('{tableName:60} {cartodbfied}:\t {space:|<10} {size} {mb};'). \
+            format(
+                tableName=z[0], space='', size=str(round(z[1], 2)), mb='MB',
+                cartodbfied=z[3])
     elif z[2] > 10 and z[2] <= 20:
-        print('{tableName:60} {cartodbfied}:\t {space:|<20} {size} {mb};').format(
-            tableName=z[0], space='', size=str(round(z[1], 2)), mb='MB',  cartodbfied=z[3])
+        print('{tableName:60} {cartodbfied}:\t {space:|<20} {size} {mb};'). \
+            format(
+                tableName=z[0], space='', size=str(round(z[1], 2)), mb='MB',
+                cartodbfied=z[3])
     elif z[2] > 20 and z[2] <= 30:
-        print('{tableName:60} {cartodbfied}:\t {space:|<30} {size} {mb};').format(
-            tableName=z[0], space='', size=str(round(z[1], 2)), mb='MB',  cartodbfied=z[3])
+        print('{tableName:60} {cartodbfied}:\t {space:|<30} {size} {mb};'). \
+            format(
+                tableName=z[0], space='', size=str(round(z[1], 2)), mb='MB',
+                cartodbfied=z[3])
     elif z[2] > 30 and z[2] <= 40:
-        print('{tableName:60} {cartodbfied}:\t {space:|<40} {size} {mb};').format(
-            tableName=z[0], space='', size=str(round(z[1], 2)), mb='MB',  cartodbfied=z[3])
+        print('{tableName:60} {cartodbfied}:\t {space:|<40} {size} {mb};'). \
+            format(
+                tableName=z[0], space='', size=str(round(z[1], 2)), mb='MB',
+                cartodbfied=z[3])
     elif z[2] > 40 and z[2] <= 50:
-        print('{tableName:60} {cartodbfied}:\t {space:|<50} {size} {mb};').format(
-            tableName=z[0], space='', size=str(round(z[1], 2)), mb='MB',  cartodbfied=z[3])
+        print('{tableName:60} {cartodbfied}:\t {space:|<50} {size} {mb};'). \
+            format(
+                tableName=z[0], space='', size=str(round(z[1], 2)), mb='MB',
+                cartodbfied=z[3])
     elif z[2] > 50 and z[2] <= 60:
-        print('{tableName:60} {cartodbfied}:\t {space:|<60} {size} {mb};').format(
-            tableName=z[0], space='', size=str(round(z[1], 2)), mb='MB',  cartodbfied=z[3])
+        print('{tableName:60} {cartodbfied}:\t {space:|<60} {size} {mb};'). \
+            format(
+                tableName=z[0], space='', size=str(round(z[1], 2)), mb='MB',
+                cartodbfied=z[3])
     elif z[2] > 60 and z[2] <= 70:
-        print('{tableName:60} {cartodbfied}:\t {space:|<70} {size} {mb};').format(
-            tableName=z[0], space='', size=str(round(z[1], 2)), mb='MB',  cartodbfied=z[3])
+        print('{tableName:60} {cartodbfied}:\t {space:|<70} {size} {mb};'). \
+            format(
+                tableName=z[0], space='', size=str(round(z[1], 2)), mb='MB',
+                cartodbfied=z[3])
     elif z[2] > 70 and z[2] <= 80:
-        print('{tableName:60} {cartodbfied}:\t {space:|<80} {size} {mb};').format(
-            tableName=z[0], space='', size=str(round(z[1], 2)), mb='MB',  cartodbfied=z[3])
+        print('{tableName:60} {cartodbfied}:\t {space:|<80} {size} {mb};'). \
+            format(
+                tableName=z[0], space='', size=str(round(z[1], 2)), mb='MB',
+                cartodbfied=z[3])
     elif z[2] > 80 and z[2] <= 90:
-        print('{tableName:60} {cartodbfied}:\t {space:|<90} {size} {mb};').format(
-            tableName=z[0], space='', size=str(round(z[1], 2)), mb='MB',  cartodbfied=z[3])
+        print('{tableName:60} {cartodbfied}:\t {space:|<90} {size} {mb};'). \
+            format(
+                tableName=z[0], space='', size=str(round(z[1], 2)), mb='MB',
+                cartodbfied=z[3])
     elif z[2] > 90 and z[2] <= 100:
-        print('{tableName:60} {cartodbfied}:\t {space:|<100} {size} {mb};').format(
-            tableName=z[0], space='', size=str(round(z[1], 2)), mb='MB',  cartodbfied=z[3])
+        print('{tableName:60} {cartodbfied}:\t {space:|<100} {size} {mb};'). \
+            format(
+                tableName=z[0], space='', size=str(round(z[1], 2)), mb='MB',
+                cartodbfied=z[3])
 
 
 print('\nThere are: ' + str(sum) + ' datasets in this account')

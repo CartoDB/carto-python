@@ -1,14 +1,15 @@
 import argparse
-from carto.auth import APIKeyAuthClient
-from carto.exceptions import CartoException
-from carto.sync_tables import SyncTableJobManager
 import logging
 import os
 import time
 import warnings
+
+from carto.auth import APIKeyAuthClient
+from carto.sync_tables import SyncTableJobManager
+
 warnings.filterwarnings('ignore')
 
-# python import_sync_table.py "http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/110m/cultural/ne_110m_admin_0_countries.zip" 900
+# python import_sync_table.py "DATASET_URL" 900
 
 # Logger (better than print)
 logging.basicConfig(

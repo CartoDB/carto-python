@@ -1,12 +1,13 @@
 import argparse
-from carto.auth import APIKeyAuthClient
-from carto.exceptions import CartoException
-from carto.sql import SQLClient
-from carto.users import UserManager
 import logging
 import os
 from prettytable import PrettyTable
 import warnings
+
+from carto.auth import APIKeyAuthClient
+from carto.sql import SQLClient
+from carto.users import UserManager
+
 warnings.filterwarnings('ignore')
 
 # Logger (better than print)
@@ -65,17 +66,14 @@ try:
     for row in userInfo:
         table_user.add_row(row)
     print(table_user)
-    #print('{name}: {value}').format(name=i,value=str(user.__dict__[i]))
+    # print('{name}: {value}').format(name=i,value=str(user.__dict__[i]))
 except Exception as e:
     logger.warn('User has no admin of its organization')
 
-
 # SQL wrapper
-
 sql = SQLClient(APIKeyAuthClient(args.CARTO_BASE_URL, args.CARTO_API_KEY))
 
 # show quota of user
-
 results = []
 print('\nThe quotas of the user are:\n')
 quota = sql.send(
@@ -90,7 +88,6 @@ for k, v in quota.items():
                 itr['soft_limit'],
                 itr['monthly_quota']
             ])
-
 
 table = PrettyTable(
     ['Service', 'Provider', 'Soft limit', 'Used quota', 'Monthly quota'])

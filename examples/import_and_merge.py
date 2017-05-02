@@ -1,15 +1,15 @@
 import argparse
-from carto.auth import APIKeyAuthClient
-from carto.datasets import DatasetManager
-from carto.exceptions import CartoException
-from carto.file_import import FileImportJob
-from carto.sql import SQLClient
 import glob
 import logging
 import os
 import re
 import time
 import warnings
+
+from carto.auth import APIKeyAuthClient
+from carto.datasets import DatasetManager
+from carto.sql import SQLClient
+
 warnings.filterwarnings('ignore')
 
 # python import_and_merge.py "files/*.csv"
@@ -23,7 +23,8 @@ logger = logging.getLogger()
 
 # set input arguments
 parser = argparse.ArgumentParser(
-    description='Import a folder with CSV files (same structure) and merge them into one dataset')
+    description='Import a folder with CSV files (same structure) and merge \
+    them into one dataset')
 
 parser.add_argument('folder_name', type=str,
                     help='Set the name of the folder where' +
@@ -132,4 +133,8 @@ for i in table_name:
         continue
 
 logger.info('Tables merged')
-print('\nURL of dataset is: https://{org}.carto.com/u/{username}/dataset/{data}').format(org=args.organization,username=username ,data=(base_table + "_merged"))
+print('\nURL of dataset is: \
+      https://{org}.carto.com/u/{username}/dataset/{data}'). \
+      format(org=args.organization,
+             username=username,
+             data=(base_table + "_merged"))

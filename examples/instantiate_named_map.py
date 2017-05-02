@@ -1,13 +1,16 @@
 import argparse
-from carto.auth import APIKeyAuthClient
-from carto.maps import NamedMapManager, NamedMap
 import json
 import logging
 import os
 import warnings
+
+from carto.auth import APIKeyAuthClient
+from carto.maps import NamedMapManager
+
 warnings.filterwarnings('ignore')
 
-# python instantiate_named_map.py "python_sdk_test_map" "files/instantiate_map.json" "example_token"
+# python instantiate_named_map.py "python_sdk_test_map" \
+# "files/instantiate_map.json" "example_token"
 
 # Logger (better than print)
 logging.basicConfig(

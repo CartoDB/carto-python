@@ -1,14 +1,15 @@
 import argparse
-from carto.auth import APIKeyAuthClient
-from carto.exceptions import CartoException
-from carto.datasets import DatasetManager
 import logging
 import os
 import re
 import warnings
+
+from carto.auth import APIKeyAuthClient
+from carto.datasets import DatasetManager
+
 warnings.filterwarnings('ignore')
 
-# python import_sync_table_as_dataset.py "http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/110m/cultural/ne_110m_admin_0_countries.zip" 900
+# python import_sync_table_as_dataset.py "DATASET_URL" 900
 
 # Logger (better than print)
 logging.basicConfig(
@@ -60,4 +61,8 @@ if substring:
 
 # return the id of the sync
 logger.info('Name of table: ' + str(table.name))
-print('\nURL of dataset is: https://{org}.carto.com/u/{username}/dataset/{data}').format(org=args.organization,username=username ,data=str(table.name))
+print('\nURL of dataset is: \
+      https://{org}.carto.com/u/{username}/dataset/{data}'). \
+      format(org=args.organization,
+             username=username,
+             data=str(table.name))

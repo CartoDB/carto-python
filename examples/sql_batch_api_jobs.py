@@ -1,10 +1,11 @@
 import argparse
-from carto.auth import APIKeyAuthClient
-from carto.exceptions import CartoException
-from carto.sql import BatchSQLClient
 import logging
 import os
 import warnings
+
+from carto.auth import APIKeyAuthClient
+from carto.sql import BatchSQLClient
+
 warnings.filterwarnings('ignore')
 
 # Logger (better than print)
@@ -18,14 +19,14 @@ logger = logging.getLogger()
 parser = argparse.ArgumentParser(
     description='Create a Batch SQL API job')
 
-parser.add_argument('operation', type=str,default=None,
-                    choices=['create','read','update','cancel'],
+parser.add_argument('operation', type=str, default=None,
+                    choices=['create', 'read', 'update', 'cancel'],
                     help='Set the batch operation that you want to apply')
 
-parser.add_argument('--query', type=str,dest='query',
+parser.add_argument('--query', type=str, dest='query',
                     help='Set the query that you want to apply')
 
-parser.add_argument('--job_id', type=str,dest='job_id',
+parser.add_argument('--job_id', type=str, dest='job_id',
                     help='Set the id of the job to check')
 
 parser.add_argument('--organization', type=str, dest='organization',

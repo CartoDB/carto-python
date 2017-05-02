@@ -1,12 +1,13 @@
 import argparse
-from carto.auth import APIKeyAuthClient
-from carto.datasets import DatasetManager
-from carto.exceptions import CartoException
-from carto.sql import SQLClient
 import logging
 import os
 from prettytable import PrettyTable
 import warnings
+
+from carto.auth import APIKeyAuthClient
+from carto.datasets import DatasetManager
+from carto.sql import SQLClient
+
 warnings.filterwarnings('ignore')
 
 # python table_info.py tornados_11
@@ -115,7 +116,7 @@ for i in all_datasets:
         for k, v in indexes.items():
             if k == 'rows':
                 for itr in v:
-                    results_index.append([itr['indexname'],itr['indexdef']])
+                    results_index.append([itr['indexname'], itr['indexdef']])
         table_index = PrettyTable(
             ['Index name', 'Index definition'])
         table_index.align['Index name'] = 'l'
@@ -123,7 +124,6 @@ for i in all_datasets:
         for row_ind in results_index:
             table_index.add_row(row_ind)
         print(table_index)
-
 
         # get all functions of user account
         print('\nFunctions of the account: \n')
@@ -147,13 +147,16 @@ for i in all_datasets:
         # save oid of tables in an object
         oid = sql.send(
             "select pg_class.oid as _oid, pg_class.relname from \
-             pg_class, pg_roles, pg_namespace where pg_roles.oid = pg_class.relowner \
-             and pg_roles.rolname = current_user and pg_namespace.oid = pg_class.relnamespace \
+             pg_class, pg_roles, pg_namespace \
+             where pg_roles.oid = pg_class.relowner \
+             and pg_roles.rolname = current_user \
+             and pg_namespace.oid = pg_class.relnamespace \
              and pg_class.relkind = 'r'")
         for c, d in oid.items():
             if c == 'rows':
                 for itr in d:
-                    # if the name of the table matches with the name of the input table
+                    # if the name of the table matches with the name of the
+                    # input table
                     # save the oid of the table in the table_oid variable
                     if itr['relname'] == args.dataset_name:
                         table_oid = itr['_oid']

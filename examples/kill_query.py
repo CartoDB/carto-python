@@ -1,10 +1,11 @@
 import argparse
-from carto.auth import APIKeyAuthClient
-from carto.exceptions import CartoException
-from carto.sql import SQLClient
 import logging
 import os
 import warnings
+
+from carto.auth import APIKeyAuthClient
+from carto.sql import SQLClient
+
 warnings.filterwarnings('ignore')
 
 # Logger (better than print)

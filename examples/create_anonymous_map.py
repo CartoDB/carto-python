@@ -1,10 +1,12 @@
 import argparse
-from carto.auth import APIKeyAuthClient
-from carto.maps import AnonymousMap
 import json
 import logging
 import os
 import warnings
+
+from carto.auth import APIKeyAuthClient
+from carto.maps import AnonymousMap
+
 warnings.filterwarnings('ignore')
 
 # python create_anonymous_map.py "files/anonymous_map.json"

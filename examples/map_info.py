@@ -1,14 +1,13 @@
 import argparse
-from carto.auth import APIKeyAuthClient
-from carto.exceptions import CartoException
-from carto.sql import SQLClient
-from carto.users import UserManager
-from carto.visualizations import VisualizationManager
 import logging
 import os
 import pprint
 import urllib
 import warnings
+
+from carto.auth import APIKeyAuthClient
+from carto.visualizations import VisualizationManager
+
 warnings.filterwarnings('ignore')
 printer = pprint.PrettyPrinter(indent=4)
 
@@ -26,7 +25,8 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument('--map', type=str, dest='map_name',
                     default=None,
-                    help='Set the name of the map to explore and display its information on the console')
+                    help='Set the name of the map to explore and display its \
+                    information on the console')
 
 parser.add_argument('--export', type=str, dest='export_map',
                     default=None,
@@ -57,18 +57,18 @@ auth_client = APIKeyAuthClient(
 visualization_manager = VisualizationManager(auth_client)
 
 # Render map info or the name of the maps
-if args.map_name == None and args.export_map == None:
+if args.map_name is None and args.export_map is None:
     for a_map in visualization_manager.all():
         logging.info(a_map.name)
-elif args.map_name != None and args.export_map == None:
+elif args.map_name is not None and args.export_map is None:
     mapa = visualization_manager.get(args.map_name)
     printer.pprint(mapa.__dict__)
     printer.pprint(mapa.table.__dict__)
-elif args.map_name == None and args.export_map != None:
+elif args.map_name is None and args.export_map is not None:
     mapa_exp = visualization_manager.get(args.export_map)
     current_path = os.getcwd()
     logger.info('Map will be downloaded at {}'.format(current_path))
-    f = open(current_path+'/downloaded_file.carto','wb')
+    f = open(current_path+'/downloaded_file.carto', 'wb')
     f.write(urllib.urlopen(mapa_exp.export()).read())
     f.close()
     logger.info('Map downloaded')
@@ -79,7 +79,7 @@ else:
     mapa_exp = visualization_manager.get(args.export_map)
     current_path = os.getcwd()
     logger.info('Map will be downloaded at {}'.format(current_path))
-    f = open(current_path+'/downloaded_file.carto','wb')
+    f = open(current_path+'/downloaded_file.carto', 'wb')
     f.write(urllib.urlopen(mapa_exp.export()).read())
     f.close()
     logger.info('Map downloaded')

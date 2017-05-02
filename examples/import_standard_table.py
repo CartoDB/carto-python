@@ -1,10 +1,12 @@
 import argparse
-from carto.auth import APIKeyAuthClient
-from carto.datasets import DatasetManager
 import logging
 import os
 import re
 import warnings
+
+from carto.auth import APIKeyAuthClient
+from carto.datasets import DatasetManager
+
 warnings.filterwarnings('ignore')
 
 # python import_standard_table.py files/barris_barcelona_1_part_1.csv
@@ -55,4 +57,8 @@ if substring:
 dataset_manager = DatasetManager(auth_client)
 table = dataset_manager.create(args.url)
 logger.info('Name of table: ' + str(table.name))
-print('\nURL of dataset is: https://{org}.carto.com/u/{username}/dataset/{data}').format(org=args.organization,username=username ,data=str(table.name))
+print('\nURL of dataset is: \
+      https://{org}.carto.com/u/{username}/dataset/{data}'). \
+      format(org=args.organization,
+             username=username,
+             data=str(table.name))
