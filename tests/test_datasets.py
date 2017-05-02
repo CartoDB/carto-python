@@ -27,7 +27,8 @@ def test_get_datasets(dataset_manager, user):
     """
     datasets = dataset_manager.all()
 
-    # If are testing against an enterprise account and have a valid user, we can easily know how many datasets to expect
+    # If are testing against an enterprise account and have a valid user, we
+    # can easily know how many datasets to expect
     if user is not None:
         assert len(datasets) == user.table_count
     else:
@@ -36,7 +37,8 @@ def test_get_datasets(dataset_manager, user):
 
 def test_create_and_modify_and_delete_dataset_from_file(dataset_manager):
     """
-    Test creating a dataset from a local file, modifying it and then deleting it
+    Test creating a dataset from a local file, modifying it and then deleting
+    it
     :param dataset_manager: Dataset manager to work with
     """
     dataset = dataset_manager.create(IMPORT_URL, create_vis=True)
@@ -58,7 +60,8 @@ def test_create_and_modify_and_delete_dataset_from_file(dataset_manager):
 
 def test_create_and_modify_and_delete_dataset_from_url(dataset_manager):
     """
-    Test creating a dataset from a remote URL, modifying it and then deleting it
+    Test creating a dataset from a remote URL, modifying it and then deleting
+    it
     :param dataset_manager: Dataset manager to work with
     """
     dataset = dataset_manager.create(IMPORT_URL)
@@ -80,7 +83,8 @@ def test_create_and_modify_and_delete_dataset_from_url(dataset_manager):
 
 def test_create_and_modify_and_delete_dataset_as_sync_table(dataset_manager):
     """
-    Test creating a dataset as a result of the creation of a sync table, modifying it and then deleting it
+    Test creating a dataset as a result of the creation of a sync table,
+    modifying it and then deleting it
     :param dataset_manager: Dataset manager to work with
     """
     dataset = dataset_manager.create(IMPORT_URL, interval=3600)
