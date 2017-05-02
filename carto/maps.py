@@ -6,12 +6,10 @@ Module for working with named and anonymous maps
    :synopsis: Module for working with named and anonymous maps
 
 .. moduleauthor:: Daniel Carrion <daniel@carto.com>
-.. moduleauthor:: Alberto Romeu <daniel@carto.com>
+.. moduleauthor:: Alberto Romeu <alrocar@carto.com>
 
 
 """
-
-import json
 
 from pyrestcli.resources import Manager, Resource
 
@@ -27,7 +25,8 @@ class NamedMap(Resource):
     Equivalent to creating a named map in CARTO.
     """
     class Meta:
-        collection_endpoint = NAMED_API_ENDPOINT.format(api_version=API_VERSION)
+        collection_endpoint = NAMED_API_ENDPOINT.format(
+            api_version=API_VERSION)
         id_field = "template_id"
         name_field = "name"
 
@@ -42,7 +41,12 @@ class NamedMap(Resource):
         Initializes a NamedMap instance
         :param auth_client: Auth client
         """
-        self.fields = ("version", "name", "auth", "placeholders", "layergroup", "view")
+        self.fields = ("version",
+                       "name",
+                       "auth",
+                       "placeholders",
+                       "layergroup",
+                       "view")
         super(NamedMap, self).__init__(auth_client)
 
     def instantiate(self, params, auth=None):
@@ -60,10 +64,12 @@ class NamedMap(Resource):
         """
         try:
             if (auth is not None):
-                endpoint = self.Meta.collection_endpoint + self.template_id + "?auth_token=" + auth
+                endpoint = self.Meta.collection_endpoint
+                + self.template_id + "?auth_token=" + auth
                 self.send(endpoint, "POST", json=params)
             else:
-                self.send(self.Meta.collection_endpoint + self.template_id, "POST", json=params)
+                self.send(self.Meta.collection_endpoint
+                          + self.template_id, "POST", json=params)
         except Exception as e:
             raise CartoException(e)
 
@@ -74,12 +80,13 @@ class NamedMap(Resource):
         """
         if 'template' in attribute_dict:
             self.update_from_dict(attribute_dict['template'])
-            setattr(self, self.Meta.id_field, attribute_dict['template']['name'])
+            setattr(self,
+                    self.Meta.id_field, attribute_dict['template']['name'])
             return
         try:
             for k, v in attribute_dict.items():
                 setattr(self, k, v)
-        except Exception as e:
+        except Exception:
             setattr(self, self.Meta.id_field, attribute_dict)
 
 
@@ -88,7 +95,8 @@ class AnonymousMap(Resource):
     Equivalent to creating an anonymous map in CARTO.
     """
     class Meta:
-        collection_endpoint = ANONYMOUS_API_ENDPOINT.format(api_version=API_VERSION)
+        collection_endpoint = ANONYMOUS_API_ENDPOINT.format(
+            api_version=API_VERSION)
 
     def instantiate(self, params):
         """
@@ -122,7 +130,9 @@ class NamedMapManager(Manager):
         """
         Creates a named map
 
-        :param kwargs: Attributes for creating the named map. Specifically an attribute `template` must contain the JSON object defining the named map
+        :param kwargs: Attributes for creating the named map. Specifically
+                        an attribute `template` must contain the JSON object
+                        defining the named map
         :type kwargs: kwargs
 
         :return: New named map object

@@ -6,7 +6,7 @@ Module for defining response objects
    :synopsis: Module for defining response objects
 
 .. moduleauthor:: Daniel Carrion <daniel@carto.com>
-.. moduleauthor:: Alberto Romeu <daniel@carto.com>
+.. moduleauthor:: Alberto Romeu <alrocar@carto.com>
 
 
 """

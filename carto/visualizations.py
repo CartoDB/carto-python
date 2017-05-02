@@ -6,15 +6,17 @@ Module for working with map visualizations
    :synopsis: Module for working with map visualizations
 
 .. moduleauthor:: Daniel Carrion <daniel@carto.com>
-.. moduleauthor:: Alberto Romeu <daniel@carto.com>
+.. moduleauthor:: Alberto Romeu <alrocar@carto.com>
 
 
 """
+
 import time
 from gettext import gettext as _
 
 from pyrestcli.resources import Resource
-from pyrestcli.fields import IntegerField, CharField, DateTimeField, BooleanField
+from pyrestcli.fields import IntegerField, CharField, DateTimeField, \
+    BooleanField
 
 from .exceptions import CartoException
 from .fields import TableField
@@ -74,14 +76,17 @@ class Visualization(Resource):
 
     def export(self):
         """
-        Make the actual request to the Import API (exporting is part of the Import API) to export a map visualization as a .carto file
+        Make the actual request to the Import API (exporting is part of the
+        Import API) to export a map visualization as a .carto file
 
         :return: A URL pointing to the .carto file
         :rtype: str
 
         :raise: CartoException
 
-        .. note:: The export is asynchronous, but this method waits for the export to complete. See `MAX_NUMBER_OF_RETRIES` and `INTERVAL_BETWEEN_RETRIES_S`
+        .. note:: The export is asynchronous, but this method waits for the
+        export to complete. See `MAX_NUMBER_OF_RETRIES` and
+        `INTERVAL_BETWEEN_RETRIES_S`
         """
         export_job = ExportJob(self.client, self.get_id())
         export_job.run()
@@ -91,7 +96,9 @@ class Visualization(Resource):
         count = 0
         while export_job.state in ("exporting", "enqueued", "pending"):
             if count >= MAX_NUMBER_OF_RETRIES:
-                raise CartoException(_("Maximum number of retries exceeded when polling the import API for visualization export"))
+                raise CartoException(_("Maximum number of retries exceeded \
+                                       when polling the import API for \
+                                       visualization export"))
             time.sleep(INTERVAL_BETWEEN_RETRIES_S)
             export_job.refresh()
             count += 1
@@ -100,7 +107,9 @@ class Visualization(Resource):
             raise CartoException(_("Visualization export failed"))
 
         if (export_job.state != "complete" and export_job.state != "created"):
-            raise CartoException(_("Unexpected problem on visualization export (state: {state})").format(state=export_job.state))
+            raise CartoException(_("Unexpected problem on visualization export \
+                                   (state: {state})").
+                                 format(state=export_job.state))
 
         return export_job.url
 
@@ -115,7 +124,8 @@ class VisualizationManager(Manager):
 
     def send(self, url, http_method, **client_args):
         """
-        Sends API request, taking into account that visualizations are only a subset of the resources available at the visualization endpoint
+        Sends API request, taking into account that visualizations are only a
+        subset of the resources available at the visualization endpoint
 
         :param url: Endpoint URL
         :param http_method: The method used to make the request to the API
@@ -131,15 +141,19 @@ class VisualizationManager(Manager):
         try:
             if "params" not in client_args:
                 client_args["params"] = {}
-            client_args["params"].update({"type": "derived", "exclude_shared": "true"})
+            client_args["params"].update({"type": "derived",
+                                          "exclude_shared": "true"})
 
-            return super(VisualizationManager, self).send(url, http_method, **client_args)
+            return super(VisualizationManager, self).send(url,
+                                                          http_method,
+                                                          **client_args)
         except Exception as e:
             raise CartoException(e)
 
     def create(self, **kwargs):
         """
-        Creating visualizations is better done by using the Maps API (named maps) or directly from your front end app if dealing with
+        Creating visualizations is better done by using the Maps API
+        (named maps) or directly from your front end app if dealing with
         public datasets
         """
         pass

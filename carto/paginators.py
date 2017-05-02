@@ -6,10 +6,11 @@ Used internally to retrieve results paginated
    :synopsis: Used internally to retrieve results paginated
 
 .. moduleauthor:: Daniel Carrion <daniel@carto.com>
-.. moduleauthor:: Alberto Romeu <daniel@carto.com>
+.. moduleauthor:: Alberto Romeu <alrocar@carto.com>
 
 
 """
+
 from pyrestcli.paginators import Paginator
 
 

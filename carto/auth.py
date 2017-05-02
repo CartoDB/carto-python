@@ -6,7 +6,7 @@ Module for authenticated access to CARTO's APIs
    :synopsis: Module for authenticated access to CARTO's APIs
 
 .. moduleauthor:: Daniel Carrion <daniel@carto.com>
-.. moduleauthor:: Alberto Romeu <daniel@carto.com>
+.. moduleauthor:: Alberto Romeu <alrocar@carto.com>
 
 
 """
@@ -14,25 +14,31 @@ Module for authenticated access to CARTO's APIs
 import re
 import sys
 import warnings
+
 from pyrestcli.auth import BaseAuthClient
+
 from .exceptions import CartoException
 
-if sys.version_info >= (3,0):
+if sys.version_info >= (3, 0):
     from urllib.parse import urlparse
 else:
     from urlparse import urlparse
 
+
 class APIKeyAuthClient(BaseAuthClient):
     """
-    This class provides you with authenticated access to CARTO's APIs using your API key.
+    This class provides you with authenticated access to CARTO's APIs using
+    your API key.
 
-    You can find your API key by clicking on the API key section of the user dropdown menu
+    You can find your API key by clicking on the API key section of the user
+    dropdown menu
     """
     def __init__(self, base_url, api_key, organization=None, session=None):
         """
         Init method
 
-        :param base_url: Base URL. API endpoint paths will always be relative to this URL
+        :param base_url: Base URL. API endpoint paths will always be relative
+        to this URL
         :param api_key: API key
         :param organization: For enterprise users, organization user belongs to
         :param session: requests' session object
@@ -42,7 +48,8 @@ class APIKeyAuthClient(BaseAuthClient):
         :return:
         """
         if not base_url.startswith("https"):
-            warnings.warn("You are using unencrypted API key authentication!!!")
+            warnings.warn("You are using unencrypted API key \
+                          authentication!!!")
 
         self.organization = organization
         self.api_key = api_key
@@ -86,13 +93,16 @@ class APIKeyAuthClient(BaseAuthClient):
         """
         try:
             http_method = http_method.lower()
-            if (http_method == "post" or http_method == "put") and "json" in requests_args:
+            if (http_method == "post" or http_method == "put") \
+                    and "json" in requests_args:
                 requests_args["json"].update({"api_key": self.api_key})
             else:
                 if "params" not in requests_args:
                     requests_args["params"] = {}
                 requests_args["params"].update({"api_key": self.api_key})
 
-            return super(APIKeyAuthClient, self).send(relative_path, http_method, **requests_args)
+            return super(APIKeyAuthClient, self).send(relative_path,
+                                                      http_method,
+                                                      **requests_args)
         except Exception as e:
             raise CartoException(e)

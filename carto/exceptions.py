@@ -6,7 +6,7 @@ Module for carto-python exceptions definitions
    :synopsis: Module for carto-python exceptions definitions
 
 .. moduleauthor:: Daniel Carrion <daniel@carto.com>
-.. moduleauthor:: Alberto Romeu <daniel@carto.com>
+.. moduleauthor:: Alberto Romeu <alrocar@carto.com>
 
 
 """

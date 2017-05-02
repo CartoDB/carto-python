@@ -6,10 +6,11 @@ Entity classes for defining permissions
    :synopsis: Entity classes for defining permissions
 
 .. moduleauthor:: Daniel Carrion <daniel@carto.com>
-.. moduleauthor:: Alberto Romeu <daniel@carto.com>
+.. moduleauthor:: Alberto Romeu <alrocar@carto.com>
 
 
 """
+
 from pyrestcli.resources import Resource
 from pyrestcli.fields import CharField, DateTimeField
 
@@ -23,7 +24,8 @@ LINK = "LINK"
 
 class Entity(Resource):
     """
-    Represents an entity in CARTO. This is an internal data type, with no specific API endpoints
+    Represents an entity in CARTO. This is an internal data type, with no
+    specific API endpoints
     """
     id = CharField()
     type = CharField()
@@ -31,7 +33,8 @@ class Entity(Resource):
 
 class Permission(Resource):
     """
-    Represents a permission in CARTO. This is an internal data type, with no specific API endpoints
+    Represents a permission in CARTO. This is an internal data type, with no
+    specific API endpoints
     """
     acl = None
     created_at = DateTimeField()

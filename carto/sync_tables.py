@@ -6,16 +6,18 @@ Module for the IMPORT API with sync tables
    :synopsis: Module for the IMPORT API with sync tables
 
 .. moduleauthor:: Daniel Carrion <daniel@carto.com>
-.. moduleauthor:: Alberto Romeu <daniel@carto.com>
+.. moduleauthor:: Alberto Romeu <alrocar@carto.com>
 
 
 """
+
 try:
     from urllib.parse import urljoin
 except ImportError:
     from urlparse import urljoin
 
-from pyrestcli.fields import IntegerField, CharField, BooleanField, DateTimeField
+from pyrestcli.fields import IntegerField, CharField, BooleanField, \
+    DateTimeField
 
 from .exceptions import CartoException
 from .resources import AsyncResource, Manager
@@ -66,7 +68,8 @@ class SyncTableJob(AsyncResource):
         """
         :param url: Remote URL for the file
         :param interval: Number of seconds between update intervals (>=900)
-        :param client: Client to make authorized requests (currently only APIKeyAuthClient is supported)
+        :param client: Client to make authorized requests (currently only
+                        APIKeyAuthClient is supported)
         :type url: str
         :type interval: int
         :type client: :class:`carto.auth.APIKeyAuthClient`
@@ -82,12 +85,19 @@ class SyncTableJob(AsyncResource):
         """
         Actually creates the job import on the CARTO server
 
-        :param import_params: To be send to the Import API, see CARTO's docs on Import API for an updated list of accepted params
+        :param import_params: To be send to the Import API, see CARTO's docs
+                                on Import API for an updated list of accepted
+                                params
         :type import_params: kwargs
 
         :return:
 
-        .. note:: The sync table job is asynchronous, so you should take care of the progression, by calling the :func:`carto.resources.AsyncResource.refresh` method and check the import job :py:attr:`~state` attribute. See :func:`carto.datasets.DatasetManager.create` for a unified method to import files into CARTO
+        .. note:: The sync table job is asynchronous, so you should take care
+        of the progression, by calling the
+        :func:`carto.resources.AsyncResource.refresh` method and check the
+        import job :py:attr:`~state` attribute.
+        See :func:`carto.datasets.DatasetManager.create` for a unified method
+        to import files into CARTO
         """
         import_params["url"] = self.url
         import_params["interval"] = self.interval
@@ -130,7 +140,8 @@ class SyncTableJobManager(Manager):
         """
         Create a sync table on the server
 
-        :param url: URL can be a pointer to a remote location or a path to a local file
+        :param url: URL can be a pointer to a remote location or a path to a
+                    local file
         :param interval: Sync interval in seconds
         :param kwargs: Attributes (field names and values) of the new resource
         :type url: str

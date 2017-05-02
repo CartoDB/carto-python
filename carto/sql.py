@@ -6,10 +6,11 @@ Module for the SQL API
    :synopsis: Module for the SQL API
 
 .. moduleauthor:: Daniel Carrion <daniel@carto.com>
-.. moduleauthor:: Alberto Romeu <daniel@carto.com>
+.. moduleauthor:: Alberto Romeu <alrocar@carto.com>
 
 
 """
+
 from .exceptions import CartoException
 
 SQL_API_URL = 'api/{api_version}/sql'
@@ -24,8 +25,10 @@ class SQLClient(object):
     """
     def __init__(self, auth_client, api_version='v2'):
         """
-        :param auth_client: Auth client to make authorized requests, such as APIKeyAuthClient
-        :param api_version: Current version is 'v2'. 'v1' can be used to avoid caching, but it's not guaranteed to work
+        :param auth_client: Auth client to make authorized requests, such as
+                            APIKeyAuthClient
+        :param api_version: Current version is 'v2'. 'v1' can be used to avoid
+                            caching, but it's not guaranteed to work
         :type auth_client: :class:`carto.auth.APIKeyAuthClient`
         :type api_version: str
 
@@ -34,9 +37,11 @@ class SQLClient(object):
         self.auth_client = auth_client
         self.api_url = SQL_API_URL.format(api_version=api_version)
 
-        self.api_key = self.auth_client.api_key if hasattr(self.auth_client, "api_key") else None
+        self.api_key = self.auth_client.api_key \
+            if hasattr(self.auth_client, "api_key") else None
         self.base_url = self.auth_client.base_url
-        self.username = self.auth_client.username if hasattr(self.auth_client, "username") else None
+        self.username = self.auth_client.username \
+            if hasattr(self.auth_client, "username") else None
 
     def send(self, sql, parse_json=True, do_post=True, format=None):
         """
@@ -45,13 +50,15 @@ class SQLClient(object):
         :param sql: The SQL
         :param parse_json: Set it to False if you want raw reponse
         :param do_post: Set it to True to force post request
-        :param format: Any of the data export formats allowed by CARTO's SQL API
+        :param format: Any of the data export formats allowed by CARTO's
+                        SQL API
         :type sql: str
         :type parse_json: boolean
         :type do_post: boolean
         :type format: str
 
-        :return: response data, either as json or as a regular response.content object
+        :return: response data, either as json or as a regular
+                    response.content object
         :rtype: object
 
         :raise: CartoException
@@ -64,7 +71,9 @@ class SQLClient(object):
                     parse_json = False
 
             if len(sql) < MAX_GET_QUERY_LEN and do_post is False:
-                resp = self.auth_client.send(self.api_url, 'GET', params=params)
+                resp = self.auth_client.send(self.api_url,
+                                             'GET',
+                                             params=params)
             else:
                 resp = self.auth_client.send(self.api_url, 'POST', data=params)
 
@@ -79,8 +88,10 @@ class BatchSQLClient(object):
     """
     def __init__(self, client, api_version='v2'):
         """
-        :param client: Auth client to make authorized requests, such as APIKeyAuthClient
-        :param api_version: Current version is 'v2'. 'v1' can be used to avoid caching, but it's not guaranteed to work
+        :param client: Auth client to make authorized requests, such as
+                        APIKeyAuthClient
+        :param api_version: Current version is 'v2'. 'v1' can be used to avoid
+                            caching, but it's not guaranteed to work
         :type auth_client: :class:`carto.auth.APIKeyAuthClient`
         :type api_version: str
 
@@ -88,7 +99,8 @@ class BatchSQLClient(object):
         """
         self.client = client
         self.api_url = SQL_BATCH_API_URL.format(api_version=api_version)
-        self.api_key = self.client.api_key if hasattr(self.client, "api_key") else None
+        self.api_key = self.client.api_key \
+            if hasattr(self.client, "api_key") else None
 
     def update_from_dict(self, data_dict):
         """
@@ -108,20 +120,26 @@ class BatchSQLClient(object):
 
         :param url: Endpoint url
         :param http_method: The method used to make the request to the API
-        :param json_body: The information that needs to be sent, by default is set to None
-        :param http_header: The header used to make write requests to the API, by default is none
+        :param json_body: The information that needs to be sent, by default
+                            is set to None
+        :param http_header: The header used to make write requests to the API,
+                            by default is none
         :type url: str
         :type http_method: str
         :type json_body: dict
         :type http_header: str
 
-        :return: Response data, either as json or as a regular response.content object
+        :return: Response data, either as json or as a regular response.content
+                object
         :rtype: object
 
         :raise: CartoException
         """
         try:
-            data = self.client.send(url, http_method=http_method, headers=http_header, json=json_body)
+            data = self.client.send(url,
+                                    http_method=http_method,
+                                    headers=http_header,
+                                    json=json_body)
             data_json = self.client.get_response_data(data)
         except Exception as e:
             raise CartoException(e)
@@ -131,18 +149,24 @@ class BatchSQLClient(object):
         """
         Creates a new batch SQL query.
 
-        Batch SQL jobs are asynchronous, once created you should call :func:`carto.sql.BatchSQLClient.read` method given the `job_id` to retrieve the state of the batch query
+        Batch SQL jobs are asynchronous, once created you should call
+        :func:`carto.sql.BatchSQLClient.read` method given the `job_id`
+        to retrieve the state of the batch query
 
         :param sql_query: The SQL query to be used
         :type sql_query: str or list of str
 
-        :return: Response data, either as json or as a regular response.content object
+        :return: Response data, either as json or as a regular response.content
+                    object
         :rtype: object
 
         :raise: CartoException
         """
         header = {'content-type': 'application/json'}
-        data = self.send(self.api_url, http_method="POST", json_body={"query": sql_query}, http_header=header)
+        data = self.send(self.api_url,
+                         http_method="POST",
+                         json_body={"query": sql_query},
+                         http_header=header)
         return data
 
     def read(self, job_id):
@@ -152,7 +176,8 @@ class BatchSQLClient(object):
         :param job_id: The id of the job to be read from
         :type job_id: str
 
-        :return: Response data, either as json or as a regular response.content object
+        :return: Response data, either as json or as a regular response.content
+                    object
         :rtype: object
 
         :raise: CartoException
@@ -169,13 +194,17 @@ class BatchSQLClient(object):
         :type job_id: str
         :type sql_query: str
 
-        :return: Response data, either as json or as a regular response.content object
+        :return: Response data, either as json or as a regular response.content
+                    object
         :rtype: object
 
         :raise: CartoException
         """
         header = {'content-type': 'application/json'}
-        data = self.send(self.api_url + job_id, http_method="PUT", json_body={"query": sql_query}, http_header=header)
+        data = self.send(self.api_url + job_id,
+                         http_method="PUT",
+                         json_body={"query": sql_query},
+                         http_header=header)
         return data
 
     def cancel(self, job_id):
@@ -185,7 +214,8 @@ class BatchSQLClient(object):
         :param job_id: The id of the job to be cancelled
         :type job_id: str
 
-        :return: A status code depending on whether the cancel request was successful
+        :return: A status code depending on whether the cancel request was
+                    successful
         :rtype: str
 
         :raise CartoException:

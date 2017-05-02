@@ -6,10 +6,11 @@ Module for working with tables
    :synopsis: Module for working with tables
 
 .. moduleauthor:: Daniel Carrion <daniel@carto.com>
-.. moduleauthor:: Alberto Romeu <daniel@carto.com>
+.. moduleauthor:: Alberto Romeu <alrocar@carto.com>
 
 
 """
+
 from pyrestcli.resources import Resource
 from pyrestcli.fields import IntegerField, CharField, DateTimeField
 
@@ -24,9 +25,11 @@ API_ENDPOINT = "api/{api_version}/tables/"
 
 class Table(Resource):
     """
-    Represents a table in CARTO. This is an internal data type. Both Table and TableManager are not meant to be used outside the SDK
+    Represents a table in CARTO. This is an internal data type. Both Table and
+    TableManager are not meant to be used outside the SDK
 
-    If you are looking to work with datasets / tables from outside the SDK, please look into the datasets.py file
+    If you are looking to work with datasets / tables from outside the SDK,
+    please look into the datasets.py file
     """
     id = CharField()
     name = CharField()

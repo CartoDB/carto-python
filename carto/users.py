@@ -6,10 +6,11 @@ Module for working with users
    :synopsis: Module for working with users
 
 .. moduleauthor:: Daniel Carrion <daniel@carto.com>
-.. moduleauthor:: Alberto Romeu <daniel@carto.com>
+.. moduleauthor:: Alberto Romeu <alrocar@carto.com>
 
 
 """
+
 from gettext import gettext as _
 try:
     from urllib.parse import urljoin
@@ -30,7 +31,8 @@ API_ENDPOINT = "api/{api_version}/organization/{organization}/users/"
 
 class User(Resource):
     """
-    Represents an enterprise CARTO user, i.e. a user that belongs to an organization
+    Represents an enterprise CARTO user, i.e. a user that belongs to an
+    organization
 
     Currently, CARTO's user API only supports enterprise users
     """
@@ -52,24 +54,28 @@ class User(Resource):
 
     def __init__(self, auth_client):
         """
-        Sets the collection endpoint dynamically, based on provided organization (see api/auth.py)
+        Sets the collection endpoint dynamically, based on provided
+        organization (see api/auth.py)
         :param auth_client: Auth client
         """
         if auth_client.organization is None:
-            raise CartoException(_("User management requires an organization-enabled APIKeyAuthClient"))
+            raise CartoException(_("User management requires an \
+                                   organization-enabled APIKeyAuthClient"))
 
         super(User, self).__init__(auth_client)
 
     def get_collection_endpoint(self):
         """
         """
-        return API_ENDPOINT.format(api_version=API_VERSION, organization=self.client.organization)
+        return API_ENDPOINT.format(api_version=API_VERSION,
+                                   organization=self.client.organization)
 
     def get_resource_endpoint(self):
         """
         """
         resource_id = getattr(self, self.Meta.id_field, None)
-        return urljoin(self.get_collection_endpoint(), str(resource_id)) if resource_id is not None else None
+        return urljoin(self.get_collection_endpoint(), str(resource_id)) \
+            if resource_id is not None else None
 
 
 class UserManager(Manager):
@@ -81,16 +87,20 @@ class UserManager(Manager):
 
     def filter(self, **search_args):
         """
-        Should get all the current users from CARTO, but this is currently not supported by the API
+        Should get all the current users from CARTO, but this is currently not
+        supported by the API
         """
-        raise CartoException(_("Retrieving user list is not currently supported by the API"))
+        raise CartoException(_("Retrieving user list is not currently \
+                               supported by the API"))
 
     def get_collection_endpoint(self):
         """
         """
-        return API_ENDPOINT.format(api_version=API_VERSION, organization=self.client.organization)
+        return API_ENDPOINT.format(api_version=API_VERSION,
+                                   organization=self.client.organization)
 
     def get_resource_endpoint(self, resource_id):
         """
         """
-        return urljoin(self.get_collection_endpoint(), str(resource_id)) if resource_id is not None else None
+        return urljoin(self.get_collection_endpoint(), str(resource_id)) \
+            if resource_id is not None else None

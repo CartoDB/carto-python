@@ -6,7 +6,7 @@ Extensions for pyrestcli Resource and Manager classes
    :synopsis: Extensions for pyrestcli Resource and Manager classes
 
 .. moduleauthor:: Daniel Carrion <daniel@carto.com>
-.. moduleauthor:: Alberto Romeu <daniel@carto.com>
+.. moduleauthor:: Alberto Romeu <alrocar@carto.com>
 
 
 """
@@ -21,7 +21,9 @@ class AsyncResource(Resource):
         Actually creates the async job on the CARTO server
 
 
-        :param client_params: To be send to the CARTO API. See CARTO's documentation depending on the subclass you are using
+        :param client_params: To be send to the CARTO API. See CARTO's
+                                documentation depending on the subclass
+                                you are using
         :type client_params: kwargs
 
 
@@ -29,19 +31,23 @@ class AsyncResource(Resource):
         :raise: CartoException
         """
         try:
-            self.send(self.get_collection_endpoint(), http_method="POST", **client_params)
+            self.send(self.get_collection_endpoint(),
+                      http_method="POST",
+                      **client_params)
         except Exception as e:
             raise CartoException(e)
 
     def refresh(self):
         """
-        Updates the information of the async job against the CARTO server. After calling the :func:`refresh` method you should check the `state` attribute of your resource
-
+        Updates the information of the async job against the CARTO server.
+        After calling the :func:`refresh` method you should check the `state`
+        attribute of your resource
 
         :return:
         """
         if self.get_resource_endpoint() is None:
-            raise CartoException("Async job needs to be run or retrieved first!")
+            raise CartoException("Async job needs to be run or retrieved \
+                                 first!")
 
         super(AsyncResource, self).refresh()
 
@@ -56,5 +62,6 @@ class Manager(PyRestCliManager):
 
         :return:
         """
-        self.paginator = self.paginator_class(self.json_collection_attribute, auth_client.base_url)
+        self.paginator = self.paginator_class(self.json_collection_attribute,
+                                              auth_client.base_url)
         super(PyRestCliManager, self).__init__(auth_client)
