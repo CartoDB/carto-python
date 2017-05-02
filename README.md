@@ -3,11 +3,11 @@ carto-python
 
 Python SDK for Carto's APIs:
 
-* [SQL API](http://developers.cartodb.com/documentation/sql-api.html)
-* [Import API](http://docs.cartodb.com/cartodb-platform/import-api.html)
+* [SQL API](https://carto.com/docs/carto-engine/sql-api)
+* [Import API](https://carto.com/docs/carto-engine/import-api)
+* [Maps API](https://carto.com/docs/carto-engine/maps-api)
 
-carto-python is a full, backwards incompatible rewrite of the deprecated [cartodb-python](https://github.com/CartoDB/cartodb-python/) SDK. Since the
-initial rewrite, carto-python has been loaded with a lot of new features, not present in old cartodb-python.
+carto-python is a full, backwards incompatible rewrite of the deprecated [cartodb-python](https://github.com/CartoDB/cartodb-python/) SDK. Since the initial rewrite, carto-python has been loaded with a lot of new features, not present in old cartodb-python.
 
 Installation
 ============
@@ -28,7 +28,7 @@ If using, the development version, you might want to install Carto's dependencie
 Test Suite
 ==========
 
-cd into the repo folder, create and enable virtualenv, install pytest and run tests:
+Create a `secret.py` from `secret.py.example`, fill the variables, cd into the repo folder, create and enable virtualenv, install pytest and run tests:
 
 ```
 cd carto-python
@@ -76,7 +76,7 @@ SQL API
 Making requests to the SQL API is pretty straightforward:
 
 ```python
-from carto import SQLCLient
+from carto.sql import SQLCLient
 
 sql = SQLCLient(auth_client)
 
@@ -91,74 +91,272 @@ except:
 Please refer to the source code documentation to find out about the rest of the parameters accepted by the constructor and the `send` method.
 In particular, the `send` method allows you to control the format of the results.
 
+**Batch SQL requests**
+
+For long lasting SQL queries you can use the batch SQL API.
+
+```python
+from carto.sql import BatchSQLCLient
+
+LIST_OF_SQL_QUERIES = []
+
+batchSQLClient = BatchSQLClient(auth_client)
+createJob = batchSQLClient.create(LIST_OF_SQL_QUERIES)
+
+print(createJob.job_id)
+```
+
+The `BatchSQLClient` is asynchronous, but it offers methods to check the status of a job, update it or cancel it:
+
+```python
+
+# check the status of a job after it has been created and you have the job_id
+readJob = batchSQLClient.read(job_id)
+
+# update the query of a batch job
+updateJob = batchSQLClient.update(job_id, NEW_QUERY)
+
+# cancel a job given its job_id
+cancelJob = batchSQLClient.cancel(job_id)
+```
+
+For more examples on how to use the SQL API, please refer to the **examples** folder or the API docs.
+
 Import API
 ==========
 
-You can import a file into Carto like this:
+You can import local or remote datasets into CARTO like this:
 
 ```python
-from carto import FileImport
+from carto.datasets import DatasetManager
 
-# Import csv file, set privacy as 'link' and create a default viz
-fi = FileImport("test.csv", auth_client, create_vis='true', privacy='link')
-fi.run()
+# write here the path to a local file or remote URL
+LOCAL_FILE_OR_URL = ""
+
+dataset_manager = DatasetManager(auth_client)
+dataset = dataset_manager.create(LOCAL_FILE_OR_URL)
 ```
 
-You can also import a dataset from a remote URL:
+The Import API is asynchronous, but the `DatasetManager` waits a maximum of 150 seconds for the dataset to be uploaded, so once it finishes the dataset has been created in CARTO.
+
+**Import a sync dataset**
+
+You can do it in the same way as a regular dataset, just include a sync_time parameter with a value >= 900 seconds
 
 ```python
-from carto import URLImport
+from carto.datasets import DatasetManager
 
-fi = URLImport(MY_URL, auth_client)
-fi.run()
+# how often to sync the dataset (in seconds)
+SYNC_TIME = 900
+# write here the URL for the dataset to sync
+URL_TO_DATASET = ""
+
+dataset_manager = DatasetManager(auth_client)
+dataset = dataset_manager.create(URL_TO_DATASET, SYNC_TIME)
 ```
 
-If you specify a refresh interval (>=900s) for a remote URL, your import job becomes a sync table, and Carto will refresh the datasets based on the contents of the URL at that interval:
+Alternatively, if you need to do further work with the sync dataset, you can use the `SyncTableJobManager`
 
 ```python
-from carto import URLImport
+from carto.sync_tables import SyncTableJobManager
+import time
 
-fi = URLImport("http://test.com/myremotefile", auth_client, interval=3600)
-fi.run()
+# how often to sync the dataset (in seconds)
+SYNC_TIME = 900
+# write here the URL for the dataset to sync
+URL_TO_DATASET = ""
+
+syncTableManager = SyncTableJobManager(auth_client)
+syncTable = syncTableManager.create(URL_TO_DATASET, SYNC_TIME)
+
+# return the id of the sync
+sync_id = syncTable.get_id()
+
+while(syncTable.state != 'success'):
+    time.sleep(5)
+    syncTable.refresh()
+    if (syncTable.state == 'failure'):
+        print('The error code is: ' + str(syncTable.error_code))
+        print('The error message is: ' + str(syncTable.error_message))
+        break
+
+# force sync
+syncTable.refresh()
+syncTable.force_sync()
 ```
 
-At this point, ```fi.success``` indicates whether the initial upload was successful or not.
-
-You can get all the pending imports:
+**Get a list of all the current import jobs**
 
 ```python
-from carto import ImportManager
+from carto.file_import import FileImportJobManager
 
-im = ImportManager(auth_client)
-import_list = im.all(ids_only=False)
+file_import_manager = FileImportJobManager(auth_client)
+file_imports = file_import_manager.all()
 ```
 
-Or just one:
+**Get all the datasets**
 
 ```python
-im = ImportManager(auth_client)
-single_import = im.get("afaab071-dc95-4bda-a772-ea37f8729157")
+from carto.datasets import DatasetManager
+
+dataset_manager = DatasetManager(auth_client)
+datasets = dataset_manager.all()
 ```
 
-You can update the attributes of an import job any time (like for checking if an import has finished):
+**Get a specific dataset**
 
 ```python
-single_import.update()
+from carto.datasets import DatasetManager
+
+# write here the ID of the dataset to retrieve
+DATASET_ID = ""
+
+dataset_manager = DatasetManager(auth_client)
+dataset = dataset_manager.get(DATASET_ID)
 ```
 
-Object attributes correspond to those defined [by the API](http://docs.cartodb.com/cartodb-platform/import-api.html#response-1). In particular, ```state``` is useful to know when the import is finished:
+**Update the properties of a dataset**
+```python
+from carto.datasets import DatasetManager
+from carto.permissions import PRIVATE, PUBLIC, LINK
+
+# write here the ID of the dataset to retrieve
+DATASET_ID = ""
+
+dataset_manager = DatasetManager(auth_client)
+dataset = dataset_manager.get(DATASET_ID)
+
+# make the dataset PUBLIC
+dataset.privacy = PUBLIC
+dataset.save()
+```
+
+**Delete a dataset**
 
 ```python
-while im.state != "complete" and im.state != "failure":
-    time.sleep(10)
-    im.update()
+from carto.datasets import DatasetManager
+
+# write here the ID of the dataset to retrieve
+DATASET_ID = ""
+
+dataset_manager = DatasetManager(auth_client)
+dataset = dataset_manager.get(DATASET_ID)
+dataset.delete()
 ```
 
-Please refer to the source code documentation to find out about the rest of the parameters accepted by constructors and methods.
+**Export a CARTO visualization**
 
-Running tests
-=============
+```python
+from carto.visualizations import VisualizationManager
 
-Clone the repo, create a secret.py from secret.py.example, fill the variables and execute:
+# write here the name of the map to export
+MAP_NAME = ""
 
-    python setup.py test
+visualization_manager = VisualizationManager(auth_client)
+visualization = visualization_manager.get(MAP_NAME)
+
+url = visualization.export()
+
+# the URL points to a .carto file
+print(url)
+```
+
+Please refer to the source code documentation and the **examples** folder to find out about the rest of the parameters accepted by constructors and methods.
+
+Maps API
+========
+
+The Maps API allows to create and instantiate named and anonymous maps:
+
+```python
+from carto.maps import NamedMapManager, NamedMap
+import json
+
+# write the path to a local file with a JSON named map template
+JSON_TEMPLATE = ""
+
+named_map_manager = NamedMapManager(auth_client)
+named_map = NamedMap(named_map_manager.client)
+
+with open(JSON_TEMPLATE) as named_map_json:
+    template = json.load(named_map_json)
+
+# Create named map
+named = named_map_manager.create(template=template)
+```
+
+```python
+from carto.maps import AnonymousMap
+import json
+
+# write the path to a local file with a JSON named map template
+JSON_TEMPLATE = ""
+
+anonymous = AnonymousMap(auth_client)
+with open(JSON_TEMPLATE) as anonymous_map_json:
+    template = json.load(anonymous_map_json)
+
+# Create anonymous map
+anonymous.instantiate(template)
+```
+
+**Instantiate a named map**
+
+```python
+from carto.maps import NamedMapManager, NamedMap
+import json
+
+# write the path to a local file with a JSON named map template
+JSON_TEMPLATE = ""
+
+# write here the ID of the named map
+NAMED_MAP_ID = ""
+
+# write here the token you set to the named map when created
+NAMED_MAP_TOKEN = ""
+
+named_map_manager = NamedMapManager(auth_client)
+named_map = named_map_manager.get(NAMED_MAP_ID)
+
+with open(JSON_TEMPLATE) as template_json:
+    template = json.load(template_json)
+
+named_map.instantiate(template, NAMED_MAP_TOKEN)
+```
+
+**Work with named maps**
+
+```python
+from carto.maps import NamedMapManager, NamedMap
+
+# write here the ID of the named map
+NAMED_MAP_ID = ""
+
+# get the named map created
+named_map = named_map_manager.get(NAMED_MAP_ID)
+
+# update named map
+named_map.view = None
+named_map.save()
+
+# delete named map
+named_map.delete()
+
+# list all named maps
+named_maps = named_map_manager.all()
+```
+
+For more examples on how to use the Maps API, please refer to the **examples** folder or the API docs.
+
+API Documentation
+=================
+
+API documentation is written with Sphinx. To build the API docs:
+
+```
+pip install sphinx
+cd doc
+make html
+```
+
+Docs are generated inside the `doc/build/hmtl` folder. Please refer to them for a complete list of objects, functions and attributes of the carto-python API.

@@ -1,7 +1,24 @@
+"""
+Used internally to retrieve results paginated
+
+.. module:: carto.paginators
+   :platform: Unix, Windows
+   :synopsis: Used internally to retrieve results paginated
+
+.. moduleauthor:: Daniel Carrion <daniel@carto.com>
+.. moduleauthor:: Alberto Romeu <alrocar@carto.com>
+
+
+"""
+
 from pyrestcli.paginators import Paginator
 
 
 class CartoPaginator(Paginator):
+    """
+    Used internally to retrieve results paginated
+
+    """
     def __init__(self, json_collection_attribute, base_url, params=None):
         self.json_collection_attribute = json_collection_attribute
 

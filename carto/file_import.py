@@ -1,5 +1,19 @@
+"""
+Module for importing remote and local files into CARTO
+
+.. module:: carto.field_import
+   :platform: Unix, Windows
+   :synopsis: Module for importing remote and local files into CARTO
+
+.. moduleauthor:: Daniel Carrion <daniel@carto.com>
+.. moduleauthor:: Alberto Romeu <alrocar@carto.com>
+
+
+"""
+
 from pyrestcli.fields import IntegerField, CharField, BooleanField
 
+from .exceptions import CartoException
 from .resources import AsyncResource, Manager
 from .paginators import CartoPaginator
 
@@ -10,7 +24,8 @@ API_ENDPOINT = 'api/{api_version}/imports/'
 
 class FileImportJob(AsyncResource):
     """
-    This class provides support for one-time uploading and importing of remote and local files into CARTO
+    This class provides support for one-time uploading and importing of
+    remote and local files into CARTO
     """
     item_queue_id = CharField()
     id = CharField()
@@ -41,8 +56,14 @@ class FileImportJob(AsyncResource):
 
     def __init__(self, url, auth_client):
         """
-        :param auth_client: Client to make authorized requests (currently only APIKeyAuthClient is supported)
-        :param url: URL can be a pointer to a remote location or a path to a local file
+
+        :param auth_client: Client to make authorized requests
+                            (currently only APIKeyAuthClient is supported)
+        :param url: URL can be a pointer to a remote location or a path to
+                    a local file
+        :type auth_client: :class:`carto.auth.APIKeyAuthClient`
+        :type url: str
+
         :return:
         """
         if url.startswith("http"):
@@ -57,8 +78,20 @@ class FileImportJob(AsyncResource):
     def run(self, **import_params):
         """
         Actually creates the import job on the CARTO server
-        :param import_params: To be send to the Import API, see CARTO's docs on Import API for an updated list of accepted params
+
+        :param import_params: To be send to the Import API, see CARTO's docs
+                                on Import API for an updated list of accepted
+                                params
+        :type import_params: kwargs
+
         :return:
+
+        .. note:: The import job is asynchronous, so you should take care of
+        the progression, by calling the
+        :func:`carto.resources.AsyncResource.refresh` method and check the
+        import job :py:attr:`~state` attribute.
+        See :func:`carto.datasets.DatasetManager.create` for a unified method
+        to import files into CARTO
         """
         if self.url:
             import_params["url"] = self.url
@@ -75,10 +108,24 @@ class FileImportJobManager(Manager):
     def filter(self):
         """
         Get a filtered list of file imports
-        :return: A list of file imports, with only the id set (you need to refresh them if you want all the attributes to be filled in)
+
+        :return: A list of file imports, with only the id set (you need to
+                refresh them if you want all the attributes to be filled in)
+        :rtype: list of :class:`carto.file_import.FileImportJob`
+
+        :raise: CartoException
         """
-        response = self.send(self.get_collection_endpoint(), "get")
-        resource_ids = self.client.get_response_data(response, self.Meta.parse_json)[self.json_collection_attribute] if self.json_collection_attribute is not None else self.client.get_response_data(response, self.Meta.parse_json)
+        try:
+            response = self.send(self.get_collection_endpoint(), "get")
+            if self.json_collection_attribute is not None:
+                resource_ids = self.client.get_response_data(
+                    response,
+                    self.Meta.parse_json)[self.json_collection_attribute]
+            else:
+                resource_ids = self.client.get_response_data(
+                    response, self.Meta.parse_json)
+        except Exception as e:
+            raise CartoException(e)
 
         resources = []
 
@@ -95,9 +142,16 @@ class FileImportJobManager(Manager):
 
     def create(self, url, **kwargs):
         """
-        Create a file import on the server
-        :param url: URL can be a pointer to a remote location or a path to a local file
-        :params kwargs: Attributes (field names and values) of the new resource
+        Creates a file import on the server
+
+        :param url: URL can be a pointer to a remote location or a path to a
+                    local file
+        :param kwargs: Attributes (field names and values) of the new resource
+
+        :type url: str
+        :type kwargs: kwargs
+
+        :return: The :class:`carto.file_import.FileImportJob`
         """
         resource = self.resource_class(url, self.client)
         resource.update_from_dict(kwargs)
