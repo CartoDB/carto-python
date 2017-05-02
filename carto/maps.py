@@ -64,12 +64,15 @@ class NamedMap(Resource):
         """
         try:
             if (auth is not None):
-                endpoint = self.Meta.collection_endpoint
-                + self.template_id + "?auth_token=" + auth
+                endpoint = (self.Meta.collection_endpoint
+                            + "{template_id}?auth_token={auth_token}"). \
+                    format(template_id=self.template_id, auth_token=auth)
+
                 self.send(endpoint, "POST", json=params)
             else:
-                self.send(self.Meta.collection_endpoint
-                          + self.template_id, "POST", json=params)
+                self.send((self.Meta.collection_endpoint + "{template_id}").
+                          format(template_id=self.template_id),
+                          "POST", json=params)
         except Exception as e:
             raise CartoException(e)
 
