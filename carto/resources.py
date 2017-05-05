@@ -59,9 +59,6 @@ class WarnAsyncResource(AsyncResource):
     """
     AsyncResource class for resources that represent non-public CARTO APIs.
     You'll be warned not to used the in production environments
-
-    .. note:: Non-public APIs may change in the future, please be aware
-    if you plan to run this on a production environment
     """
     def __init__(self, auth_client, **kwargs):
         """
@@ -81,9 +78,6 @@ class WarnResource(Resource):
     """
     Resource class for resources that represent non-public CARTO APIs.
     You'll be warned not to used the in production environments
-
-    .. note:: Non-public APIs may change in the future, please be aware
-    if you plan to run this on a production environment
     """
     def __init__(self, auth_client, **kwargs):
         """

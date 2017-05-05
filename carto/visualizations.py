@@ -35,8 +35,7 @@ class Visualization(WarnResource):
     """
     Represents a map visualization in CARTO.
 
-    .. note:: Non-public API. It may change in the future, please be aware
-    if you plan to run this on a production environment
+    .. warning:: Non-public API. It may change with no previous notice
     """
     active_child = None
     active_layer_id = CharField()
@@ -86,12 +85,9 @@ class Visualization(WarnResource):
 
         :raise: CartoException
 
-        .. note:: Non-public API. It may change in the future, please be aware
-        if you plan to run this on a production environment
+        .. warning:: Non-public API. It may change with no previous notice
 
-        .. note:: The export is asynchronous, but this method waits for the
-        export to complete. See `MAX_NUMBER_OF_RETRIES` and
-        `INTERVAL_BETWEEN_RETRIES_S`
+        .. note:: The export is asynchronous, but this method waits for the export to complete. See `MAX_NUMBER_OF_RETRIES` and `INTERVAL_BETWEEN_RETRIES_S`
         """
         export_job = ExportJob(self.client, self.get_id())
         export_job.run()
@@ -123,8 +119,7 @@ class VisualizationManager(Manager):
     """
     Manager for the Visualization class.
 
-    .. note:: Non-public API. It may change in the future, please be aware
-    if you plan to run this on a production environment
+    .. warning:: Non-public API. It may change with no previous notice
     """
     resource_class = Visualization
     json_collection_attribute = "visualizations"

@@ -40,8 +40,7 @@ class Dataset(WarnResource):
     Represents a dataset in CARTO. Typically, that means there is a table in
     the PostgreSQL server associated to this object.
 
-    .. note:: Non-public API. It may change in the future, please be aware
-    if you plan to run this on a production environment
+    .. warning:: Non-public API. It may change with no previous notice
     """
     active_child = None
     active_layer_id = CharField()
@@ -87,8 +86,7 @@ class DatasetManager(Manager):
     """
     Manager for the Dataset class.
 
-    .. note:: Non-public API. It may change in the future, please be aware
-    if you plan to run this on a production environment
+    .. warning:: Non-public API. It may change with no previous notice
     """
     resource_class = Dataset
     json_collection_attribute = "visualizations"

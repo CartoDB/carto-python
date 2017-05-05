@@ -30,8 +30,7 @@ class Table(WarnResource):
     If you are looking to work with datasets / tables from outside the SDK,
     please look into the datasets.py file.
 
-    .. note:: Non-public API. It may change in the future, please be aware
-    if you plan to run this on a production environment
+    .. warning:: Non-public API. It may change with no previous notice
     """
     id = CharField()
     name = CharField()
@@ -60,8 +59,7 @@ class TableManager(Manager):
     """
     Manager for the Table class.
 
-    .. note:: Non-public API. It may change in the future, please be aware
-    if you plan to run this on a production environment
+    .. warning:: Non-public API. It may change with no previous notice
     """
     resource_class = Table
     paginator_class = CartoPaginator

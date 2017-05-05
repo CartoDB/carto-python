@@ -35,8 +35,7 @@ class User(WarnResource):
 
     Currently, CARTO's user API only supports enterprise users.
 
-    .. note:: Non-public API. It may change in the future, please be aware
-    if you plan to run this on a production environment
+    .. warning:: Non-public API. It may change with no previous notice
     """
     username = CharField()
     email = CharField()
@@ -84,8 +83,7 @@ class UserManager(Manager):
     """
     Manager for the User class.
 
-    .. note:: Non-public API. It may change in the future, please be aware
-    if you plan to run this on a production environment
+    .. warning:: Non-public API. It may change with no previous notice
     """
     resource_class = User
     paginator_class = CartoPaginator

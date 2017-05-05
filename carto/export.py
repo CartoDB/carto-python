@@ -27,8 +27,7 @@ class ExportJob(WarnAsyncResource):
     Allows a CARTO export to be created using a visualization in the user's
     CARTO account
 
-    .. note:: Non-public API. It may change in the future, please be aware
-    if you plan to run this on a production environment
+    .. warning:: Non-public API. It may change with no previous notice
     """
     id = CharField()
     visualization_id = CharField()
@@ -68,12 +67,7 @@ class ExportJob(WarnAsyncResource):
 
         :return:
 
-        .. note:: The export is asynchronous, so you should take care of the
-         progression, by calling the
-         :func:`carto.resources.AsyncResource.refresh` method and check the
-         export job :py:attr:`~state` attribute.
-         See :func:`carto.visualizations.Visualization.export`
-         method implementation for more details
+        .. note:: The export is asynchronous, so you should take care of the progression, by calling the :func:`carto.resources.AsyncResource.refresh` method and check the export job :py:attr:`~state` attribute. See :func:`carto.visualizations.Visualization.export` method implementation for more details
         """
         export_params["visualization_id"] = self.visualization_id
 
