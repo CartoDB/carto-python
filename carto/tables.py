@@ -11,25 +11,27 @@ Module for working with tables
 
 """
 
-from pyrestcli.resources import Resource
 from pyrestcli.fields import IntegerField, CharField, DateTimeField
 
 from .fields import PermissionField, VisualizationField
 from .paginators import CartoPaginator
-from .resources import Manager
+from .resources import Manager, WarnResource
 
 
 API_VERSION = "v1"
 API_ENDPOINT = "api/{api_version}/tables/"
 
 
-class Table(Resource):
+class Table(WarnResource):
     """
     Represents a table in CARTO. This is an internal data type. Both Table and
     TableManager are not meant to be used outside the SDK
 
     If you are looking to work with datasets / tables from outside the SDK,
-    please look into the datasets.py file
+    please look into the datasets.py file.
+
+    .. note:: Non-public API. It may change in the future, please be aware
+    if you plan to run this on a production environment
     """
     id = CharField()
     name = CharField()
@@ -56,7 +58,10 @@ class Table(Resource):
 
 class TableManager(Manager):
     """
-    Manager for the Table class
+    Manager for the Table class.
+
+    .. note:: Non-public API. It may change in the future, please be aware
+    if you plan to run this on a production environment
     """
     resource_class = Table
     paginator_class = CartoPaginator

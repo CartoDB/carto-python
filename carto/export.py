@@ -13,19 +13,22 @@ Module for exporting visualizations
 
 from pyrestcli.fields import CharField, DateTimeField
 
-from .resources import AsyncResource
+from .resources import WarnAsyncResource
 
 
 API_VERSION = "v3"
 API_ENDPOINT = 'api/{api_version}/visualization_exports/'
 
 
-class ExportJob(AsyncResource):
+class ExportJob(WarnAsyncResource):
     """
     Equivalent to a .carto export in CARTO.
 
     Allows a CARTO export to be created using a visualization in the user's
     CARTO account
+
+    .. note:: Non-public API. It may change in the future, please be aware
+    if you plan to run this on a production environment
     """
     id = CharField()
     visualization_id = CharField()
@@ -49,6 +52,7 @@ class ExportJob(AsyncResource):
 
         :return:
         """
+
         self.visualization_id = visualization_id
 
         super(ExportJob, self).__init__(client)

@@ -17,24 +17,26 @@ try:
 except ImportError:
     from urlparse import urljoin
 
-from pyrestcli.resources import Resource
 from pyrestcli.fields import IntegerField, CharField
 
 from .exceptions import CartoException
 from .paginators import CartoPaginator
-from .resources import Manager
+from .resources import Manager, WarnResource
 
 
 API_VERSION = "v1"
 API_ENDPOINT = "api/{api_version}/organization/{organization}/users/"
 
 
-class User(Resource):
+class User(WarnResource):
     """
     Represents an enterprise CARTO user, i.e. a user that belongs to an
     organization
 
-    Currently, CARTO's user API only supports enterprise users
+    Currently, CARTO's user API only supports enterprise users.
+
+    .. note:: Non-public API. It may change in the future, please be aware
+    if you plan to run this on a production environment
     """
     username = CharField()
     email = CharField()
@@ -80,7 +82,10 @@ class User(Resource):
 
 class UserManager(Manager):
     """
-    Manager for the User class
+    Manager for the User class.
+
+    .. note:: Non-public API. It may change in the future, please be aware
+    if you plan to run this on a production environment
     """
     resource_class = User
     paginator_class = CartoPaginator

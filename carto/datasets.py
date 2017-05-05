@@ -15,12 +15,12 @@ import time
 import json
 from gettext import gettext as _
 
-from pyrestcli.resources import Resource
 from pyrestcli.fields import IntegerField, CharField, DateTimeField, \
     BooleanField
 
 from .exceptions import CartoException
 from .file_import import FileImportJobManager
+from .resources import WarnResource
 from .sync_tables import SyncTableJobManager
 from .tables import TableManager
 from .fields import TableField, UserField, PermissionField
@@ -35,10 +35,13 @@ MAX_NUMBER_OF_RETRIES = 30
 INTERVAL_BETWEEN_RETRIES_S = 5
 
 
-class Dataset(Resource):
+class Dataset(WarnResource):
     """
     Represents a dataset in CARTO. Typically, that means there is a table in
-    the PostgreSQL server associated to this object
+    the PostgreSQL server associated to this object.
+
+    .. note:: Non-public API. It may change in the future, please be aware
+    if you plan to run this on a production environment
     """
     active_child = None
     active_layer_id = CharField()
@@ -82,7 +85,10 @@ class Dataset(Resource):
 
 class DatasetManager(Manager):
     """
-    Manager for the Dataset class
+    Manager for the Dataset class.
+
+    .. note:: Non-public API. It may change in the future, please be aware
+    if you plan to run this on a production environment
     """
     resource_class = Dataset
     json_collection_attribute = "visualizations"

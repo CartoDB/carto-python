@@ -14,13 +14,12 @@ Module for working with map visualizations
 import time
 from gettext import gettext as _
 
-from pyrestcli.resources import Resource
 from pyrestcli.fields import IntegerField, CharField, DateTimeField, \
     BooleanField
 
 from .exceptions import CartoException
 from .fields import TableField
-from .resources import Manager
+from .resources import Manager, WarnResource
 from .paginators import CartoPaginator
 from .export import ExportJob
 
@@ -32,9 +31,12 @@ MAX_NUMBER_OF_RETRIES = 30
 INTERVAL_BETWEEN_RETRIES_S = 5
 
 
-class Visualization(Resource):
+class Visualization(WarnResource):
     """
     Represents a map visualization in CARTO.
+
+    .. note:: Non-public API. It may change in the future, please be aware
+    if you plan to run this on a production environment
     """
     active_child = None
     active_layer_id = CharField()
@@ -84,6 +86,9 @@ class Visualization(Resource):
 
         :raise: CartoException
 
+        .. note:: Non-public API. It may change in the future, please be aware
+        if you plan to run this on a production environment
+
         .. note:: The export is asynchronous, but this method waits for the
         export to complete. See `MAX_NUMBER_OF_RETRIES` and
         `INTERVAL_BETWEEN_RETRIES_S`
@@ -116,7 +121,10 @@ class Visualization(Resource):
 
 class VisualizationManager(Manager):
     """
-    Manager for the Visualization class
+    Manager for the Visualization class.
+
+    .. note:: Non-public API. It may change in the future, please be aware
+    if you plan to run this on a production environment
     """
     resource_class = Visualization
     json_collection_attribute = "visualizations"

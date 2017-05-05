@@ -10,6 +10,9 @@ Extensions for pyrestcli Resource and Manager classes
 
 
 """
+
+import warnings
+
 from pyrestcli.resources import Resource, Manager as PyRestCliManager
 
 from .exceptions import CartoException
@@ -50,6 +53,48 @@ class AsyncResource(Resource):
                                  first!")
 
         super(AsyncResource, self).refresh()
+
+
+class WarnAsyncResource(AsyncResource):
+    """
+    AsyncResource class for resources that represent non-public CARTO APIs.
+    You'll be warned not to used the in production environments
+
+    .. note:: Non-public APIs may change in the future, please be aware
+    if you plan to run this on a production environment
+    """
+    def __init__(self, auth_client, **kwargs):
+        """
+        Initializes the resource
+        :param auth_client: Client to make (non)authorized requests
+        :param kwargs: Initial value for attributes
+        :return:
+        """
+
+        warnings.warn('This is part of a non-public CARTO API and may change in \
+              the future. Take this into account if you are using \
+              this in a production environment', FutureWarning)
+        super(WarnAsyncResource, self).__init__(auth_client, **kwargs)
+
+
+class WarnResource(Resource):
+    """
+    Resource class for resources that represent non-public CARTO APIs.
+    You'll be warned not to used the in production environments
+
+    .. note:: Non-public APIs may change in the future, please be aware
+    if you plan to run this on a production environment
+    """
+    def __init__(self, auth_client, **kwargs):
+        """
+        Initializes the resource
+        :param auth_client: Client to make (non)authorized requests
+        :param kwargs: Initial value for attributes
+        :return:
+        """
+
+        warnings.warn('This is part of a non-public CARTO API and may change in the future. Take this into account if you are using this in a production environment', FutureWarning)
+        super(WarnResource, self).__init__(auth_client, **kwargs)
 
 
 class Manager(PyRestCliManager):
