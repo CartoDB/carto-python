@@ -215,7 +215,7 @@ dataset_manager = DatasetManager(auth_client)
 dataset = dataset_manager.get(DATASET_ID)
 ```
 
-**Update the properties of a dataset**
+**Update the properties of a dataset ([non-public API](#non-public-apis))**
 ```python
 from carto.datasets import DatasetManager
 from carto.permissions import PRIVATE, PUBLIC, LINK
@@ -244,7 +244,7 @@ dataset = dataset_manager.get(DATASET_ID)
 dataset.delete()
 ```
 
-**Export a CARTO visualization**
+**Export a CARTO visualization ([non-public API](#non-public-apis))**
 
 ```python
 from carto.visualizations import VisualizationManager
@@ -360,3 +360,12 @@ make html
 ```
 
 Docs are generated inside the `doc/build/hmtl` folder. Please refer to them for a complete list of objects, functions and attributes of the carto-python API.
+
+non-public APIs
+===============
+
+Non-public APIs may change in the future and will thrown a `warnings.warn` message when used.
+
+Please be aware if you plan to run them on a production environment.
+
+Refer to the API docs for a list of non-public APIs
