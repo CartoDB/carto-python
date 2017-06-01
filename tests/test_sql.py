@@ -35,10 +35,11 @@ def test_sql_error_get(api_key_auth_client_usr):
 
 @pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
                     reason="Integration tests not executed in Travis")
-def test_sql(api_key_auth_client_usr, do_post=True):
-    sql = SQLClient(api_key_auth_client_usr)
-
-    data = sql.send('select * from ' + EXISTING_POINT_DATASET, do_post=do_post)
+def test_sql(api_key_auth_client_usr, mock_requests, do_post=True):
+    with mock_requests.mocker:
+        sql = SQLClient(api_key_auth_client_usr)
+        data = sql.send('select * from ' + EXISTING_POINT_DATASET,
+                        do_post=do_post)
 
     assert data is not None
     assert 'rows' in data
@@ -47,10 +48,8 @@ def test_sql(api_key_auth_client_usr, do_post=True):
     assert len(data['rows']) > 0
 
 
-@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
-                    reason="Integration tests not executed in Travis")
-def test_sql_get(api_key_auth_client_usr):
-    test_sql(api_key_auth_client_usr, do_post=False)
+def test_sql_get(api_key_auth_client_usr, mock_requests):
+    test_sql(api_key_auth_client_usr, mock_requests, do_post=False)
 
 
 @pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",

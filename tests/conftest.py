@@ -4,6 +4,7 @@ from pyrestcli.auth import NoAuthClient
 
 from carto.auth import APIKeyAuthClient
 from carto.users import UserManager
+from mocks import MockRequests, NotMockRequests
 
 from secret import USERNAME, API_KEY, ORGANIZATION
 
@@ -52,3 +53,15 @@ def user():
     """
     return UserManager(APIKeyAuthClient(BASE_URL, API_KEY, ORGANIZATION)). \
         get(USERNAME) if ORGANIZATION is not None else None
+
+
+@pytest.fixture(scope="session")
+def mock_requests():
+    """
+    Returns a new MockRequests instance
+    :return: MockRequests instance
+    """
+    if USERNAME == "mock":
+        return MockRequests()
+    else:
+        return NotMockRequests()
