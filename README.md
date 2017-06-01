@@ -1,6 +1,11 @@
 carto-python
 ============
 
+
+![](https://api.travis-ci.org/CartoDB/carto-python.svg?branch=1.0.0)
+
+
+
 Python SDK for Carto's APIs:
 
 * [SQL API](https://carto.com/docs/carto-engine/sql-api)
