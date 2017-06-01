@@ -7,6 +7,8 @@ python:
   - "3.5"
   - "3.6"
   - "nightly" # currently points to 3.7-dev
+before_script:
+- cp tests/secret.py.example tests/secret.py
 install:
   - "pip install ."
   - "pip install -r requirements.txt"
