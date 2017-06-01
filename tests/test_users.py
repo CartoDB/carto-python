@@ -1,3 +1,4 @@
+import os
 import pytest
 import time
 from pyrestcli.exceptions import NotFoundException
@@ -18,6 +19,8 @@ def user_manager(api_key_auth_client):
     return UserManager(api_key_auth_client)
 
 
+@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
+                    reason="Integration tests not executed in Travis")
 def test_get_users(user_manager):
     """
     Currently not supported by the user API. If we actually tried to perform
@@ -27,6 +30,8 @@ def test_get_users(user_manager):
     pass
 
 
+@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
+                    reason="Integration tests not executed in Travis")
 def test_get_one_user(user):
     """
     Test retrieval of a single user from the API
@@ -37,6 +42,8 @@ def test_get_one_user(user):
     assert user.username == USERNAME
 
 
+@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
+                    reason="Integration tests not executed in Travis")
 def test_modify_user(user_manager, user):
     """
     Test modifying a user
@@ -60,6 +67,8 @@ def test_modify_user(user_manager, user):
     assert user.email == old_email
 
 
+@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
+                    reason="Integration tests not executed in Travis")
 def test_create_and_delete_user(user_manager):
     """
     Test creating a user and then deleting it

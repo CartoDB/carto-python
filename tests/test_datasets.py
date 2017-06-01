@@ -1,3 +1,4 @@
+import os
 import pytest
 from pyrestcli.exceptions import NotFoundException
 
@@ -18,6 +19,8 @@ def dataset_manager(api_key_auth_client):
     return DatasetManager(api_key_auth_client)
 
 
+@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
+                    reason="Integration tests not executed in Travis")
 def test_get_datasets(dataset_manager, user):
     """
     Get all the datasets from the API
@@ -35,6 +38,8 @@ def test_get_datasets(dataset_manager, user):
         assert len(datasets) >= 0
 
 
+@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
+                    reason="Integration tests not executed in Travis")
 def test_create_and_modify_and_delete_dataset_from_file(dataset_manager):
     """
     Test creating a dataset from a local file, modifying it and then deleting
@@ -58,6 +63,8 @@ def test_create_and_modify_and_delete_dataset_from_file(dataset_manager):
         dataset_manager.get(dataset_id)
 
 
+@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
+                    reason="Integration tests not executed in Travis")
 def test_create_and_modify_and_delete_dataset_from_url(dataset_manager):
     """
     Test creating a dataset from a remote URL, modifying it and then deleting
@@ -81,6 +88,8 @@ def test_create_and_modify_and_delete_dataset_from_url(dataset_manager):
         dataset_manager.get(dataset_id)
 
 
+@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
+                    reason="Integration tests not executed in Travis")
 def test_create_and_modify_and_delete_dataset_as_sync_table(dataset_manager):
     """
     Test creating a dataset as a result of the creation of a sync table,
