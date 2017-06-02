@@ -142,8 +142,7 @@ class VisualizationManager(Manager):
         :raise: CartoException
         """
         try:
-            if "params" not in client_args:
-                client_args["params"] = {}
+            client_args.setdefault('params', {})
             client_args["params"].update({"type": "derived",
                                           "exclude_shared": "true"})
 

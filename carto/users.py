@@ -75,8 +75,10 @@ class User(WarnResource):
         """
         """
         resource_id = getattr(self, self.Meta.id_field, None)
-        return urljoin(self.get_collection_endpoint(), str(resource_id)) \
-            if resource_id is not None else None
+        if resource_id is not None:
+            return urljoin(self.get_collection_endpoint(), str(resource_id))
+        else:
+            return None
 
 
 class UserManager(Manager):
@@ -105,5 +107,7 @@ class UserManager(Manager):
     def get_resource_endpoint(self, resource_id):
         """
         """
-        return urljoin(self.get_collection_endpoint(), str(resource_id)) \
-            if resource_id is not None else None
+        if resource_id is not None:
+            return urljoin(self.get_collection_endpoint(), str(resource_id))
+        else:
+            return None
