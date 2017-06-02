@@ -1,3 +1,4 @@
+import os
 import pytest
 from pyrestcli.exceptions import NotFoundException
 
@@ -25,6 +26,8 @@ def dataset_manager(api_key_auth_client):
     return DatasetManager(api_key_auth_client)
 
 
+@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
+                    reason="Integration tests not executed in Travis")
 def test_get_datasets(dataset_manager, user):
     """
     Get all the datasets from the API
