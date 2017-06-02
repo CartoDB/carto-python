@@ -56,7 +56,9 @@ For unauthenticated requests, we need to create a NoAuthClient object:
 ```python
 from carto import NoAuthClient
 
-auth_client = NoAuthClient(user="myuser")
+USERNAME="type here your username"
+USR_BASE_URL = "https://{user}.carto.com/".format(user=USERNAME)
+auth_client = NoAuthClient(base_url=USR_BASE_URL)
 ```
 
 For API key authenticated requests, we need to create an APIKeyAuthClient instance:
@@ -64,16 +66,26 @@ For API key authenticated requests, we need to create an APIKeyAuthClient instan
 ```python
 from carto import APIKeyAuthClient
 
-auth_client = APIKeyAuthClient(api_key="myapikey", user="myuser")
+USERNAME="type here your username"
+USR_BASE_URL = "https://{user}.carto.com/".format(user=USERNAME)
+auth_client = APIKeyAuthClient(api_key="myapikey", base_url="base_url")
 ```
 
 API key is mandatory for all API requests except for sending SQL queries to public datasets.
 
-By default, API requests are sent to _carto.com_. They can be sent to another domain by setting the `domain` parameter. Furthermore,
-subdomainless API access, used typically by our on-premises product, is also available. In this case, the `host` parameter needs to be
-set, instead of `domain`.
+The `base_url` parameter must include the `user` and or the `organization`
+
+```
+BASE_URL = "https://{organization}.carto.com/user/{user}/". \
+    format(organization=ORGANIZATION,
+           user=USERNAME)
+USR_BASE_URL = "https://{user}.carto.com/".format(user=USERNAME)
+```
+
+Additionally, see `test_auth.py` for supported formats for the `base_url` parameter.
 
 For a detailed description of the rest of parameters both constructors accept, please take a look at the documentation of the source code.
+
 
 SQL API
 =======
