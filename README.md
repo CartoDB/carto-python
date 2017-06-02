@@ -40,6 +40,7 @@ cd carto-python
 virtualenv env
 source env/bin/activate
 pip install -e .
+pip install -r test_requirements.txt
 pip install pytest
 py.test tests
 ```
@@ -386,3 +387,22 @@ Non-public APIs may change in the future and will thrown a `warnings.warn` messa
 Please be aware if you plan to run them on a production environment.
 
 Refer to the API docs for a list of non-public APIs
+
+Examples
+========
+
+Inside the `examples` folder there are sample code snippets of the carto-python client.
+
+To run examples, you should need to install additional dependencies:
+
+```
+pip install -r examples/requirements.txt
+```
+
+carto-python examples need to setup environment variables.
+
+- CARTO_ORG: The name of your organization
+- CARTO_API_URL: The `base_url` including your user and/or organization
+- CARTO_API_KEY: Your user API key
+
+Please refer to the examples source code for additional info about parameters of each one
