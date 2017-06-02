@@ -149,16 +149,14 @@ class NamedMap(BaseMap):
         :raise: CartoException
         """
         try:
+            endpoint = (self.Meta.collection_endpoint
+                        + "{template_id}"). \
+                format(template_id=self.template_id)
             if (auth is not None):
-                endpoint = (self.Meta.collection_endpoint
-                            + "{template_id}?auth_token={auth_token}"). \
-                    format(template_id=self.template_id, auth_token=auth)
+                endpoint = (endpoint + "?auth_token={auth_token}"). \
+                    format(auth_token=auth)
 
-                self.send(endpoint, "POST", json=params)
-            else:
-                self.send((self.Meta.collection_endpoint + "{template_id}").
-                          format(template_id=self.template_id),
-                          "POST", json=params)
+            self.send(endpoint, "POST", json=params)
         except Exception as e:
             raise CartoException(e)
 

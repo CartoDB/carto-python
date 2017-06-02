@@ -80,8 +80,7 @@ class APIKeyAuthClient(BaseAuthClient):
         """
         try:
             http_method = http_method.lower()
-            if (http_method == "post" or http_method == "put") \
-                    and "json" in requests_args:
+            if (http_method in ['post', 'put']) and "json" in requests_args:
                 requests_args["json"].update({"api_key": self.api_key})
             else:
                 if "params" not in requests_args:
