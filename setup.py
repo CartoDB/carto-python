@@ -4,8 +4,6 @@ from setuptools import setup
 with open('requirements.txt') as f:
     required = f.read().splitlines()
 
-print required
-
 with open('test_requirements.txt') as f:
     test_required = f.read().splitlines()
 
