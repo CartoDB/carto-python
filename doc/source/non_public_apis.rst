@@ -1,4 +1,4 @@
-non-public APIs
+Non-public APIs
 ===============
 
 Non-public APIs may change in the future and will thrown a `warnings.warn` message when used.
