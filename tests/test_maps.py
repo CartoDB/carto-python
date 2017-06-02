@@ -1,4 +1,3 @@
-import os
 import pytest
 import requests
 
@@ -25,15 +24,11 @@ def no_auth_client_fixture(no_auth_client):
     return no_auth_client
 
 
-@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
-                    reason="Integration tests not executed in Travis")
 def test_get_named_map_error(named_map_manager):
     with pytest.raises(NotFoundException):
         named_map_manager.get('non-existent')
 
 
-@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
-                    reason="Integration tests not executed in Travis")
 def test_named_map_methods(named_map_manager):
     n = NamedMap(named_map_manager.client)
     n.template_id = 'python_sdk_test_map'
@@ -64,8 +59,6 @@ def test_named_map_methods(named_map_manager):
     assert named.delete().status_code is requests.codes.no_content
 
 
-@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
-                    reason="Integration tests not executed in Travis")
 def test_named_map_manager(named_map_manager):
     # Get all named maps
     initial_maps = named_map_manager.all()
@@ -84,8 +77,6 @@ def test_named_map_manager(named_map_manager):
     assert named.delete().status_code is requests.codes.no_content
 
 
-@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
-                    reason="Integration tests not executed in Travis")
 def test_create_anonymous_map(no_auth_client_fixture):
     anonymous = AnonymousMap(no_auth_client_fixture)
     anonymous.instantiate(ANONYMOUS_MAP_DEFINITION)

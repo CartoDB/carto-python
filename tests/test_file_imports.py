@@ -1,4 +1,3 @@
-import os
 import pytest
 
 from carto.file_import import FileImportJobManager
@@ -15,8 +14,6 @@ def file_import_manager(api_key_auth_client):
     return FileImportJobManager(api_key_auth_client)
 
 
-@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
-                    reason="Integration tests not executed in Travis")
 def test_get_file_imports(file_import_manager):
     """
     Get all the file imports from the API

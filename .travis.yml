@@ -1,15 +1,15 @@
 language: python
 python:
-  - "2.7"
-  - "3.3"
-  - "3.4"
-  - "3.5"
-  - "3.6"
-  - "nightly" # currently points to 3.7-dev
+- '2.7'
+- '3.3'
+- '3.4'
+- '3.5'
+- '3.6'
+- nightly
 before_script:
 - cp tests/secret.py.example tests/secret.py
 install:
-  - "pip install ."
-  - "pip install -r requirements.txt"
-  - "pip install -r test_requirements.txt"
+- pip install .
+- pip install -r requirements.txt
+- pip install -r test_requirements.txt
 script: pytest

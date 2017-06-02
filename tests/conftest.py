@@ -1,3 +1,4 @@
+import os
 import pytest
 
 from pyrestcli.auth import NoAuthClient
@@ -6,8 +7,20 @@ from carto.auth import APIKeyAuthClient
 from carto.users import UserManager
 from mocks import MockRequests, NotMockRequests
 
-from secret import USERNAME, API_KEY, ORGANIZATION
+if "API_KEY" in os.environ:
+    API_KEY = os.environ["API_KEY"]
+else:
+    from secret import API_KEY
 
+if "ORGANIZATION" in os.environ:
+    ORGANIZATION = os.environ["ORGANIZATION"]
+else:
+    from secret import ORGANIZATION
+
+if "USERNAME" in os.environ:
+    USERNAME = os.environ["USERNAME"]
+else:
+    from secret import USERNAME
 
 BASE_URL = "https://{organization}.carto.com/user/{user}/". \
     format(organization=ORGANIZATION,

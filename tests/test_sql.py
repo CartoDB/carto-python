@@ -1,4 +1,3 @@
-import os
 import pytest
 
 from carto.exceptions import CartoException
@@ -15,8 +14,6 @@ requests_log.setLevel(logging.DEBUG)
 requests_log.propagate = True
 
 
-@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
-                    reason="Integration tests not executed in Travis")
 def test_sql_error(api_key_auth_client_usr):
     sql = SQLClient(api_key_auth_client_usr)
 
@@ -24,8 +21,6 @@ def test_sql_error(api_key_auth_client_usr):
         sql.send('select * from non_existing_dataset')
 
 
-@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
-                    reason="Integration tests not executed in Travis")
 def test_sql_error_get(api_key_auth_client_usr):
     sql = SQLClient(api_key_auth_client_usr)
 
@@ -33,8 +28,6 @@ def test_sql_error_get(api_key_auth_client_usr):
         sql.send('select * from non_existing_dataset', {'do_post': False})
 
 
-@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
-                    reason="Integration tests not executed in Travis")
 def test_sql(api_key_auth_client_usr, mock_requests, do_post=True):
     with mock_requests.mocker:
         sql = SQLClient(api_key_auth_client_usr)
@@ -52,14 +45,10 @@ def test_sql_get(api_key_auth_client_usr, mock_requests):
     test_sql(api_key_auth_client_usr, mock_requests, do_post=False)
 
 
-@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
-                    reason="Integration tests not executed in Travis")
 def test_no_api_key(no_auth_client):
     assert hasattr(no_auth_client, "api_key") is False
 
 
-@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
-                    reason="Integration tests not executed in Travis")
 def test_no_auth_sql_error(no_auth_client):
     sql = SQLClient(no_auth_client)
 
@@ -67,8 +56,6 @@ def test_no_auth_sql_error(no_auth_client):
         sql.send('select * from non_existing_dataset')
 
 
-@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
-                    reason="Integration tests not executed in Travis")
 def test_no_auth_sql_error_get(no_auth_client):
     sql = SQLClient(no_auth_client)
 
@@ -76,8 +63,6 @@ def test_no_auth_sql_error_get(no_auth_client):
         sql.send('select * from non_existing_dataset', {'do_post': False})
 
 
-@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
-                    reason="Integration tests not executed in Travis")
 def test_batch_create(api_key_auth_client_usr):
     sql = BatchSQLClient(api_key_auth_client_usr)
 
@@ -96,8 +81,6 @@ def test_batch_create(api_key_auth_client_usr):
         assert confirmation == 'cancelled'
 
 
-@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
-                    reason="Integration tests not executed in Travis")
 def test_batch_multi_sql(api_key_auth_client_usr):
     sql = BatchSQLClient(api_key_auth_client_usr)
 
