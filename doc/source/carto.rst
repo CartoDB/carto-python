@@ -1,9 +1,6 @@
 carto package
 =============
 
-Submodules
-----------
-
 carto\.auth module
 ------------------
 
@@ -120,15 +117,6 @@ carto\.visualizations module
 ----------------------------
 
 .. automodule:: carto.visualizations
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: carto
     :members:
     :undoc-members:
     :show-inheritance:

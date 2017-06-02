@@ -373,6 +373,7 @@ API documentation is written with Sphinx. To build the API docs:
 
 ```
 pip install sphinx
+pip install sphinx_rtd_theme
 cd doc
 make html
 ```
