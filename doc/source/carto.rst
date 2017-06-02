@@ -1,5 +1,9 @@
-carto package
-=============
+.. _apidoc:
+
+carto package API documentation
+===============================
+
+.. _authmodule:
 
 carto\.auth module
 ------------------

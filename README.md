@@ -55,7 +55,7 @@ be used when instantiating the Python classes that deal with API requests.
 For unauthenticated requests, we need to create a NoAuthClient object:
 
 ```python
-from carto import NoAuthClient
+from carto.auth import NoAuthClient
 
 USERNAME="type here your username"
 USR_BASE_URL = "https://{user}.carto.com/".format(user=USERNAME)
@@ -65,11 +65,11 @@ auth_client = NoAuthClient(base_url=USR_BASE_URL)
 For API key authenticated requests, we need to create an APIKeyAuthClient instance:
 
 ```python
-from carto import APIKeyAuthClient
+from carto.auth import APIKeyAuthClient
 
 USERNAME="type here your username"
 USR_BASE_URL = "https://{user}.carto.com/".format(user=USERNAME)
-auth_client = APIKeyAuthClient(api_key="myapikey", base_url="base_url")
+auth_client = APIKeyAuthClient(api_key="myapikey", base_url=USR_BASE_URL)
 ```
 
 API key is mandatory for all API requests except for sending SQL queries to public datasets.
