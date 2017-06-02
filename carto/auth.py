@@ -58,18 +58,7 @@ class APIKeyAuthClient(BaseAuthClient):
         if not base_url.endswith('/'):
             base_url += '/'
 
-        url_info = urlparse(base_url)
-        # On-Prem:
-        #   /user/<username>
-        m = re.search('^/user/([^/]+)/.*$', url_info.path)
-        if m is None:
-            # Cloud personal account (org and standalone)
-            # <username>.carto.com
-            netloc = url_info.netloc
-            if netloc.startswith('www.'):
-                netloc = netloc.split('www.')[1]
-            m = re.search('^(.*?)\..*', netloc)
-        self.username = m.group(1)
+        self.username = self.get_user_name(base_url)
 
         super(APIKeyAuthClient, self).__init__(base_url, session=session)
 
@@ -104,3 +93,17 @@ class APIKeyAuthClient(BaseAuthClient):
                                                       **requests_args)
         except Exception as e:
             raise CartoException(e)
+
+    def get_user_name(self, base_url):
+        url_info = urlparse(base_url)
+        # On-Prem:
+        #   /user/<username>
+        m = re.search('^/user/([^/]+)/.*$', url_info.path)
+        if m is None:
+            # Cloud personal account (org and standalone)
+            # <username>.carto.com
+            netloc = url_info.netloc
+            if netloc.startswith('www.'):
+                netloc = netloc.split('www.')[1]
+            m = re.search('^(.*?)\..*', netloc)
+        return m.group(1)
