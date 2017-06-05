@@ -5,14 +5,6 @@ from carto.sql import SQLClient, BatchSQLClient
 from secret import EXISTING_POINT_DATASET, BATCH_SQL_SINGLE_QUERY, \
     BATCH_SQL_MULTI_QUERY
 
-import logging
-
-logging.basicConfig()
-logging.getLogger().setLevel(logging.DEBUG)
-requests_log = logging.getLogger("requests.packages.urllib3")
-requests_log.setLevel(logging.DEBUG)
-requests_log.propagate = True
-
 
 def test_sql_error(api_key_auth_client_usr):
     sql = SQLClient(api_key_auth_client_usr)
