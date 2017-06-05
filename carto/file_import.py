@@ -59,8 +59,8 @@ class FileImportJob(AsyncResource):
 
         :param auth_client: Client to make authorized requests
                             (currently only APIKeyAuthClient is supported)
-        :param archive: archive can be a pointer to a remote location, a path to
-                    a local file or a StringIO object
+        :param archive: archive can be a pointer to a remote location, a path
+                     to a local file or a StringIO object
         :type auth_client: :class:`carto.auth.APIKeyAuthClient`
         :type archive: str
 
@@ -86,7 +86,12 @@ class FileImportJob(AsyncResource):
 
         :return:
 
-        .. note:: The import job is asynchronous, so you should take care of the progression, by calling the :func:`carto.resources.AsyncResource.refresh` method and check the import job :py:attr:`~state` attribute. See :func:`carto.datasets.DatasetManager.create` for a unified method to import files into CARTO
+        .. note:: The import job is asynchronous, so you should take care of
+        the progression, by calling the
+        :func:`carto.resources.AsyncResource.refresh` method and check the
+        import job :py:attr:`~state` attribute.
+        See :func:`carto.datasets.DatasetManager.create` for a unified method
+        to import files into CARTO
         """
         if self.file:
             import_params["url"] = self.file
@@ -145,8 +150,8 @@ class FileImportJobManager(Manager):
         """
         Creates a file import on the server
 
-        :param archive: archive can be a pointer to a remote location, a path to a
-                    local file or a StringIO object
+        :param archive: archive can be a pointer to a remote location, a path
+         to a local file or a StringIO object
         :param kwargs: Attributes (field names and values) of the new resource
 
         :type archive: str

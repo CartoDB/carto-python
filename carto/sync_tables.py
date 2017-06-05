@@ -92,7 +92,12 @@ class SyncTableJob(AsyncResource):
 
         :return:
 
-        .. note:: The sync table job is asynchronous, so you should take care of the progression, by calling the :func:`carto.resources.AsyncResource.refresh` method and check the import job :py:attr:`~state` attribute. See :func:`carto.datasets.DatasetManager.create` for a unified method to import files into CARTO
+        .. note:: The sync table job is asynchronous, so you should take care
+        of the progression, by calling the
+        :func:`carto.resources.AsyncResource.refresh` method and check
+        the import job :py:attr:`~state` attribute.
+        See :func:`carto.datasets.DatasetManager.create` for a unified method
+        to import files into CARTO
         """
         import_params["url"] = self.url
         import_params["interval"] = self.interval
