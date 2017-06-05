@@ -12,7 +12,6 @@ Module for importing remote and local files into CARTO
 """
 
 from pyrestcli.fields import IntegerField, CharField, BooleanField
-from tempfile import mkstemp
 
 from .exceptions import CartoException
 from .resources import AsyncResource, Manager
