@@ -5,14 +5,7 @@ from pyrestcli.exceptions import NotFoundException
 from carto.datasets import DatasetManager
 from carto.permissions import PRIVATE, PUBLIC
 
-from secret import IMPORT_URL
-
-import logging
-logging.basicConfig()
-logging.getLogger().setLevel(logging.DEBUG)
-requests_log = logging.getLogger("requests.packages.urllib3")
-requests_log.setLevel(logging.DEBUG)
-requests_log.propagate = True
+from secret import IMPORT_URL, IMPORT_FILE
 
 
 @pytest.fixture(scope="module")
@@ -104,3 +97,14 @@ def test_create_and_modify_and_delete_dataset_as_sync_table(dataset_manager):
     dataset.delete()
     with pytest.raises(NotFoundException):
         dataset_manager.get(dataset_id)
+
+
+def test_import_from_object(dataset_manager):
+    """
+    Imports a file as an object
+    :param dataset_manager: Dataset manager to work with
+    """
+    with open(IMPORT_FILE, "rb") as archive:
+        file_imported = dataset_manager.create(archive)
+
+    assert file_imported.get_id() is not None

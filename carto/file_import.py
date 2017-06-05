@@ -12,6 +12,7 @@ Module for importing remote and local files into CARTO
 """
 
 from pyrestcli.fields import IntegerField, CharField, BooleanField
+from tempfile import mkstemp
 
 from .exceptions import CartoException
 from .resources import AsyncResource, Manager
@@ -54,24 +55,24 @@ class FileImportJob(AsyncResource):
         collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
         id_field = "item_queue_id"
 
-    def __init__(self, url, auth_client):
+    def __init__(self, archive, auth_client):
         """
 
         :param auth_client: Client to make authorized requests
                             (currently only APIKeyAuthClient is supported)
-        :param url: URL can be a pointer to a remote location or a path to
-                    a local file
+        :param archive: archive can be a pointer to a remote location, a path to
+                    a local file or a StringIO object
         :type auth_client: :class:`carto.auth.APIKeyAuthClient`
-        :type url: str
+        :type archive: str
 
         :return:
         """
-        if url.startswith("http"):
-            self.url = url
+        if hasattr(archive, "startswith") and archive.startswith("http"):
+            self.file = archive
             self.files = None
         else:
-            self.url = None
-            self.files = {'file': open(url, 'rb')}
+            self.file = None
+            self.files = {'file': self.__open(archive, 'rb')}
 
         super(FileImportJob, self).__init__(auth_client)
 
@@ -88,11 +89,17 @@ class FileImportJob(AsyncResource):
 
         .. note:: The import job is asynchronous, so you should take care of the progression, by calling the :func:`carto.resources.AsyncResource.refresh` method and check the import job :py:attr:`~state` attribute. See :func:`carto.datasets.DatasetManager.create` for a unified method to import files into CARTO
         """
-        if self.url:
-            import_params["url"] = self.url
+        if self.file:
+            import_params["url"] = self.file
 
         super(FileImportJob, self).run(params=import_params, files=self.files)
         self.id_field = "id"
+
+    def __open(self, name, mode):
+        if hasattr(name, "read"):
+            return name
+        else:
+            return open(name, mode)
 
 
 class FileImportJobManager(Manager):
@@ -135,20 +142,20 @@ class FileImportJobManager(Manager):
 
         return resources
 
-    def create(self, url, **kwargs):
+    def create(self, archive, **kwargs):
         """
         Creates a file import on the server
 
-        :param url: URL can be a pointer to a remote location or a path to a
-                    local file
+        :param archive: archive can be a pointer to a remote location, a path to a
+                    local file or a StringIO object
         :param kwargs: Attributes (field names and values) of the new resource
 
-        :type url: str
+        :type archive: str
         :type kwargs: kwargs
 
         :return: The :class:`carto.file_import.FileImportJob`
         """
-        resource = self.resource_class(url, self.client)
+        resource = self.resource_class(archive, self.client)
         resource.update_from_dict(kwargs)
         resource.save(force_create=True)
 

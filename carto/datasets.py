@@ -31,8 +31,8 @@ from .resources import Manager
 API_VERSION = "v1"
 API_ENDPOINT = "api/{api_version}/viz/"
 
-MAX_NUMBER_OF_RETRIES = 30
-INTERVAL_BETWEEN_RETRIES_S = 5
+MAX_NUMBER_OF_RETRIES = 60
+INTERVAL_BETWEEN_RETRIES_S = 10
 
 
 class Dataset(WarnResource):
@@ -122,16 +122,16 @@ class DatasetManager(Manager):
         except Exception as e:
             raise CartoException(e)
 
-    def create(self, url, interval=None, **import_args):
+    def create(self, archive, interval=None, **import_args):
         """
         Creating a table means uploading a file or setting up a sync table
 
-        :param url: URL to the file (both remote URLs or local paths are
-                    supported)
+        :param archive: URL to the file (both remote URLs or local paths are
+                    supported) or StringIO object
         :param interval: If not None, CARTO will try to set up a sync table
                         against the (remote) URL
         :param import_args: Arguments to be sent to the import job when run
-        :type url: str
+        :type archive: str
         :type interval: int
         :type import_args: kwargs
 
@@ -140,15 +140,16 @@ class DatasetManager(Manager):
 
         :raise: CartoException
         """
-        url = url.lower()
+        archive = archive.lower() if hasattr(archive, "lower") else archive
 
-        if url.startswith("http") and interval is not None:
+        if hasattr(archive, "startswith") and archive.startswith("http") \
+                and interval is not None:
             manager = SyncTableJobManager(self.client)
         else:
             manager = FileImportJobManager(self.client)
 
-        import_job = manager.create(url) if interval is None \
-            else manager.create(url, interval)
+        import_job = manager.create(archive) if interval is None \
+            else manager.create(archive, interval)
         import_job.run(**import_args)
 
         if import_job.get_id() is None:
