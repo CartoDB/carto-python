@@ -48,6 +48,7 @@ class Dataset(WarnResource):
     auth_tokens = CharField(many=True)
     children = None
     created_at = DateTimeField()
+    connector = None
     description = CharField()
     display_name = CharField()
     external_source = None
@@ -122,13 +123,36 @@ class DatasetManager(Manager):
         except Exception as e:
             raise CartoException(e)
 
+    def is_sync_table(self, archive, interval, **import_args):
+        """
+        Checks if this is a request for a sync dataset.
+
+        The condition for creating a sync dataset is to provide a URL or a
+        connection to an external database and an interval in seconds
+
+        :param archive: URL to the file (both remote URLs or local paths are
+                    supported) or StringIO object
+        :param interval: Interval in seconds.
+        :param import_args: Connection parameters for an external database
+        :type url: str
+        :type interval: int
+        :type import_args: kwargs
+
+        :return: True if it is a sync dataset
+
+        """
+        return (hasattr(archive, "startswith") and archive.startswith("http")
+                or "connection" in import_args) \
+            and interval is not None
+
     def create(self, archive, interval=None, **import_args):
         """
         Creating a table means uploading a file or setting up a sync table
 
         :param archive: URL to the file (both remote URLs or local paths are
                     supported) or StringIO object
-        :param interval: If not None, CARTO will try to set up a sync table
+        :param interval: Interval in seconds.
+                        If not None, CARTO will try to set up a sync table
                         against the (remote) URL
         :param import_args: Arguments to be sent to the import job when run
         :type archive: str
@@ -142,8 +166,7 @@ class DatasetManager(Manager):
         """
         archive = archive.lower() if hasattr(archive, "lower") else archive
 
-        if hasattr(archive, "startswith") and archive.startswith("http") \
-                and interval is not None:
+        if self.is_sync_table(archive, interval, **import_args):
             manager = SyncTableJobManager(self.client)
         else:
             manager = FileImportJobManager(self.client)

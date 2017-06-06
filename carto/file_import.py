@@ -66,12 +66,13 @@ class FileImportJob(AsyncResource):
 
         :return:
         """
-        if hasattr(archive, "startswith") and archive.startswith("http"):
-            self.file = archive
-            self.files = None
-        else:
-            self.file = None
-            self.files = {'file': self.__open(archive, 'rb')}
+        self.file = None
+        self.files = None
+        if archive is not None:
+            if hasattr(archive, "startswith") and archive.startswith("http"):
+                self.file = archive
+            else:
+                self.files = {'file': self.__open(archive, 'rb')}
 
         super(FileImportJob, self).__init__(auth_client)
 
@@ -96,8 +97,15 @@ class FileImportJob(AsyncResource):
         if self.file:
             import_params["url"] = self.file
 
-        super(FileImportJob, self).run(params=import_params, files=self.files)
         self.id_field = "id"
+
+        if "connection" in import_params:
+            self.fields.append("connector")
+            self.update_from_dict(import_params["connection"])
+            self.save(force_create=True)
+        else:
+            super(FileImportJob, self).run(params=import_params,
+                                           files=self.files)
 
     def __open(self, name, mode):
         if hasattr(name, "read"):

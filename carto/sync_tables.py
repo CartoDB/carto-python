@@ -102,7 +102,13 @@ class SyncTableJob(AsyncResource):
         import_params["url"] = self.url
         import_params["interval"] = self.interval
 
-        return super(SyncTableJob, self).run(params=import_params)
+        if "connection" in import_params:
+            self.fields.append("connector")
+            import_params["connection"]["interval"] = self.interval
+            self.update_from_dict(import_params["connection"])
+            self.save(force_create=True)
+        else:
+            return super(SyncTableJob, self).run(params=import_params)
 
     def get_force_sync_endpoint(self):
         """
