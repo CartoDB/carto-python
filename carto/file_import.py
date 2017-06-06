@@ -87,12 +87,7 @@ class FileImportJob(AsyncResource):
 
         :return:
 
-        .. note:: The import job is asynchronous, so you should take care of
-        the progression, by calling the
-        :func:`carto.resources.AsyncResource.refresh` method and check the
-        import job :py:attr:`~state` attribute.
-        See :func:`carto.datasets.DatasetManager.create` for a unified method
-        to import files into CARTO
+        .. note:: The import job is asynchronous, so you should take care of the progression, by calling the :func:`carto.resources.AsyncResource.refresh` method and check the import job :py:attr:`~state` attribute. See :func:`carto.datasets.DatasetManager.create` for a unified method to import files into CARTO
         """
         if self.file:
             import_params["url"] = self.file
