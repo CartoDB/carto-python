@@ -117,3 +117,47 @@ Delete a dataset
 
 
 Please refer to the :ref:`apidoc` and the **examples** folder to find out about the rest of the parameters accepted by constructors and methods.
+
+
+External database connectors
+----------------------------
+
+The CARTO Python client implements the `database connectors`_ feature of the Import API
+
+.. _database connectors: https://carto.com/docs/carto-engine/import-api/database-connectors
+
+The database connectors allow importing data from an external database into a CARTO table by using the `connector` parameter.
+
+There are several types of database connectors that you can connect to your CARTO account.
+
+Please refer to the `database connectors`_ documentation for supported external databases.
+
+As an example, this code snippets imports data from a Hive table into CARTO:
+
+::
+
+  from carto.datasets import DatasetManager
+
+  dataset_manager = DatasetManager(auth_client)
+
+  connection = {
+    "connector": {
+      "provider": "hive",
+      "connection": {
+        "server": "YOUR_SERVER_IP",
+        "database": "default",
+        "username": "YOUR_USER_NAME",
+        "password": "YOUR_PASSWORD"
+      },
+      "schema": "default",
+      "table": "YOUR_HIVE_TABLE"
+    }
+  }
+
+  table = dataset_manager.create(None, None, connection=connection)
+
+You still can configure a sync external database connector, by providing the `interval` parameter:
+
+::
+
+  table = dataset_manager.create(None, 900, connection=connection)
