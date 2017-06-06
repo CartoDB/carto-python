@@ -57,7 +57,7 @@ if substring:
 dataset_manager = DatasetManager(auth_client)
 table = dataset_manager.create(args.url)
 logger.info('Name of table: ' + str(table.name))
-print('\nURL of dataset is: \
+print('URL of dataset: \
       https://{org}.carto.com/u/{username}/dataset/{data}'). \
       format(org=args.organization,
              username=username,

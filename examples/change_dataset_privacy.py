@@ -19,8 +19,7 @@ logger = logging.getLogger()
 
 # set input arguments
 parser = argparse.ArgumentParser(
-    description='Import a folder with CSV files (same structure) and merge \
-    them into one dataset')
+    description='Changes the privacy of a dataset')
 
 parser.add_argument('dataset_name', type=str,
                     help='The name of the dataset in CARTO')
