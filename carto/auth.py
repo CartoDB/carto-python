@@ -11,6 +11,7 @@ Module for authenticated access to CARTO's APIs
 
 """
 
+from gettext import gettext as _
 import re
 import sys
 import warnings
@@ -94,15 +95,22 @@ class APIKeyAuthClient(BaseAuthClient):
             raise CartoException(e)
 
     def get_user_name(self, base_url):
-        url_info = urlparse(base_url)
-        # On-Prem:
-        #   /user/<username>
-        m = re.search('^/user/([^/]+)/.*$', url_info.path)
-        if m is None:
-            # Cloud personal account (org and standalone)
-            # <username>.carto.com
-            netloc = url_info.netloc
-            if netloc.startswith('www.'):
-                netloc = netloc.split('www.')[1]
-            m = re.search('^(.*?)\..*', netloc)
-        return m.group(1)
+        try:
+            url_info = urlparse(base_url)
+            # On-Prem:
+            #   /user/<username>
+            m = re.search('^/user/([^/]+)/.*$', url_info.path)
+            if m is None:
+                # Cloud personal account (org and standalone)
+                # <username>.carto.com
+                netloc = url_info.netloc
+                if netloc.startswith('www.'):
+                    netloc = netloc.split('www.')[1]
+                m = re.search('^(.*?)\..*', netloc)
+            return m.group(1)
+        except Exception:
+            raise CartoException(_("Could not find a valid user_name in the " +
+                                   "base URL provided. Please check that the" +
+                                   "URL is one of '{user_name}.carto.com', " +
+                                   "carto.com/user/{user_name} or a similar " +
+                                   "one based on your domain"))

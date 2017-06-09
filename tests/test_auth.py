@@ -1,6 +1,14 @@
+import pytest
+
 from secret import API_KEY
 
 from carto.auth import APIKeyAuthClient
+from carto.exceptions import CartoException
+
+
+def test_wrong_url():
+    with pytest.raises(CartoException):
+        APIKeyAuthClient('https://wrongurl', API_KEY).username
 
 
 def test_cloud_personal_url():
