@@ -62,3 +62,7 @@ target/
 *.swp
 secret.py
 env
+
+.idea/*
+.DS_Store
+*variables.sh

@@ -1,0 +1,27 @@
+{
+  "version": "1.0.1",
+  "layers": [
+    {
+      "type": "http",
+      "options": {
+        "urlTemplate": "http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png",
+        "subdomains": [
+          "a",
+          "b",
+          "c"
+        ]
+      }
+    },
+    {
+      "type": "cartodb",
+      "options": {
+        "sql": "select * from tornados_11",
+        "cartocss": "#layer{polygon-fill: #3E7BB6;polygon-opacity: 0;line-color: #FFF;line-width: 0.5;line-opacity: 1;}",
+        "cartocss_version": "2.1.1",
+        "interactivity": [
+          "cartodb_id"
+        ]
+      }
+    }
+  ]
+}

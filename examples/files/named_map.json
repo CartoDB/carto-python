@@ -1,0 +1,42 @@
+{
+    "version": "0.0.1",
+    "name": "python_sdk_test_map",
+    "auth": {
+        "method": "token",
+        "valid_tokens": [
+            "example_token"
+        ]
+    },
+    "placeholders": {
+        "color": {
+            "type": "css_color",
+            "default": "red"
+        }
+    },
+    "layergroup": {
+        "version": "1.0.1",
+        "layers": [
+            {
+                "type": "cartodb",
+                "options": {
+                    "cartocss_version": "2.1.1",
+                    "cartocss": "#layer { marker-fill: <%= color %>; }",
+                    "sql": "select * from tornados_11"
+                }
+            }
+        ]
+    },
+    "view": {
+        "zoom": 4,
+        "center": {
+            "lng": 0,
+            "lat": 0
+        },
+        "bounds": {
+            "west": -45,
+            "south": -45,
+            "east": 45,
+            "north": 45
+        }
+    }
+}

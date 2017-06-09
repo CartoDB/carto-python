@@ -1,20 +1,17 @@
-
-#from distutils.core import setup
+# -*- coding: utf-8 -*-
 from setuptools import setup
-import sys
 
-REQUIRES = ['oauth2']
-if sys.version_info < (2 , 6):
-    REQUIRES.append('simplejson')
+with open('requirements.txt') as f:
+    required = f.read().splitlines()
 
-setup(name='cartodb',
-      author = 'Javi Santana',
-      author_email = 'jsantana@vizzuality.com',
-      description = 'client to access cartodb api',
-      version='0.8.2',
-      url='https://github.com/CartoDB/cartodb-python',
-      install_requires=REQUIRES,
-      packages=['cartodb'],
-      requires = REQUIRES,
-      test_suite='test.client'
-)
+with open('test_requirements.txt') as f:
+    test_required = f.read().splitlines()
+
+setup(name="carto",
+      author="Daniel Carrión",
+      author_email="daniel@cartodb.com",
+      description="SDK around CartoDB's APIs",
+      version="1.0.0",
+      url="https://github.com/CartoDB/carto-python",
+      install_requires=required,
+      packages=["carto"])
