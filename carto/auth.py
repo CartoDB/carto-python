@@ -111,6 +111,7 @@ class APIKeyAuthClient(BaseAuthClient):
         except Exception:
             raise CartoException(_("Could not find a valid user_name in the " +
                                    "base URL provided. Please check that the" +
-                                   "URL is one of '{user_name}.carto.com', " +
-                                   "carto.com/user/{user_name} or a similar " +
-                                   "one based on your domain"))
+                                   "URL is one of " +
+                                   "'https://{user_name}.carto.com', " +
+                                   "'https://carto.com/user/{user_name}' " +
+                                   "or a similar one based on your domain"))
