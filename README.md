@@ -2,7 +2,8 @@ carto-python
 ============
 
 
-![](https://api.travis-ci.org/CartoDB/carto-python.svg?branch=1.0.0)
+![](https://api.travis-ci.org/CartoDB/carto-python.svg?branch=1.0.0) [![Documentation Status](https://readthedocs.org/projects/carto-python/badge/?version=latest)](http://carto-python.readthedocs.io/en/latest/?badge=latest)
+
 
 
 
