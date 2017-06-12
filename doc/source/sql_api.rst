@@ -5,9 +5,9 @@ Making requests to the `SQL API`_ is pretty straightforward:
 
 ::
 
-  from carto.sql import SQLCLient
+  from carto.sql import SQLClient
 
-  sql = SQLCLient(auth_client)
+  sql = SQLClient(auth_client)
 
   try:
       sql.send('select * from mytable')
