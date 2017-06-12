@@ -1,3 +1,4 @@
+import os
 import pytest
 
 from carto.exceptions import CartoException
@@ -73,6 +74,8 @@ def test_batch_create(api_key_auth_client_usr):
         assert confirmation == 'cancelled'
 
 
+@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
+                    reason="Integration tests not executed in Travis")
 def test_batch_multi_sql(api_key_auth_client_usr):
     sql = BatchSQLClient(api_key_auth_client_usr)
 
