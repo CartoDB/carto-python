@@ -9,7 +9,7 @@ with open('test_requirements.txt') as f:
 
 setup(name="carto",
       author="Daniel Carrión",
-      author_email="daniel@cartodb.com",
+      author_email="daniel@carto.com",
       description="SDK around CartoDB's APIs",
       version="1.0.0",
       url="https://github.com/CartoDB/carto-python",
