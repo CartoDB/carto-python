@@ -1,11 +1,17 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup
 
-with open('requirements.txt') as f:
-    required = f.read().splitlines()
+try:
+    with open('requirements.txt') as f:
+        required = f.read().splitlines()
+except:
+    required = ['requests>=2.7.0', 'pyrestcli>=0.6.3']
 
-with open('test_requirements.txt') as f:
-    test_required = f.read().splitlines()
+try:
+    with open('test_requirements.txt') as f:
+        test_required = f.read().splitlines()
+except:
+    pass
 
 setup(name="carto",
       author="Daniel Carrión",
