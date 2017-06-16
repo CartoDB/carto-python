@@ -26,10 +26,10 @@ By default all requests are sent via `POST`, anyway you still can send requests 
 
 ::
 
-  from carto.sql import SQLCLient
+  from carto.sql import SQLClient
   from carto.exceptions import CartoException
 
-  sql = SQLCLient(auth_client)
+  sql = SQLClient(auth_client)
 
   try:
      data = sql.send('select * from mytable', do_post=False)
@@ -54,9 +54,9 @@ By default, requests are sent in `JSON` format, but you can specify a different 
 
 ::
 
-  from carto.sql import SQLCLient
+  from carto.sql import SQLClient
 
-  sql = SQLCLient(auth_client)
+  sql = SQLClient(auth_client)
 
   try:
       result = sql.send('select * from mytable', format='csv')
@@ -77,7 +77,7 @@ For long lasting SQL queries you can use the `batch SQL API`_.
 
 ::
 
-  from carto.sql import BatchSQLCLient
+  from carto.sql import BatchSQLClient
 
   LIST_OF_SQL_QUERIES = []
 
