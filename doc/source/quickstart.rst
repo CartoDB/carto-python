@@ -9,13 +9,13 @@ As an example, next code snippet makes a SQL query to a dataset
 
   from carto.auth import APIKeyAuthClient
   from carto.exceptions import CartoException
-  from carto.sql import SQLCLient
+  from carto.sql import SQLClient
 
   USERNAME="type here your username"
   USR_BASE_URL = "https://{user}.carto.com/".format(user=USERNAME)
   auth_client = APIKeyAuthClient(api_key="myapikey", base_url=USR_BASE_URL)
 
-  sql = SQLCLient(auth_client)
+  sql = SQLClient(auth_client)
 
   try:
       data = sql.send('select * from mytable')
