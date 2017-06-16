@@ -6,15 +6,16 @@ Making requests to the `SQL API`_ is pretty straightforward:
 ::
 
   from carto.sql import SQLClient
+  from carto.exceptions import CartoException
 
   sql = SQLClient(auth_client)
 
   try:
-      sql.send('select * from mytable')
+      data = sql.send('select * from mytable')
   except CartoException as e:
       print("some error ocurred", e)
-  except:
-       print sql.rows
+
+  print data['rows']
 
 POST and GET
 ^^^^^^^^^^^^
@@ -26,15 +27,16 @@ By default all requests are sent via `POST`, anyway you still can send requests 
 ::
 
   from carto.sql import SQLCLient
+  from carto.exceptions import CartoException
 
   sql = SQLCLient(auth_client)
 
   try:
-     sql.send('select * from mytable', do_post=False)
+     data = sql.send('select * from mytable', do_post=False)
   except CartoException as e:
      print("some error ocurred", e)
-  except:
-      print sql.rows
+
+  print data['rows']
 
 Response formats
 ^^^^^^^^^^^^^^^^

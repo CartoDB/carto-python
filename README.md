@@ -100,11 +100,11 @@ from carto.sql import SQLCLient
 sql = SQLCLient(auth_client)
 
 try:
-    sql.send('select * from mytable')
+    data = sql.send('select * from mytable')
 except CartoException as e:
     print("some error ocurred", e)
-except:
-     print sql.rows
+
+print data['rows']
 ```
 
 Please refer to the source code documentation to find out about the rest of the parameters accepted by the constructor and the `send` method.
