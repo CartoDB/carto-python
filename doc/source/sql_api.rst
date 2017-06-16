@@ -84,7 +84,7 @@ For long lasting SQL queries you can use the `batch SQL API`_.
   batchSQLClient = BatchSQLClient(auth_client)
   createJob = batchSQLClient.create(LIST_OF_SQL_QUERIES)
 
-  print(createJob.job_id)
+  print(createJob['job_id'])
 
 
 The `BatchSQLClient` is asynchronous, but it offers methods to check the status of a job, update it or cancel it:
