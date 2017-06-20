@@ -6,15 +6,16 @@ Making requests to the `SQL API`_ is pretty straightforward:
 ::
 
   from carto.sql import SQLClient
+  from carto.exceptions import CartoException
 
   sql = SQLClient(auth_client)
 
   try:
-      sql.send('select * from mytable')
+      data = sql.send('select * from mytable')
   except CartoException as e:
       print("some error ocurred", e)
-  except:
-       print sql.rows
+
+  print data['rows']
 
 POST and GET
 ^^^^^^^^^^^^
@@ -25,16 +26,17 @@ By default all requests are sent via `POST`, anyway you still can send requests 
 
 ::
 
-  from carto.sql import SQLCLient
+  from carto.sql import SQLClient
+  from carto.exceptions import CartoException
 
-  sql = SQLCLient(auth_client)
+  sql = SQLClient(auth_client)
 
   try:
-     sql.send('select * from mytable', do_post=False)
+     data = sql.send('select * from mytable', do_post=False)
   except CartoException as e:
      print("some error ocurred", e)
-  except:
-      print sql.rows
+
+  print data['rows']
 
 Response formats
 ^^^^^^^^^^^^^^^^
@@ -52,9 +54,9 @@ By default, requests are sent in `JSON` format, but you can specify a different 
 
 ::
 
-  from carto.sql import SQLCLient
+  from carto.sql import SQLClient
 
-  sql = SQLCLient(auth_client)
+  sql = SQLClient(auth_client)
 
   try:
       result = sql.send('select * from mytable', format='csv')
@@ -75,14 +77,14 @@ For long lasting SQL queries you can use the `batch SQL API`_.
 
 ::
 
-  from carto.sql import BatchSQLCLient
+  from carto.sql import BatchSQLClient
 
   LIST_OF_SQL_QUERIES = []
 
   batchSQLClient = BatchSQLClient(auth_client)
   createJob = batchSQLClient.create(LIST_OF_SQL_QUERIES)
 
-  print(createJob.job_id)
+  print(createJob['job_id'])
 
 
 The `BatchSQLClient` is asynchronous, but it offers methods to check the status of a job, update it or cancel it:

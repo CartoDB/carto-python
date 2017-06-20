@@ -8,6 +8,7 @@ As an example, next code snippet makes a SQL query to a dataset
 ::
 
   from carto.auth import APIKeyAuthClient
+  from carto.exceptions import CartoException
   from carto.sql import SQLClient
 
   USERNAME="type here your username"
@@ -17,8 +18,8 @@ As an example, next code snippet makes a SQL query to a dataset
   sql = SQLClient(auth_client)
 
   try:
-      sql.send('select * from mytable')
+      data = sql.send('select * from mytable')
   except CartoException as e:
       print("some error ocurred", e)
-  except:
-       print sql.rows
+
+  print data['rows']
