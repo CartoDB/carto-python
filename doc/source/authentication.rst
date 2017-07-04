@@ -42,3 +42,14 @@ The `base_url` parameter must include the `user` and or the `organization` with 
 
 
 For a detailed description of the rest of parameters both constructors accept, please take a look at the :ref:`authmodule` documentation.
+
+Finally, you can use a `NonVerifiedAPIKeyAuthClient` instance if you are running CARTO on your premises and don't have a valid SSL certificate:
+
+::
+
+  from carto.auth import NonVerifiedAPIKeyAuthClient
+
+  USERNAME="type here your username"
+  YOUR_ON_PREM_DOMAIN="myonprem.com"
+  USR_BASE_URL = "https://{domain}/user/{user}".format(domain=YOUR_ON_PREM_DOMAIN, user=USERNAME)
+  auth_client = NonVerifiedAPIKeyAuthClient(api_key="myapikey", base_url=USR_BASE_URL)

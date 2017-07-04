@@ -92,3 +92,28 @@ def test_batch_multi_sql(api_key_auth_client_usr):
         pass
     else:
         assert confirmation == 'cancelled'
+
+
+def test_sql_unverified(non_verified_auth_client):
+    if non_verified_auth_client is None:
+        assert True is True
+        return
+
+    sql = SQLClient(non_verified_auth_client)
+    data = sql.send('select version()')
+
+    assert data is not None
+    assert 'rows' in data
+    assert 'total_rows' in data
+    assert 'time' in data
+    assert len(data['rows']) > 0
+
+
+def test_sql_unverified_fails_with_auth_client(wrong_onprem_auth_client):
+    if wrong_onprem_auth_client is None:
+        assert True is True
+        return
+
+    sql = SQLClient(wrong_onprem_auth_client)
+    with pytest.raises(CartoException):
+        data = sql.send('select version()')

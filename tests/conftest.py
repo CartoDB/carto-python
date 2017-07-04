@@ -3,7 +3,7 @@ import pytest
 
 from pyrestcli.auth import NoAuthClient
 
-from carto.auth import APIKeyAuthClient
+from carto.auth import APIKeyAuthClient, NonVerifiedAPIKeyAuthClient
 from carto.users import UserManager
 from mocks import MockRequests, NotMockRequests
 
@@ -22,9 +22,32 @@ if "USERNAME" in os.environ:
 else:
     from secret import USERNAME
 
+if "ONPREMISES" in os.environ:
+    ONPREMISES = os.environ["ONPREMISES"]
+else:
+    from secret import ONPREMISES
+
+if "ONPREM_USERNAME" in os.environ:
+    ONPREM_USERNAME = os.environ["ONPREM_USERNAME"]
+else:
+    from secret import ONPREM_USERNAME
+
+if "ONPREM_ORGANIZATION" in os.environ:
+    ONPREM_ORGANIZATION = os.environ["ONPREM_ORGANIZATION"]
+else:
+    from secret import ONPREM_ORGANIZATION
+
+if "ONPREM_API_KEY" in os.environ:
+    ONPREM_API_KEY = os.environ["ONPREM_API_KEY"]
+else:
+    from secret import ONPREM_API_KEY
+
 BASE_URL = "https://{organization}.carto.com/user/{user}/". \
     format(organization=ORGANIZATION,
            user=USERNAME)
+ONPREMISES_USR_BASE_URL = "https://{onpremises}/user/{onpremuser}/". \
+    format(onpremises=ONPREMISES,
+           onpremuser=ONPREM_USERNAME)
 USR_BASE_URL = "https://{user}.carto.com/".format(user=USERNAME)
 
 
@@ -56,6 +79,30 @@ def no_auth_client():
     :return: NoAuthClient instance
     """
     return NoAuthClient(USR_BASE_URL)
+
+
+@pytest.fixture(scope="session")
+def non_verified_auth_client():
+    """
+    Returns an authentication client that can be used to send authenticated
+    test requests to CARTO onpremises
+    :return: NonVerifiedAPIKeyAuthClient instance
+    """
+    if ONPREM_API_KEY is None:
+        return None
+    return NonVerifiedAPIKeyAuthClient(ONPREMISES_USR_BASE_URL, ONPREM_API_KEY, ONPREM_ORGANIZATION)
+
+
+@pytest.fixture(scope="session")
+def wrong_onprem_auth_client():
+    """
+    Returns an authentication client that can be used to send authenticated
+    test requests to CARTO onpremises
+    :return: NonVerifiedAPIKeyAuthClient instance
+    """
+    if ONPREM_API_KEY is None:
+        return None
+    return APIKeyAuthClient(ONPREMISES_USR_BASE_URL, ONPREM_API_KEY, ONPREM_ORGANIZATION)
 
 
 @pytest.fixture(scope="session")
