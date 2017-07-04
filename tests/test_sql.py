@@ -137,4 +137,4 @@ def test_sql_additional_params(api_key_auth_client_usr):
     data = sql.send('select * from ' + EXISTING_POINT_DATASET,
                         do_post=True)
 
-    assert "the_geom_webmercator" not in data['rows'][0]
+    assert "the_geom_webmercator" in data['rows'][0]
