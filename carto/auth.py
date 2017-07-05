@@ -80,7 +80,7 @@ class APIKeyAuthClient(BaseAuthClient):
             CartoException
         """
         try:
-            self.prepare_send(http_method, **requests_args)
+            http_method, requests_args = self.prepare_send(http_method, **requests_args)
 
             return super(APIKeyAuthClient, self).send(relative_path,
                                                       http_method,
@@ -118,6 +118,8 @@ class APIKeyAuthClient(BaseAuthClient):
             if "params" not in requests_args:
                 requests_args["params"] = {}
             requests_args["params"].update({"api_key": self.api_key})
+
+        return http_method, requests_args
 
 
 class NonVerifiedAPIKeyAuthClient(APIKeyAuthClient):
@@ -161,7 +163,7 @@ class NonVerifiedAPIKeyAuthClient(APIKeyAuthClient):
             CartoException
         """
         try:
-            self.prepare_send(http_method, **requests_args)
+            http_method, requests_args = self.prepare_send(http_method, **requests_args)
             requests_args["verify"] = False
             return super(APIKeyAuthClient, self).send(relative_path,
                                                       http_method,
