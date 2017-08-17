@@ -51,10 +51,14 @@ def test_create_and_modify_and_delete_dataset_from_file(dataset_manager):
     dataset_id = dataset.get_id()
     dataset = dataset_manager.get(dataset_id)
     dataset.privacy = PUBLIC
+    dataset.license = "mit"
+    dataset.attributions = "test"
     dataset.save()
 
     dataset = dataset_manager.get(dataset_id)
     assert dataset.privacy == PUBLIC
+    assert dataset.license == "mit"
+    assert dataset.attributions == "test"
 
     dataset.delete()
     with pytest.raises(NotFoundException):
