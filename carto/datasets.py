@@ -44,7 +44,7 @@ class Dataset(WarnResource):
     """
     active_child = None
     active_layer_id = CharField()
-    attributions = None
+    attributions = CharField()
     auth_tokens = CharField(many=True)
     children = None
     created_at = DateTimeField()
@@ -54,7 +54,7 @@ class Dataset(WarnResource):
     external_source = None
     id = CharField()
     kind = CharField()
-    license = None
+    license = CharField()
     liked = BooleanField()
     likes = IntegerField()
     locked = BooleanField()

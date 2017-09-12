@@ -41,7 +41,7 @@ class SQLClient(object):
         self.username = getattr(self.auth_client, 'username', None)
         self.base_url = self.auth_client.base_url
 
-    def send(self, sql, parse_json=True, do_post=True, format=None):
+    def send(self, sql, parse_json=True, do_post=True, format=None, **request_args):
         """
         Executes SQL query in a CARTO server
 
@@ -50,10 +50,12 @@ class SQLClient(object):
         :param do_post: Set it to True to force post request
         :param format: Any of the data export formats allowed by CARTO's
                         SQL API
+        :param request_args: Additional parameters to send with the request
         :type sql: str
         :type parse_json: boolean
         :type do_post: boolean
         :type format: str
+        :type request_args: dictionary
 
         :return: response data, either as json or as a regular
                     response.content object
@@ -67,6 +69,10 @@ class SQLClient(object):
                 params['format'] = format
                 if format not in ['json', 'geojson']:
                     parse_json = False
+
+            if request_args is not None:
+                for attr in request_args:
+                    params[attr] = request_args[attr]
 
             if len(sql) < MAX_GET_QUERY_LEN and do_post is False:
                 resp = self.auth_client.send(self.api_url,

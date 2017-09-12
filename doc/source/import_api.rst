@@ -161,3 +161,51 @@ You still can configure a sync external database connector, by providing the `in
 ::
 
   table = dataset_manager.create(None, 900, connection=connection)
+
+DatasetManager vs FileImportJobManager and SyncTableJobManager
+--------------------------------------------------------------
+
+The `DatasetManager` is conceptually different from both `FileImportJobManager` and `SyncTableJobManager`. These later ones are `JobManagers`, that means that they create and return a job using the CARTO Import API. It's responsibility of the developer to check the `state` of the job to know whether the dataset import job is completed, or has failed, errored, etc.
+
+As an example, this code snippet uses the `FileImportJobManager` to create an import job:
+
+::
+
+  # write here the URL for the dataset or the path to a local file (local to the server...)
+  LOCAL_FILE_OR_URL = "https://academy.cartodb.com/d/tornadoes.zip"
+
+  file_import_manager = FileImportJobManager(auth_client)
+  file_import = file_import_manager.create(LOCAL_FILE_OR_URL)
+
+  # return the id of the import
+  file_id = file_import.get_id()
+
+  file_import.run()
+  while(file_import.state != "complete" and file_import.state != "created"
+              and file_import.state != "success"):
+      time.sleep(5)
+      file_import.refresh()
+      if (file_import.state == 'failure'):
+          print('The error code is: ' + str(file_import))
+          break
+
+Note that with the `FileImportJobManager` we are creating an import job and we check the `state` of the job.
+
+On the other hand the `DatasetManager` is an utility class that works at the level of `Dataset`. It creates and returns a `Dataset` instance. Internally, it uses a `FileImportJobManager` or a `SyncTableJobManager` depending on the parameters received and is able to automatically `check` the `state` of the job it creates to properly return a `Dataset` instance once the job finishes successfully or a `CartoException` in any other case.
+
+As an example, this code snippet uses the `DatasetManager` to create a dataset:
+
+::
+
+  # write here the path to a local file (local to the server...) or remote URL
+  LOCAL_FILE_OR_URL = "https://academy.cartodb.com/d/tornadoes.zip"
+
+  # to use the DatasetManager you need an enterprise account
+  auth_client = APIKeyAuthClient(BASE_URL, API_KEY)
+
+  dataset_manager = DatasetManager(auth_client)
+  dataset = dataset_manager.create(LOCAL_FILE_OR_URL)
+
+  # the create method will wait up to 10 minutes until the dataset is uploaded.
+
+In this case, you don't have to check the `state` of the import job, since it's done automatically by the `DatasetManager`. On the other hand, you get a `Dataset` instance as a result, instead of a `FileImportJob` instance.
