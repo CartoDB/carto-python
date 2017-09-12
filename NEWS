@@ -1,3 +1,13 @@
+Sep-12-2017: version 1.1.0
+ - Expose params in `sql_client.send`(#58)
+ - Added support for invalid SSL certificates (#59)
+ - License and attributions for datasets are not saved (#62)
+ - Docs: http://carto-python.readthedocs.io/en/1.1.0/
+
+Jun-12-2017: version 1.0.1
+ - SDK rewritten
+ - Docs: http://carto-python.readthedocs.io/en/1.0.1/
+
 Jun-06-2014: version 0.8
  - added format param for sql method
  - using API v2 by default
