@@ -82,6 +82,7 @@ BASE_URL = "https://{organization}.carto.com/user/{user}/". \
     format(organization=ORGANIZATION,
            user=USERNAME)
 USR_BASE_URL = "https://{user}.carto.com/".format(user=USERNAME)
+auth_client = APIKeyAuthClient(api_key="myapikey", base_url=USR_BASE_URL, organization=ORGANIZATION)
 ```
 
 Additionally, see `test_auth.py` for supported formats for the `base_url` parameter.
