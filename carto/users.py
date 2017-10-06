@@ -26,6 +26,7 @@ from .resources import Manager, WarnResource
 
 API_VERSION = "v1"
 API_ENDPOINT = "api/{api_version}/organization/{organization}/users/"
+API_NONORG_ENDPOINT = "api/{api_version}/users/"
 
 
 class User(WarnResource):
@@ -60,15 +61,16 @@ class User(WarnResource):
         :param auth_client: Auth client
         """
         if auth_client.organization is None:
-            raise CartoException(_("User management requires an \
-                                   organization-enabled APIKeyAuthClient"))
+            self._api_endpoint = API_NONORG_ENDPOINT
+        else:
+            self._api_endpoint = API_ENDPOINT
 
         super(User, self).__init__(auth_client)
 
     def get_collection_endpoint(self):
         """
         """
-        return API_ENDPOINT.format(api_version=API_VERSION,
+        return self._api_endpoint.format(api_version=API_VERSION,
                                    organization=self.client.organization)
 
     def get_resource_endpoint(self):
@@ -100,7 +102,7 @@ class UserManager(Manager):
     def get_collection_endpoint(self):
         """
         """
-        return API_ENDPOINT.format(api_version=API_VERSION,
+        return self._api_endpoint.format(api_version=API_VERSION,
                                    organization=self.client.organization)
 
     def get_resource_endpoint(self, resource_id):
