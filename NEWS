@@ -1,3 +1,6 @@
+Mon-DD-YYYY: version V.V.V
+ - Fix for using with non-organization users (#67)
+
 Sep-12-2017: version 1.1.0
  - Expose params in `sql_client.send`(#58)
  - Added support for invalid SSL certificates (#59)
