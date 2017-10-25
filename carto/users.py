@@ -91,6 +91,17 @@ class UserManager(Manager):
     resource_class = User
     paginator_class = CartoPaginator
 
+    def __init__(self, auth_client):
+        """
+        :param auth_client: Client to make (non)authorized requests
+        :return:
+        """
+        super(UserManager, self).__init__(auth_client)
+        if auth_client.organization is None:
+            self._api_endpoint = API_NONORG_ENDPOINT
+        else:
+            self._api_endpoint = API_ENDPOINT
+
     def filter(self, **search_args):
         """
         Should get all the current users from CARTO, but this is currently not
