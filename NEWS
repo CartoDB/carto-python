@@ -1,5 +1,6 @@
-Mon-DD-YYYY: version V.V.V
+Oct-26-2017: version 1.1.1
  - Fix for using with non-organization users (#67)
+ - Fix in filter function
 
 Sep-12-2017: version 1.1.0
  - Expose params in `sql_client.send`(#58)
