@@ -1,3 +1,6 @@
+Dec-27-2017: version 1.1.2
+ - Fix on examples management of environment variables (#70)
+
 Oct-26-2017: version 1.1.1
  - Fix for using with non-organization users (#67)
  - Fix in filter function (#68)
