@@ -22,32 +22,38 @@ parser = argparse.ArgumentParser(
     description='Return information from a specific user')
 
 parser.add_argument('--organization', type=str, dest='organization',
-                    default=os.environ['CARTO_ORG'],
+                    default=os.environ['CARTO_ORG'] if 'CARTO_ORG' in os.environ else '',
                     help='Set the name of the organization' +
                     ' account (defaults to env variable CARTO_ORG)')
 
 parser.add_argument('--base_url', type=str, dest='CARTO_BASE_URL',
-                    default=os.environ['CARTO_API_URL'],
+                    default=os.environ['CARTO_API_URL'] if 'CARTO_API_URL' in os.environ else '',
                     help='Set the base URL. For example:' +
                     ' https://username.carto.com/ ' +
                     '(defaults to env variable CARTO_API_URL)')
 
 parser.add_argument('--api_key', dest='CARTO_API_KEY',
-                    default=os.environ['CARTO_API_KEY'],
+                    default=os.environ['CARTO_API_KEY'] if 'CARTO_API_KEY' in os.environ else '',
                     help='Api key of the account' +
                     ' (defaults to env variable CARTO_API_KEY)')
 
 parser.add_argument('--username', dest='CARTO_USER',
-                    default=os.environ['CARTO_USER'],
+                    default=os.environ['CARTO_USER'] if 'CARTO_USER' in os.environ else '',
                     help='define username of the organization' +
                     ' to check (defaults to env variable CARTO_USER)')
 args = parser.parse_args()
 
 
 # Set authentification to CARTO
-auth_client = APIKeyAuthClient(
-    args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
-user_manager = UserManager(auth_client)
+if args.CARTO_BASE_URL and args.CARTO_API_KEY and args.CARTO_USER and args.organization:
+    auth_client = APIKeyAuthClient(
+        args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
+    user_manager = UserManager(auth_client)
+else:
+    logger.error('You need to provide valid credentials, run with -h parameter for details')
+    import sys
+    sys.exit(1)
+
 
 userInfo = []
 print('\nThe attributes of the user are:\n')

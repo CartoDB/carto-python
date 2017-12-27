@@ -88,7 +88,7 @@ def non_verified_auth_client():
     test requests to CARTO onpremises
     :return: NonVerifiedAPIKeyAuthClient instance
     """
-    if ONPREM_API_KEY is None:
+    if not ONPREM_API_KEY:
         return None
     return NonVerifiedAPIKeyAuthClient(ONPREMISES_USR_BASE_URL, ONPREM_API_KEY, ONPREM_ORGANIZATION)
 
@@ -100,7 +100,7 @@ def wrong_onprem_auth_client():
     test requests to CARTO onpremises
     :return: NonVerifiedAPIKeyAuthClient instance
     """
-    if ONPREM_API_KEY is None:
+    if not ONPREM_API_KEY:
         return None
     return APIKeyAuthClient(ONPREMISES_USR_BASE_URL, ONPREM_API_KEY, ONPREM_ORGANIZATION)
 

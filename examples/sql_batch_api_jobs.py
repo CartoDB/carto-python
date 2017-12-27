@@ -30,28 +30,32 @@ parser.add_argument('--job_id', type=str, dest='job_id',
                     help='Set the id of the job to check')
 
 parser.add_argument('--organization', type=str, dest='organization',
-                    default=os.environ['CARTO_ORG'],
+                    default=os.environ['CARTO_ORG'] if 'CARTO_ORG' in os.environ else '',
                     help='Set the name of the organization' +
                     ' account (defaults to env variable CARTO_ORG)')
 
 parser.add_argument('--base_url', type=str, dest='CARTO_BASE_URL',
-                    default=os.environ['CARTO_API_URL'],
+                    default=os.environ['CARTO_API_URL'] if 'CARTO_API_URL' in os.environ else '',
                     help='Set the base URL. For example:' +
                     ' https://username.carto.com/ ' +
                     '(defaults to env variable CARTO_API_URL)')
 
 parser.add_argument('--api_key', dest='CARTO_API_KEY',
-                    default=os.environ['CARTO_API_KEY'],
+                    default=os.environ['CARTO_API_KEY'] if 'CARTO_API_KEY' in os.environ else '',
                     help='Api key of the account' +
                     ' (defaults to env variable CARTO_API_KEY)')
 
 args = parser.parse_args()
 
 # Set authentification to CARTO
-auth_client = APIKeyAuthClient(
-    args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
-
-batchSQLClient = BatchSQLClient(auth_client)
+if args.CARTO_BASE_URL and args.CARTO_API_KEY and args.organization:
+    auth_client = APIKeyAuthClient(
+        args.CARTO_BASE_URL, args.CARTO_API_KEY, args.organization)
+    batchSQLClient = BatchSQLClient(auth_client)
+else:
+    logger.error('You need to provide valid credentials, run with -h parameter for details')
+    import sys
+    sys.exit(1)
 
 # Batch SQL API operations
 if args.operation == 'create':
