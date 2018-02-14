@@ -13,7 +13,7 @@ Module for working with tables
 
 from pyrestcli.fields import IntegerField, CharField, DateTimeField
 
-from .fields import PermissionField, VisualizationField
+from .fields import PermissionField, VisualizationField, SynchronizationField
 from .paginators import CartoPaginator
 from .resources import Manager, WarnResource
 
@@ -36,7 +36,7 @@ class Table(WarnResource):
     name = CharField()
     privacy = CharField()
     permission = PermissionField()
-    schema = None
+    schema = CharField()
     updated_at = DateTimeField()
     rows_counted = IntegerField()
     row_count = IntegerField()
@@ -48,7 +48,7 @@ class Table(WarnResource):
     table_visualization = VisualizationField()
     dependent_visualizations = None
     non_dependent_visualizations = None
-    synchronization = None
+    synchronization = SynchronizationField()
 
     class Meta:
         collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
