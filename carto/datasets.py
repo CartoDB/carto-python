@@ -16,7 +16,7 @@ import json
 from gettext import gettext as _
 
 from pyrestcli.fields import IntegerField, CharField, DateTimeField, \
-    BooleanField
+    BooleanField, DictField
 
 from .exceptions import CartoException
 from .file_import import FileImportJobManager
