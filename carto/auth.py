@@ -16,7 +16,7 @@ import re
 import sys
 import warnings
 
-from pyrestcli.auth import BaseAuthClient
+from pyrestcli.auth import BaseAuthClient, BasicAuthClient
 
 from .exceptions import CartoException
 
@@ -26,7 +26,43 @@ else:
     from urlparse import urlparse
 
 
-class APIKeyAuthClient(BaseAuthClient):
+class _UsernameGetter:
+    def get_user_name(self, base_url):
+        try:
+            url_info = urlparse(base_url)
+            # On-Prem:
+            #   /user/<username>
+            m = re.search('^/user/([^/]+)/.*$', url_info.path)
+            if m is None:
+                # Cloud personal account (org and standalone)
+                # <username>.carto.com
+                netloc = url_info.netloc
+                if netloc.startswith('www.'):
+                    netloc = netloc.split('www.')[1]
+                m = re.search('^(.*?)\..*', netloc)
+            return m.group(1)
+        except Exception:
+            raise CartoException(_("Could not find a valid user_name in the " +
+                                   "base URL provided. Please check that the" +
+                                   "URL is one of " +
+                                   "'https://{user_name}.carto.com', " +
+                                   "'https://carto.com/user/{user_name}' " +
+                                   "or a similar one based on your domain"))
+
+class _BaseUrlChecker:
+    def check_base_url(self, base_url):
+        if not base_url.startswith("https"):
+            warnings.warn("You are using unencrypted API key \
+                          authentication!!!")
+        # Make sure there is a trailing / for urljoin
+        if not base_url.endswith('/'):
+            base_url += '/'
+
+        return base_url
+
+
+
+class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, BaseAuthClient):
     """
     This class provides you with authenticated access to CARTO's APIs using
     your API key.
@@ -48,17 +84,9 @@ class APIKeyAuthClient(BaseAuthClient):
 
         :return:
         """
-        if not base_url.startswith("https"):
-            warnings.warn("You are using unencrypted API key \
-                          authentication!!!")
-
         self.organization = organization
         self.api_key = api_key
-
-        # Make sure there is a trailing / for urljoin
-        if not base_url.endswith('/'):
-            base_url += '/'
-
+        base_url = self.check_base_url(base_url)
         self.username = self.get_user_name(base_url)
 
         super(APIKeyAuthClient, self).__init__(base_url, session=session)
@@ -87,28 +115,6 @@ class APIKeyAuthClient(BaseAuthClient):
                                                       **requests_args)
         except Exception as e:
             raise CartoException(e)
-
-    def get_user_name(self, base_url):
-        try:
-            url_info = urlparse(base_url)
-            # On-Prem:
-            #   /user/<username>
-            m = re.search('^/user/([^/]+)/.*$', url_info.path)
-            if m is None:
-                # Cloud personal account (org and standalone)
-                # <username>.carto.com
-                netloc = url_info.netloc
-                if netloc.startswith('www.'):
-                    netloc = netloc.split('www.')[1]
-                m = re.search('^(.*?)\..*', netloc)
-            return m.group(1)
-        except Exception:
-            raise CartoException(_("Could not find a valid user_name in the " +
-                                   "base URL provided. Please check that the" +
-                                   "URL is one of " +
-                                   "'https://{user_name}.carto.com', " +
-                                   "'https://carto.com/user/{user_name}' " +
-                                   "or a similar one based on your domain"))
 
     def prepare_send(self, http_method, **requests_args):
         http_method = http_method.lower()
@@ -170,3 +176,50 @@ class NonVerifiedAPIKeyAuthClient(APIKeyAuthClient):
                                                       **requests_args)
         except Exception as e:
             raise CartoException(e)
+
+
+class AuthAPIClient(_UsernameGetter, _BaseUrlChecker, BasicAuthClient):
+    """
+    This class provides you with authenticated access to CARTO's APIs using
+    your API key at Basic authentication header, as provided by Auth API.
+
+    Auth API is still under development. You might want to take a look at
+    APIKeyAuthClient for missing features or an stable API.
+
+    You can find your API key by clicking on the API key section of the user
+    dropdown menu
+    """
+
+    def __init__(self, base_url, api_key, organization=None, session=None):
+        """
+        Init method
+
+        :param base_url: Base URL. API endpoint paths will always be relative
+        to this URL
+        :param api_key: API key
+        :param organization: For enterprise users, organization user belongs to
+        :param session: requests' session object
+        :type api_key: str
+        :type organization: str
+
+        :return:
+        """
+        self.organization = organization
+        self.api_key = api_key
+        base_url = self.check_base_url(base_url)
+        self.username = self.get_user_name(base_url)
+
+        super(AuthAPIClient, self).__init__(self.username, api_key, base_url, session=session)
+
+    def is_valid_api_key(self):
+        """
+        Checks validity. Right now, an API key is considered valid if it
+        can list user API keys and the result contains that API key.
+        This might change in the future.
+
+        :return: True if the API key is considered valid for current user.
+        """
+        res = self.send('/api/v3/api_keys', 'get')
+        return \
+            res.status_code == 200 and \
+            self.api_key in map(lambda ak: ak['token'], res.json()['result'])

@@ -33,3 +33,46 @@ def test_on_prem_url():
     assert user1 == 'user1'
     assert user2 == 'user2'
     assert user3 == 'user3'
+
+from conftest import USR_BASE_URL, USERNAME, DEFAULT_PUBLIC_API_KEY
+
+def test_api_key_auth_client_username():
+    conf_username = APIKeyAuthClient(USR_BASE_URL, API_KEY).username
+    assert conf_username == USERNAME
+
+def test_api_key_auth_client_me_endpoint():
+    client = APIKeyAuthClient(USR_BASE_URL, API_KEY)
+    username = client.send('/api/v3/me', 'get').json()['config']['user_name']
+    assert username == USERNAME
+
+from carto.auth import AuthAPIClient
+
+def test_auth_api_client_username():
+    conf_username = AuthAPIClient(USR_BASE_URL, API_KEY).username
+    assert conf_username == USERNAME
+
+def test_auth_api_client_me_endpoint():
+    client = AuthAPIClient(USR_BASE_URL, API_KEY)
+    username = client.send('/api/v3/me', 'get').json()['config']['user_name']
+    assert username == USERNAME
+
+def test_api_key_auth_cant_read_api_keys_with_default_public():
+    client = APIKeyAuthClient(USR_BASE_URL, DEFAULT_PUBLIC_API_KEY)
+    response = client.send('/api/v3/api_keys', 'get')
+    assert response.status_code == 401
+
+def test_auth_api_can_read_api_keys_with_default_public():
+    client = AuthAPIClient(USR_BASE_URL, DEFAULT_PUBLIC_API_KEY)
+    response = client.send('/api/v3/api_keys', 'get')
+    assert response.status_code == 200
+    assert response.json()['count'] == 1
+
+def test_auth_api_is_valid_api_key_with_wrong_key():
+    assert AuthAPIClient(USR_BASE_URL, 'wadus').is_valid_api_key() == False
+
+def test_auth_api_is_valid_api_key_with_default_public_key():
+    assert AuthAPIClient(USR_BASE_URL, DEFAULT_PUBLIC_API_KEY). \
+               is_valid_api_key() == True
+
+def test_auth_api_is_valid_api_key_with_master_key():
+    assert AuthAPIClient(USR_BASE_URL, API_KEY).is_valid_api_key() == True
