@@ -182,7 +182,7 @@ class DatasetManager(Manager):
         import_job.refresh()
 
         count = 0
-        while import_job.state in ("enqueued", "pending", "uploading",
+        while import_job.state in ("enqueued", "queued", "pending", "uploading",
                                    "unpacking", "importing", "guessing") \
             or (isinstance(manager, SyncTableJobManager)
                 and import_job.state == "created"):
