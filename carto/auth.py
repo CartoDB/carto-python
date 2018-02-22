@@ -49,6 +49,7 @@ class _UsernameGetter:
                                    "'https://carto.com/user/{user_name}' " +
                                    "or a similar one based on your domain"))
 
+
 class _BaseUrlChecker:
     def check_base_url(self, base_url):
         if not base_url.startswith("https"):
@@ -59,7 +60,6 @@ class _BaseUrlChecker:
             base_url += '/'
 
         return base_url
-
 
 
 class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, BaseAuthClient):
@@ -221,5 +221,5 @@ class AuthAPIClient(_UsernameGetter, _BaseUrlChecker, BasicAuthClient):
         """
         res = self.send('/api/v3/api_keys', 'get')
         return \
-            res.status_code == 200 and \
-            self.api_key in map(lambda ak: ak['token'], res.json()['result'])
+            res.ok and \
+            self.api_key in (ak['token'] for ak in res.json()['result'])
