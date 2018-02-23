@@ -219,7 +219,10 @@ class AuthAPIClient(_UsernameGetter, _BaseUrlChecker, BasicAuthClient):
 
         :return: True if the API key is considered valid for current user.
         """
-        res = self.send('/api/v3/api_keys', 'get')
-        return \
-            res.ok and \
-            self.api_key in (ak['token'] for ak in res.json()['result'])
+        try:
+            res = self.send('/api/v3/api_keys', 'get')
+            return \
+                res.ok and \
+                self.api_key in (ak['token'] for ak in res.json()['result'])
+        except:
+            return False
