@@ -7,6 +7,8 @@ from carto.auth import APIKeyAuthClient, NonVerifiedAPIKeyAuthClient
 from carto.users import UserManager
 from mocks import MockRequests, NotMockRequests
 
+DEFAULT_PUBLIC_API_KEY = 'default_public'
+
 if "PROTOCOL" in os.environ:
     PROTOCOL = os.environ["PROTOCOL"]
 else:

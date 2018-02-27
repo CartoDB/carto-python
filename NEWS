@@ -1,5 +1,8 @@
+Feb-21-2018: version 1.2.1
+ - Added AuthAPIClient class for future Auth API usage and API key validation (#69)
+
 Feb-21-2018: version 1.2.0
- - Added PROTOCOL and HOST to test configuration allowing local testing.
+ - Added PROTOCOL and HOST to test configuration allowing local testing
 
 Dec-27-2017: version 1.1.2
  - Fix on examples management of environment variables (#70)
