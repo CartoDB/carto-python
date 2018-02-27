@@ -38,6 +38,7 @@ def test_on_prem_url():
 USER1_BASE_URL = 'https://user1.carto.com/'
 USER1_USERNAME = 'user1'
 
+
 def test_api_key_auth_client_username():
     conf_username = APIKeyAuthClient(USER1_BASE_URL, API_KEY).username
     assert conf_username == USER1_USERNAME
@@ -74,15 +75,15 @@ def test_auth_api_can_read_api_keys_with_default_public():
 
 
 def test_auth_api_is_valid_api_key_with_wrong_key():
-    assert AuthAPIClient(USER1_BASE_URL, 'wadus').is_valid_api_key() == False
+    assert AuthAPIClient(USER1_BASE_URL, 'wadus').is_valid_api_key() is False
 
 
 def test_auth_api_is_valid_api_key_with_default_public_key():
     assert AuthAPIClient(USER1_BASE_URL, DEFAULT_PUBLIC_API_KEY). \
-               is_valid_api_key() == True
+               is_valid_api_key()
 
 
 def test_auth_api_is_valid_api_key_with_master_key():
     if API_KEY == 'mockmockmock':
         pytest.skip("Can't be tested with mock api key")
-    assert AuthAPIClient(USR_BASE_URL, API_KEY).is_valid_api_key() == True
+    assert AuthAPIClient(USR_BASE_URL, API_KEY).is_valid_api_key()
