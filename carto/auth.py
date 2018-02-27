@@ -7,6 +7,7 @@ Module for authenticated access to CARTO's APIs
 
 .. moduleauthor:: Daniel Carrion <daniel@carto.com>
 .. moduleauthor:: Alberto Romeu <alrocar@carto.com>
+.. moduleauthor:: Juan Ignacio Sánchez <juanignaciosl@carto.com>
 
 
 """
