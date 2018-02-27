@@ -3,7 +3,7 @@ import pytest
 from secret import API_KEY
 from carto.auth import APIKeyAuthClient
 from carto.exceptions import CartoException
-from conftest import USR_BASE_URL, USERNAME, DEFAULT_PUBLIC_API_KEY
+from conftest import USR_BASE_URL, DEFAULT_PUBLIC_API_KEY
 from carto.auth import AuthAPIClient
 
 
