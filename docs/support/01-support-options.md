@@ -19,7 +19,7 @@ Before opening an issue, review the [contributing guidelines](https://github.com
 
 GIS Stack Exchange is the most popular community in the geospatial industry. This is a collaboratively-edited question and answer site for geospatial programmers and technicians. It is a fantastic resource for asking technical questions about developing and maintaining your application.
 
-Members of the Python SDK team regularly monitor the `carto` tag. You can look for CARTO topics by adding `carto` or `cartodb.js` to your search query. You can also add additional tags to your question in order to attract the attention of experts in related technologies.
+Members of the Python SDK team regularly monitor the `carto` tag. You can look for CARTO topics by adding `carto` or `carto-python` or `carto python sdk` to your search query. You can also add additional tags to your question in order to attract the attention of experts in related technologies.
 
 
 When posting a new question, please consider the following:
