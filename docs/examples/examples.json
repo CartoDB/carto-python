@@ -17,9 +17,9 @@
                     "file": "import/import-standard-table.md"
                 },
                 {
-                    "title": "Import from database",
-                    "desc": "Import data into your CARTO account from database.",
-                    "file": "import/import-from-database.md"
+                    "title": "Import sync table",
+                    "desc": "Import sync table into your CARTO account from database.",
+                    "file": "import/import-sync-table.md"
                 },
                 {
                     "title": "Import from database",
