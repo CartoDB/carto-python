@@ -15,6 +15,7 @@ Making requests to the `SQL API`_ is pretty straightforward:
       print("some error ocurred", e)
 
   print data['rows']
+```
 
 **Tip:** If you want to learn more about SQL API, browse its [guides]({{site.sqlapi_docs}}/guides/) and [reference]({{site.sqlapi_docs}}/reference/).
 
