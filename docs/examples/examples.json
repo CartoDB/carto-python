@@ -1,0 +1,107 @@
+{
+    "main": {
+        "file": "import/import_from_database.md"
+    },
+    "categories": [
+        {
+            "title": "Import",
+            "samples": [
+                {
+                    "title": "Import from database",
+                    "desc": "Import data into your CARTO account from database.",
+                    "file": "import/import_from_database.md"
+                },
+                {
+                    "title": "Import from database",
+                    "desc": "Import data into your CARTO account from database.",
+                    "file": "import/import_from_database.md"
+                },
+                {
+                    "title": "Import from database",
+                    "desc": "Import data into your CARTO account from database.",
+                    "file": "import/import_from_database.md"
+                },
+                {
+                    "title": "Import from database",
+                    "desc": "Import data into your CARTO account from database.",
+                    "file": "import/import_from_database.md"
+                }
+            ]
+        },
+        {
+            "title": "Export",
+            "samples": [
+                {
+                    "title": "Import from database",
+                    "desc": "Import data into your CARTO account from database.",
+                    "file": "import/import_from_database.md"
+                },
+                {
+                    "title": "Import from database",
+                    "desc": "Import data into your CARTO account from database.",
+                    "file": "import/import_from_database.md"
+                },
+                {
+                    "title": "Import from database",
+                    "desc": "Import data into your CARTO account from database.",
+                    "file": "import/import_from_database.md"
+                },
+                {
+                    "title": "Import from database",
+                    "desc": "Import data into your CARTO account from database.",
+                    "file": "import/import_from_database.md"
+                }
+            ]
+        },
+        {
+            "title": "Tables",
+            "samples": [
+                {
+                    "title": "Import from database",
+                    "desc": "Import data into your CARTO account from database.",
+                    "file": "import/import_from_database.md"
+                },
+                {
+                    "title": "Import from database",
+                    "desc": "Import data into your CARTO account from database.",
+                    "file": "import/import_from_database.md"
+                },
+                {
+                    "title": "Import from database",
+                    "desc": "Import data into your CARTO account from database.",
+                    "file": "import/import_from_database.md"
+                },
+                {
+                    "title": "Import from database",
+                    "desc": "Import data into your CARTO account from database.",
+                    "file": "import/import_from_database.md"
+                }
+            ]
+        },
+        {
+            "title": "Misc",
+            "samples": [
+                {
+                    "title": "Import from database",
+                    "desc": "Import data into your CARTO account from database.",
+                    "file": "import/import_from_database.md"
+                },
+                {
+                    "title": "Import from database",
+                    "desc": "Import data into your CARTO account from database.",
+                    "file": "import/import_from_database.md"
+                },
+                {
+                    "title": "Import from database",
+                    "desc": "Import data into your CARTO account from database.",
+                    "file": "import/import_from_database.md"
+                },
+                {
+                    "title": "Import from database",
+                    "desc": "Import data into your CARTO account from database.",
+                    "file": "import/import_from_database.md"
+                }
+            ]
+        }
+    ]
+}
