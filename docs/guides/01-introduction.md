@@ -1,4 +1,4 @@
-## Quickstart
+## Introduction
 
 Python SDK is a full, backwards incompatible rewrite of the deprecated `cartodb-python` SDK. 
 Since the initial rewrite, Python SDK has been loaded with a lot of new features, not present in old _cartodb-python_.
