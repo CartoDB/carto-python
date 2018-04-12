@@ -22,8 +22,8 @@
                     "file": "import/import-sync-table.md"
                 },
                 {
-                    "title": "Import from database",
-                    "desc": "Import data into your CARTO account from database.",
+                    "title": "Import sync table as dataset",
+                    "desc": "Import sync table as dataset into your CARTO account.",
                     "file": "import/import-from-database.md"
                 }
             ]
