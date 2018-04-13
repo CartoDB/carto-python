@@ -24,13 +24,13 @@
                 {
                     "title": "Import sync table as dataset",
                     "desc": "Import sync table as dataset into your CARTO account.",
-                    "file": "import/import-from-database.md"
+                    "file": "import/import-sync-table-as-dataset.md"
                 },
                 {
                     "title": "Import and merge several datasets",
                     "desc": "Import a folder with CSV files (same structure) and merge them into one dataset.",
                     "file": "import/import-and-merge.md"
-                },
+                }
             ]
         },
         {
