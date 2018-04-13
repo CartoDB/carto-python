@@ -4,7 +4,7 @@
     },
     "categories": [
         {
-            "title": "Import",
+            "title": "Import data",
             "samples": [
                 {
                     "title": "Import from database",
@@ -25,81 +25,101 @@
                     "title": "Import sync table as dataset",
                     "desc": "Import sync table as dataset into your CARTO account.",
                     "file": "import/import-from-database.md"
-                }
+                },
+                {
+                    "title": "Import and merge several datasets",
+                    "desc": "Import a folder with CSV files (same structure) and merge them into one dataset.",
+                    "file": "import/import-and-merge.md"
+                },
             ]
         },
         {
             "title": "Export",
             "samples": [
                 {
-                    "title": "Import from database",
-                    "desc": "Import data into your CARTO account from database.",
-                    "file": "import/import-from-database.md"
+                    "title": "Export dataset",
+                    "desc": "Export a dataset from your CARTO account.",
+                    "file": "export/export-from-dataset.md"
                 },
                 {
-                    "title": "Import from database",
-                    "desc": "Import data into your CARTO account from database.",
-                    "file": "import/import-from-database.md"
-                },
-                {
-                    "title": "Import from database",
-                    "desc": "Import data into your CARTO account from database.",
-                    "file": "import/import-from-database.md"
-                },
-                {
-                    "title": "Import from database",
-                    "desc": "Import data into your CARTO account from database.",
-                    "file": "import/import-from-database.md"
+                    "title": "Export map",
+                    "desc": "Export a map from your CARTO account.",
+                    "file": "export/export-map.md"
                 }
             ]
         },
         {
-            "title": "Tables",
+            "title": "Maps",
             "samples": [
                 {
-                    "title": "Import from database",
-                    "desc": "Import data into your CARTO account from database.",
-                    "file": "import/import-from-database.md"
+                    "title": "Create anonymous map",
+                    "desc": "Create an anonymous map from your CARTO account.",
+                    "file": "maps/create-anonymous-map.md"
                 },
                 {
-                    "title": "Import from database",
-                    "desc": "Import data into your CARTO account from database.",
-                    "file": "import/import-from-database.md"
+                    "title": "Create named map",
+                    "desc": "Create a named map into your CARTO account.",
+                    "file": "maps/create-named-map.md"
                 },
                 {
-                    "title": "Import from database",
-                    "desc": "Import data into your CARTO account from database.",
-                    "file": "import/import-from-database.md"
+                    "title": "Instantiate named map",
+                    "desc": "Instantiate a named map from your CARTO account.",
+                    "file": "maps/instantiate-named-map.md"
                 },
                 {
-                    "title": "Import from database",
-                    "desc": "Import data into your CARTO account from database.",
-                    "file": "import/import-from-database.md"
+                    "title": "Display information on maps",
+                    "desc": "Return the names of all maps or display information from a specific map.",
+                    "file": "maps/map-info.md"
                 }
             ]
         },
         {
-            "title": "Misc",
+            "title": "Admin",
             "samples": [
                 {
-                    "title": "Import from database",
-                    "desc": "Import data into your CARTO account from database.",
-                    "file": "import/import-from-database.md"
+                    "title": "Change privacy of dataset",
+                    "desc": "Change the privacy of a dataset in your account.",
+                    "file": "admin/change-dataset-privacy.md"
                 },
                 {
-                    "title": "Import from database",
-                    "desc": "Import data into your CARTO account from database.",
-                    "file": "import/import-from-database.md"
+                    "title": "Check query optimization",
+                    "desc": "Check if query can be easily optimized.",
+                    "file": "admin/check-query.md"
                 },
                 {
-                    "title": "Import from database",
-                    "desc": "Import data into your CARTO account from database.",
-                    "file": "import/import-from-database.md"
+                    "title": "Export scripts to create tables",
+                    "desc": "Exports the CREATE TABLE scripts of all the account datasets.",
+                    "file": "admin/export-create-tables.md"
                 },
                 {
-                    "title": "Import from database",
-                    "desc": "Import data into your CARTO account from database.",
-                    "file": "import/import-from-database.md"
+                    "title": "Kill query",
+                    "desc": "Kill a running database query.",
+                    "file": "admin/kill-query.md"
+                },
+                {
+                    "title": "List tables",
+                    "desc": "Return graph of tables ordered by size and indicating if they are cartodbfied or not.",
+                    "file": "admin/list-tables.md"
+                },
+                {
+                    "title": "List running queries",
+                    "desc": "Return a list of the running queries in the database.",
+                    "file": "admin/running-queries.md"
+                },
+                {
+                    "title": "SQL API batch jobs",
+                    "desc": "Create and manage batch jobs for the SQL API.",
+                    "file": "admin/sql-batch-api-jobs.md"
+                },
+                {
+                    "title": "Get table info",
+                    "desc": "Return columns and its types, indexes, functions and triggers of a specific table.",
+                    "file": "admin/table-info.md"
+                },
+                {
+                  "title": "Get user info",
+                  "desc": "Return information from a specific user.",
+                  "file": "admin/user-info.md"
                 }
             ]
         }
