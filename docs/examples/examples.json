@@ -45,6 +45,11 @@
                     "title": "Export map",
                     "desc": "Export a map from your CARTO account.",
                     "file": "export/export-map.md"
+                },
+                {
+                    "title": "Export all datasets",
+                    "desc": "Export all datasets from your CARTO account.",
+                    "file": "export/export-all-datasets.md"
                 }
             ]
         },
