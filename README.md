@@ -139,6 +139,20 @@ updateJob = batchSQLClient.update(job_id, NEW_QUERY)
 cancelJob = batchSQLClient.cancel(job_id)
 ```
 
+**COPY queries**
+
+COPY queries allow you to use the [PostgreSQL COPY command](https://www.postgresql.org/docs/10/static/sql-copy.html) for efficient streaming of data to and from CARTO.
+
+```python
+from carto.sql import CopySQLClient
+
+# COPY FROM example
+copyClient = CopySQLClient(auth_client)
+query = 'COPY copy_example (the_geom, name, age) FROM stdin WITH (FORMAT csv, HEADER true)'
+with open('files/copy_from.csv') as data:
+    result = copyClient.copyfrom(query, data)
+```
+
 For more examples on how to use the SQL API, please refer to the **examples** folder or the API docs.
 
 Import API
