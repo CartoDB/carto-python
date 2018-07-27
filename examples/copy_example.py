@@ -68,9 +68,17 @@ if job['status'] != 'done':
     logger.error(job['failed_reason'])
     sys.exit(1)
 
-# COPY FROM example
 copyClient = CopySQLClient(auth_client)
+
+# COPY FROM example
 query = 'COPY copy_example (the_geom, name, age) FROM stdin WITH (FORMAT csv, HEADER true)'
 with open('files/copy_from.csv') as data:
     result = copyClient.copyfrom(query, data)
 logger.info(result)
+
+# COPY TO example
+query = 'COPY copy_example TO stdout WITH (FORMAT csv, HEADER true)'
+data = copyClient.copyto(query)
+with open('files/copy_export.csv', 'wb') as f:
+    for block in data.iter_content(1024):
+        f.write(block)
