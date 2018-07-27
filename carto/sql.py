@@ -12,6 +12,7 @@ Module for the SQL API
 """
 
 from .exceptions import CartoException
+from requests import HTTPError
 
 SQL_API_URL = 'api/{api_version}/sql'
 SQL_BATCH_API_URL = 'api/{api_version}/sql/job/'
@@ -265,3 +266,26 @@ class CopySQLClient(object):
         except Exception as e:
             raise CartoException(e)
         return response_json
+
+    def copyto(self, query):
+        url = self.api_url + '/copyto'
+        params={'api_key': self.api_key, 'q': query}
+
+        try:
+            response = self.client.send(url,
+                                        http_method='GET',
+                                        params=params,
+                                        stream=True)
+            response.raise_for_status()
+        except HTTPError as e:
+            if 400 <= response.status_code < 500:
+                # Client error, provide better reason
+                reason = response.json()['error'][0]
+                error_msg = u'%s Client Error: %s' % (response.status_code, reason)
+                raise CartoException(error_msg)
+            else:
+                raise CartoException(e)
+        except Exception as e:
+            raise CartoException(e)
+
+        return response
