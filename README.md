@@ -146,11 +146,19 @@ COPY queries allow you to use the [PostgreSQL COPY command](https://www.postgres
 ```python
 from carto.sql import CopySQLClient
 
-# COPY FROM example
 copyClient = CopySQLClient(auth_client)
+
+# COPY FROM example
 query = 'COPY copy_example (the_geom, name, age) FROM stdin WITH (FORMAT csv, HEADER true)'
-with open('files/copy_from.csv') as data:
+with open('copy_from.csv', 'rb') as data:
     result = copyClient.copyfrom(query, data)
+
+# COPY TO example
+query = 'COPY copy_example TO stdout WITH (FORMAT csv, HEADER true)'
+data = copyClient.copyto(query)
+with open('export.csv', 'wb') as f:
+    for block in data.iter_content(1024):
+        f.write(block)
 ```
 
 For more examples on how to use the SQL API, please refer to the **examples** folder or the API docs.
