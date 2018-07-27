@@ -226,3 +226,42 @@ class BatchSQLClient(object):
         """
         confirmation = self.send(self.api_url + job_id, http_method="DELETE")
         return confirmation['status']
+
+
+class CopySQLClient(object):
+    """
+    Allows to use the PostgreSQL COPY command for efficient streaming
+    of data to and from CARTO.
+    """
+
+    def __init__(self, client, api_version='v2'):
+        """
+        :param client: Auth client to make authorized requests, such as
+                        APIKeyAuthClient
+        :param api_version: Current version is 'v2'. 'v1' can be used to avoid
+                            caching, but it's not guaranteed to work
+        :type auth_client: :class:`carto.auth.APIKeyAuthClient`
+        :type api_version: str
+
+        :return:
+        """
+        self.client = client
+        self.api_url = SQL_API_URL.format(api_version=api_version)
+        self.api_key = self.client.api_key \
+            if hasattr(self.client, "api_key") else None
+
+    def copyfrom(self, query, data):
+        url = self.api_url + '/copyfrom'
+        header = {'Content-Type: application/octet-stream'}
+        params={'api_key': self.api_key, 'q': query}
+
+        try:
+            response = self.client.send(url,
+                                        http_method='POST',
+                                        params=params,
+                                        data=data,
+                                        stream=True)
+            response_json = self.client.get_response_data(response)
+        except Exception as e:
+            raise CartoException(e)
+        return response_json
