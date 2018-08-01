@@ -253,7 +253,7 @@ class CopySQLClient(object):
 
     def copyfrom(self, query, data):
         url = self.api_url + '/copyfrom'
-        header = {'Content-Type: application/octet-stream'}
+        headers = {'Content-Type': 'application/octet-stream'}
         params={'api_key': self.api_key, 'q': query}
 
         try:
@@ -261,6 +261,7 @@ class CopySQLClient(object):
                                         http_method='POST',
                                         params=params,
                                         data=data,
+                                        headers=headers,
                                         stream=True)
             response_json = self.client.get_response_data(response)
         except Exception as e:
