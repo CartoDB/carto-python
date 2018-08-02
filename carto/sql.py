@@ -251,7 +251,24 @@ class CopySQLClient(object):
         self.api_key = self.client.api_key \
             if hasattr(self.client, "api_key") else None
 
-    def copyfrom(self, query, data):
+    def copyfrom(self, query, iterable_data):
+        """
+        Gets data from an iterable object into a table
+
+        :param query: The "COPY table_name [(column_name[, ...])]
+                           FROM STDIN [WITH(option[,...])]" query to execute
+        :type query: str
+
+        :param iterable_data: An object that can be iterated
+                              to retrieve the data
+        :type iterable_data: object
+
+        :return: Response data as json
+        :rtype: str
+
+        :raise CartoException:
+        """
+
         url = self.api_url + '/copyfrom'
         headers = {'Content-Type': 'application/octet-stream'}
         params={'api_key': self.api_key, 'q': query}
@@ -260,7 +277,7 @@ class CopySQLClient(object):
             response = self.client.send(url,
                                         http_method='POST',
                                         params=params,
-                                        data=data,
+                                        data=iterable_data,
                                         headers=headers,
                                         stream=True)
             response_json = self.client.get_response_data(response)
