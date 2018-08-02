@@ -97,8 +97,7 @@ logger.info("COPY'ing the table FROM the file...")
 query = 'COPY tl_2014_census_tracts (the_geom,statefp,countyfp,tractce,geoid,name,cartodb_id,aland,awater,created_at,updated_at,mtfcc) FROM stdin WITH (FORMAT csv, HEADER true)'
 input_file = '/home/rtorre/src/cartodb-tests/sql_copy_perf/tl_2014_census_tracts.csv'
 
-with open(input_file, 'rb') as f:
-    result = copyClient.copyfrom_file_object(query, f)
+result = copyClient.copyfrom_file_path(query, input_file)
 
 logger.info(result)
 logger.info("Table populated")

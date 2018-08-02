@@ -324,6 +324,26 @@ class CopySQLClient(object):
         chunk_generator = self._read_in_chunks(file_object)
         return self.copyfrom(query, chunk_generator)
 
+    def copyfrom_file_path(self, query, path):
+        """
+        Gets data from a file object into a table
+
+        :param query: The "COPY table_name [(column_name[, ...])]
+                           FROM STDIN [WITH(option[,...])]" query to execute
+        :type query: str
+
+        :param path: A path to a file
+        :type path: str
+
+        :return: Response data as json
+        :rtype: str
+
+        :raise CartoException:
+        """
+
+        with open(path, 'rb') as f:
+            result = self.copyfrom_file_object(query, f)
+        return result
 
     def copyto(self, query):
         url = self.api_url + '/copyto'
