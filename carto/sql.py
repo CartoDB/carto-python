@@ -301,6 +301,23 @@ class CopySQLClient(object):
         return response_json
 
     def copyfrom_file_object(self, query, file_object):
+        """
+        Gets data from a file object into a table
+
+        :param query: The "COPY table_name [(column_name[, ...])]
+                           FROM STDIN [WITH(option[,...])]" query to execute
+        :type query: str
+
+        :param file_object: A file-like object.
+                            Normally the return value of open(...)
+        :type file_object: file
+
+        :return: Response data as json
+        :rtype: str
+
+        :raise CartoException:
+        """
+
         if not isinstance(file_object, file):
             raise CartoException('The object passed is not a file')
 
