@@ -100,7 +100,7 @@ input_file = '/home/rtorre/src/cartodb-tests/sql_copy_perf/tl_2014_census_tracts
 # with open(input_file) as data:
 #     result = copyClient.copyfrom(query, data)
 
-def read_in_chunks(file_object, chunk_size=65536):
+def read_in_chunks(file_object, chunk_size=8192):
     while True:
         data = file_object.read(chunk_size)
         if not data:
