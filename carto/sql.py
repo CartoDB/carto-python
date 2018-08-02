@@ -19,6 +19,11 @@ SQL_BATCH_API_URL = 'api/{api_version}/sql/job/'
 
 MAX_GET_QUERY_LEN = 1024
 
+# The chunk size should be a multiple of the filesystem/buffers block
+# size. Big values can cause resource starvation and OTOH small values
+# incur in some protocol overhead. Typical linux block size is 4 KB.
+DEFAULT_CHUNK_SIZE = 8 * 1024 # 8 KB provides good results in practice
+
 
 class SQLClient(object):
     """
@@ -251,6 +256,13 @@ class CopySQLClient(object):
         self.api_key = self.client.api_key \
             if hasattr(self.client, "api_key") else None
 
+    def _read_in_chunks(self, file_object, chunk_size=DEFAULT_CHUNK_SIZE):
+        while True:
+            data = file_object.read(chunk_size)
+            if not data:
+                break
+            yield data
+
     def copyfrom(self, query, iterable_data):
         """
         Gets data from an iterable object into a table
@@ -269,6 +281,9 @@ class CopySQLClient(object):
         :raise CartoException:
         """
 
+        if isinstance(iterable_data, file):
+            raise CartoException('The object passed cannot be a file. Use copyfrom_file_object instead.')
+
         url = self.api_url + '/copyfrom'
         headers = {'Content-Type': 'application/octet-stream'}
         params={'api_key': self.api_key, 'q': query}
@@ -284,6 +299,14 @@ class CopySQLClient(object):
         except Exception as e:
             raise CartoException(e)
         return response_json
+
+    def copyfrom_file_object(self, query, file_object):
+        if not isinstance(file_object, file):
+            raise CartoException('The object passed is not a file')
+
+        chunk_generator = self._read_in_chunks(file_object)
+        return self.copyfrom(query, chunk_generator)
+
 
     def copyto(self, query):
         url = self.api_url + '/copyto'
