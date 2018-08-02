@@ -72,7 +72,7 @@ copyClient = CopySQLClient(auth_client)
 
 # COPY FROM example
 query = 'COPY copy_example (the_geom, name, age) FROM stdin WITH (FORMAT csv, HEADER true)'
-with open('files/copy_from.csv') as f:
+with open('files/copy_from.csv', 'rb') as f:
     result = copyClient.copyfrom_file_object(query, f)
 logger.info(result)
 
