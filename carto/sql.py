@@ -302,14 +302,14 @@ class CopySQLClient(object):
 
     def copyfrom_file_object(self, query, file_object):
         """
-        Gets data from a file object into a table
+        Gets data from a readable file object into a table
 
         :param query: The "COPY table_name [(column_name[, ...])]
                            FROM STDIN [WITH(option[,...])]" query to execute
         :type query: str
 
         :param file_object: A file-like object.
-                            Normally the return value of open(...)
+                            Normally the return value of open('file.ext', 'rb')
         :type file_object: file
 
         :return: Response data as json
@@ -326,7 +326,7 @@ class CopySQLClient(object):
 
     def copyfrom_file_path(self, query, path):
         """
-        Gets data from a file object into a table
+        Gets data from a readable file into a table
 
         :param query: The "COPY table_name [(column_name[, ...])]
                            FROM STDIN [WITH(option[,...])]" query to execute
@@ -346,6 +346,19 @@ class CopySQLClient(object):
         return result
 
     def copyto(self, query):
+        """
+        Gets data from a table into a Response object that can be iterated
+
+        :param query: The "COPY { table_name [(column_name[, ...])] | ( query ) }
+                           TO STDOUT [WITH(option[,...])]" query to execute
+        :type query: str
+
+        :return: response object
+        :rtype: Response
+
+        :raise CartoException:
+        """
+
         url = self.api_url + '/copyto'
         params={'api_key': self.api_key, 'q': query}
 
@@ -369,6 +382,20 @@ class CopySQLClient(object):
         return response
 
     def copyto_file_object(self, query, file_object):
+        """
+        Gets data from a table into a writable file object
+
+        :param query: The "COPY { table_name [(column_name[, ...])] | ( query ) }
+                           TO STDOUT [WITH(option[,...])]" query to execute
+        :type query: str
+
+        :param file_object: A file-like object.
+                            Normally the return value of open('file.ext', 'wb')
+        :type file_object: file
+
+        :raise CartoException:
+        """
+
         if not isinstance(file_object, file):
             raise CartoException('The object passed is not a file')
         response = self.copyto(query)
@@ -376,6 +403,23 @@ class CopySQLClient(object):
             file_object.write(block)
 
     def copyto_file_path(self, query, path, append=False):
+        """
+        Gets data from a table into a writable file object
+
+        :param query: The "COPY { table_name [(column_name[, ...])] | ( query ) }
+                           TO STDOUT [WITH(option[,...])]" query to execute
+        :type query: str
+
+        :param path: A path to a writable file
+        :type path: str
+
+        :param append: Whether to append or not if the file already exists
+                       Default value is False
+        :type append: bool
+
+        :raise CartoException:
+        """
+
         file_mode = 'wb' if not append else 'ab'
         with open(path, file_mode) as f:
             self.copyto_file_object(query, f)
