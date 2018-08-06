@@ -12,6 +12,7 @@ Module for the SQL API
 """
 
 import zlib
+import struct
 
 from .exceptions import CartoException
 from requests import HTTPError
@@ -274,10 +275,17 @@ class CopySQLClient(object):
             yield data
 
     def _compress_chunks(self, chunk_generator, compression_level):
-        compressor = zlib.compressobj(compression_level)
+        zlib_mode = 16 + zlib.MAX_WBITS
+        compressor = zlib.compressobj(compression_level, zlib.DEFLATED, zlib_mode)
+        size = 0
+        crcval = zlib.crc32("")
         for chunk in chunk_generator:
+            size += len(chunk)
+            crcval = zlib.crc32(chunk, crcval)
             yield compressor.compress(chunk)
         yield compressor.flush()
+        #yield struct.pack('>I', crcval)
+        #yield struct.pack('>I', size)
 
 
     def copyfrom(self, query, iterable_data, compress=True, compression_level=DEFAULT_COMPRESSION_LEVEL):
