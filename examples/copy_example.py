@@ -73,11 +73,10 @@ copyClient = CopySQLClient(auth_client)
 # COPY FROM example
 query = 'COPY copy_example (the_geom, name, age) FROM stdin WITH (FORMAT csv, HEADER true)'
 result = copyClient.copyfrom_file_path(query, 'files/copy_from.csv')
-logger.info(result)
+logger.info('result = %s' % result)
 
 # COPY TO example
 query = 'COPY copy_example TO stdout WITH (FORMAT csv, HEADER true)'
-data = copyClient.copyto(query)
-with open('files/copy_export.csv', 'wb') as f:
-    for block in data.iter_content(1024):
-        f.write(block)
+output_file = 'files/copy_export.csv'
+copyClient.copyto_file_path(query, output_file)
+logger.info('Table copied to %s' % output_file)
