@@ -71,6 +71,7 @@ if job['status'] != 'done':
 copyClient = CopySQLClient(auth_client)
 
 # COPY FROM example
+logger.info("COPY'ing FROM file...")
 query = 'COPY copy_example (the_geom, name, age) FROM stdin WITH (FORMAT csv, HEADER true)'
 result = copyClient.copyfrom_file_path(query, 'files/copy_from.csv')
 logger.info('result = %s' % result)

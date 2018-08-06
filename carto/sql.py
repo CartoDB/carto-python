@@ -11,6 +11,8 @@ Module for the SQL API
 
 """
 
+import zlib
+
 from .exceptions import CartoException
 from requests import HTTPError
 
@@ -23,6 +25,14 @@ MAX_GET_QUERY_LEN = 1024
 # size. Big values can cause resource starvation and OTOH small values
 # incur in some protocol overhead. Typical linux block size is 4 KB.
 DEFAULT_CHUNK_SIZE = 8 * 1024 # 8 KB provides good results in practice
+
+# The compression level of gzip/zlib ranges from 1 (fastest, least
+# compression) to 9 (slowest, most compression).  In our performance
+# tests, we determined that the most efficient way to transmit data
+# end-to-end is to use compression levels 1 or 2 (compressing in the
+# client, transmiting through network, decompressing and loading in
+# the DB). Those levels are also gentle with platform CPU usage.
+DEFAULT_COMPRESSION_LEVEL = 1
 
 
 class SQLClient(object):
@@ -263,7 +273,12 @@ class CopySQLClient(object):
                 break
             yield data
 
-    def copyfrom(self, query, iterable_data):
+    def _compress_chunks(self, chunk_generator, compression_level):
+        for chunk in chunk_generator:
+            yield zlib.compress(chunk, compression_level)
+
+
+    def copyfrom(self, query, iterable_data, compress=True, compression_level=DEFAULT_COMPRESSION_LEVEL):
         """
         Gets data from an iterable object into a table
 
@@ -285,22 +300,29 @@ class CopySQLClient(object):
             raise CartoException('The object passed cannot be a file. Use copyfrom_file_object instead.')
 
         url = self.api_url + '/copyfrom'
-        headers = {'Content-Type': 'application/octet-stream'}
+        headers = {
+            'Content-Type': 'application/octet-stream',
+            'Transfer-Encoding': 'chunked'
+        }
         params={'api_key': self.api_key, 'q': query}
 
-        try:
-            response = self.client.send(url,
-                                        http_method='POST',
-                                        params=params,
-                                        data=iterable_data,
-                                        headers=headers,
-                                        stream=True)
-            response_json = self.client.get_response_data(response)
-        except Exception as e:
-            raise CartoException(e)
+        if compress:
+            headers['Content-Encoding'] = 'gzip'
+            _iterable_data = self._compress_chunks(iterable_data, compression_level)
+        else:
+            _iterable_data = iterable_data
+
+        response = self.client.send(url,
+                                    http_method='POST',
+                                    params=params,
+                                    data=_iterable_data,
+                                    headers=headers,
+                                    stream=True)
+        response_json = self.client.get_response_data(response)
+
         return response_json
 
-    def copyfrom_file_object(self, query, file_object):
+    def copyfrom_file_object(self, query, file_object, compress=True):
         """
         Gets data from a readable file object into a table
 
@@ -322,9 +344,9 @@ class CopySQLClient(object):
             raise CartoException('The object passed is not a file')
 
         chunk_generator = self._read_in_chunks(file_object)
-        return self.copyfrom(query, chunk_generator)
+        return self.copyfrom(query, chunk_generator, compress)
 
-    def copyfrom_file_path(self, query, path):
+    def copyfrom_file_path(self, query, path, compress=True):
         """
         Gets data from a readable file into a table
 
@@ -342,7 +364,7 @@ class CopySQLClient(object):
         """
 
         with open(path, 'rb') as f:
-            result = self.copyfrom_file_object(query, f)
+            result = self.copyfrom_file_object(query, f, compress)
         return result
 
     def copyto(self, query):
