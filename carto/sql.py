@@ -274,8 +274,10 @@ class CopySQLClient(object):
             yield data
 
     def _compress_chunks(self, chunk_generator, compression_level):
+        compressor = zlib.compressobj(compression_level)
         for chunk in chunk_generator:
-            yield zlib.compress(chunk, compression_level)
+            yield compressor.compress(chunk)
+        yield compressor.flush()
 
 
     def copyfrom(self, query, iterable_data, compress=True, compression_level=DEFAULT_COMPRESSION_LEVEL):
