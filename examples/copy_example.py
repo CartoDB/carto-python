@@ -44,15 +44,15 @@ else:
 
 
 LIST_OF_SQL_QUERIES = [
-    'DROP TABLE IF EXISTS copy_example;'
+    'DROP TABLE IF EXISTS copy_example',
     """
     CREATE TABLE copy_example (
       the_geom geometry(Geometry,4326),
       name text,
       age integer
-    );
+    )
     """,
-    "SELECT CDB_CartodbfyTable(current_schema, 'copy_example');"
+    "SELECT CDB_CartodbfyTable(current_schema, 'copy_example')"
 ]
 
 BATCH_TERMINAL_STATES = ['done', 'failed', 'cancelled', 'unknown']
