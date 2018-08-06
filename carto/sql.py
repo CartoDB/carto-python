@@ -277,8 +277,12 @@ class CopySQLClient(object):
     def _compress_chunks(self, chunk_generator, compression_level):
         zlib_mode = 16 + zlib.MAX_WBITS
         compressor = zlib.compressobj(compression_level, zlib.DEFLATED, zlib_mode)
+        compressed_chunk = ""
         for chunk in chunk_generator:
-            yield compressor.compress(chunk)
+            compressed_chunk += compressor.compress(chunk)
+            if len(compressed_chunk) > 0:
+                yield compressed_chunk
+                compressed_chunk = ""
         yield compressor.flush()
 
 
