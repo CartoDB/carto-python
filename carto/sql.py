@@ -367,3 +367,15 @@ class CopySQLClient(object):
             raise CartoException(e)
 
         return response
+
+    def copyto_file_object(self, query, file_object):
+        if not isinstance(file_object, file):
+            raise CartoException('The object passed is not a file')
+        response = self.copyto(query)
+        for block in response.iter_content(DEFAULT_CHUNK_SIZE):
+            file_object.write(block)
+
+    def copyto_file_path(self, query, path, append=False):
+        file_mode = 'wb' if not append else 'ab'
+        with open(path, file_mode) as f:
+            self.copyto_file_object(query, f)
