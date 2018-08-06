@@ -154,10 +154,7 @@ result = copyClient.copyfrom_file_path(query, 'copy_from.csv')
 
 # COPY TO example
 query = 'COPY copy_example TO stdout WITH (FORMAT csv, HEADER true)'
-data = copyClient.copyto(query)
-with open('export.csv', 'wb') as f:
-    for block in data.iter_content(1024):
-        f.write(block)
+copyClient.copyto_file_path(query, 'export.csv')
 ```
 
 For more examples on how to use the SQL API, please refer to the **examples** folder or the API docs.
