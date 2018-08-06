@@ -25,7 +25,7 @@ logger = logging.getLogger()
 # logging.getLogger().setLevel(logging.DEBUG)
 # requests_log = logging.getLogger("requests.packages.urllib3")
 # requests_log.setLevel(logging.DEBUG)
-# requests_log.propagate = Trueo
+# requests_log.propagate = True
 
 
 # set input arguments
