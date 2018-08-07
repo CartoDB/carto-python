@@ -81,7 +81,7 @@ def in_memory_csv(request):
 
     request.addfinalizer(fin)
 
-    for i in xrange(IN_MEMORY_CSV_NROWS):
+    for i in range(IN_MEMORY_CSV_NROWS):
         row = 'SRID=4326;POINT({lon} {lat}),{name},{age}\n'.format(
             lon = random.uniform(-170.0, 170.0),
             lat = random.uniform(-80.0, 80.0),
