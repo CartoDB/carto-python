@@ -118,24 +118,24 @@ def copyto_sample_query():
 
 @pytest.fixture()
 def copyto_expected_result():
-    return "\n".join([
-        '1\tSRID=4326;POINT(1 1)',
-        '2\tSRID=4326;POINT(2 2)',
-        '3\tSRID=4326;POINT(3 3)',
-        '4\tSRID=4326;POINT(4 4)',
-        '5\tSRID=4326;POINT(5 5)',
-        '6\tSRID=4326;POINT(6 6)',
-        '7\tSRID=4326;POINT(7 7)',
-        '8\tSRID=4326;POINT(8 8)',
-        '9\tSRID=4326;POINT(9 9)',
-        '10\tSRID=4326;POINT(10 10)\n'
-    ])
+    return bytearray(u'\n'.join([
+        u'1\tSRID=4326;POINT(1 1)',
+        u'2\tSRID=4326;POINT(2 2)',
+        u'3\tSRID=4326;POINT(3 3)',
+        u'4\tSRID=4326;POINT(4 4)',
+        u'5\tSRID=4326;POINT(5 5)',
+        u'6\tSRID=4326;POINT(6 6)',
+        u'7\tSRID=4326;POINT(7 7)',
+        u'8\tSRID=4326;POINT(8 8)',
+        u'9\tSRID=4326;POINT(9 9)',
+        u'10\tSRID=4326;POINT(10 10)\n'
+    ]), 'utf-8')
 
 
 def test_copyto(copy_client, copyto_sample_query, copyto_expected_result):
     response = copy_client.copyto(copyto_sample_query)
 
-    result = ''
+    result = bytearray()
     for block in response.iter_content(10):
         result += block
 
@@ -152,4 +152,4 @@ def test_copyto_file_object(copy_client, copyto_sample_query, copyto_expected_re
 def test_copyto_file_path(copy_client, copyto_sample_query, copyto_expected_result, tmpdir):
     target_path = tmpdir.join('carto-python-sdk-copy-test.dump')
     copy_client.copyto_file_path(copyto_sample_query, target_path.strpath)
-    assert target_path.read() == copyto_expected_result
+    assert target_path.read() == copyto_expected_result.decode('utf-8')
