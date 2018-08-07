@@ -99,3 +99,29 @@ def test_copyfrom_file_path(copy_client):
     result = copy_client.copyfrom_file_path(query, 'tests/copy_from.csv')
 
     assert result['total_rows'] == 3
+
+
+
+
+def test_copyto(copy_client):
+    arbitrary_subquery = 'SELECT i cartodb_id, ST_AsEWKT(ST_SetSRID(ST_MakePoint(i, i),4326)) the_geom FROM generate_series(1,10) i'
+    query = 'COPY ({subquery}) TO STDOUT'.format(subquery=arbitrary_subquery)
+    response = copy_client.copyto(query)
+    result = ''
+
+
+    for block in response.iter_content(10):
+        result += block
+
+    assert result == "\n".join([
+        '1\tSRID=4326;POINT(1 1)',
+        '2\tSRID=4326;POINT(2 2)',
+        '3\tSRID=4326;POINT(3 3)',
+        '4\tSRID=4326;POINT(4 4)',
+        '5\tSRID=4326;POINT(5 5)',
+        '6\tSRID=4326;POINT(6 6)',
+        '7\tSRID=4326;POINT(7 7)',
+        '8\tSRID=4326;POINT(8 8)',
+        '9\tSRID=4326;POINT(9 9)',
+        '10\tSRID=4326;POINT(10 10)\n'
+    ])
