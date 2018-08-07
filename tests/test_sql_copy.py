@@ -38,10 +38,12 @@ def test_table(api_key_auth_client_usr):
         job = batch_client.read(job['job_id'])
     assert job['status'] == 'done'
 
+@pytest.fixture
+def copy_client(api_key_auth_client_usr):
+    return CopySQLClient(api_key_auth_client_usr)
 
-def test_copyfrom(api_key_auth_client_usr):
-    copy_client = CopySQLClient(api_key_auth_client_usr)
 
+def test_copyfrom(copy_client):
     query = 'COPY carto_python_sdk_copy_test (the_geom, name, age) FROM stdin WITH (FORMAT csv, HEADER true)'
     data = iter(TABLE_CONTENTS)
     result = copy_client.copyfrom(query, data)
@@ -49,18 +51,14 @@ def test_copyfrom(api_key_auth_client_usr):
     assert result['total_rows'] == 3
 
 
-def test_copyfrom_no_compression(api_key_auth_client_usr):
-    copy_client = CopySQLClient(api_key_auth_client_usr)
-
+def test_copyfrom_no_compression(copy_client):
     query = 'COPY carto_python_sdk_copy_test (the_geom, name, age) FROM stdin WITH (FORMAT csv, HEADER true)'
     data = iter(TABLE_CONTENTS)
     result = copy_client.copyfrom(query, data, compress=False)
 
     assert result['total_rows'] == 3
 
-def test_copyfrom_wrong_query(api_key_auth_client_usr):
-    copy_client = CopySQLClient(api_key_auth_client_usr)
-
+def test_copyfrom_wrong_query(copy_client):
     query = 'COPY any_wrong_table (any_wrong_column) FROM stdin'
     data = iter(TABLE_CONTENTS)
     with pytest.raises(CartoException) as e:
@@ -90,17 +88,13 @@ def in_memory_csv(request):
     file_obj.seek(0)
     return file_obj
 
-def test_copyfrom_file_object(api_key_auth_client_usr, in_memory_csv):
-    copy_client = CopySQLClient(api_key_auth_client_usr)
-
+def test_copyfrom_file_object(copy_client, in_memory_csv):
     query = 'COPY carto_python_sdk_copy_test (the_geom, name, age) FROM stdin WITH (FORMAT csv, HEADER false)'
     result = copy_client.copyfrom_file_object(query, in_memory_csv)
 
     assert result['total_rows'] == IN_MEMORY_CSV_NROWS
 
-def test_copyfrom_file_path(api_key_auth_client_usr):
-    copy_client = CopySQLClient(api_key_auth_client_usr)
-
+def test_copyfrom_file_path(copy_client):
     query = 'COPY carto_python_sdk_copy_test (the_geom, name, age) FROM stdin WITH (FORMAT csv, HEADER true)'
     result = copy_client.copyfrom_file_path(query, 'tests/copy_from.csv')
 
