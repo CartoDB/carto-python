@@ -320,13 +320,16 @@ class CopySQLClient(object):
         else:
             _iterable_data = iterable_data
 
-        response = self.client.send(url,
-                                    http_method='POST',
-                                    params=params,
-                                    data=_iterable_data,
-                                    headers=headers,
-                                    stream=True)
-        response_json = self.client.get_response_data(response)
+        try:
+            response = self.client.send(url,
+                                        http_method='POST',
+                                        params=params,
+                                        data=_iterable_data,
+                                        headers=headers,
+                                        stream=True)
+            response_json = self.client.get_response_data(response)
+        except Exception as e:
+            raise CartoException(e)
 
         return response_json
 
