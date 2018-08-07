@@ -46,3 +46,22 @@ def test_copyfrom(api_key_auth_client_usr):
     result = copy_client.copyfrom(query, data)
 
     assert result['total_rows'] == 3
+
+
+def test_copyfrom_no_compression(api_key_auth_client_usr):
+    copy_client = CopySQLClient(api_key_auth_client_usr)
+
+    query = 'COPY carto_python_sdk_copy_test (the_geom, name, age) FROM stdin WITH (FORMAT csv, HEADER true)'
+    data = iter(TABLE_CONTENTS)
+    result = copy_client.copyfrom(query, data, compress=False)
+
+    assert result['total_rows'] == 3
+
+def test_copyfrom_wrong_query(api_key_auth_client_usr):
+    copy_client = CopySQLClient(api_key_auth_client_usr)
+
+    query = 'COPY any_wrong_table (any_wrong_column) FROM stdin'
+    data = iter(TABLE_CONTENTS)
+    with pytest.raises(CartoException) as e:
+        copy_client.copyfrom(query, data)
+    assert 'relation "any_wrong_table" does not exist' in e.value.message.message
