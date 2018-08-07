@@ -303,9 +303,6 @@ class CopySQLClient(object):
 
         :raise CartoException:
         """
-        if isinstance(iterable_data, file):
-            raise CartoException('The object passed cannot be a file. Use copyfrom_file_object instead.')
-
         url = self.api_url + '/copyfrom'
         headers = {
             'Content-Type': 'application/octet-stream',
