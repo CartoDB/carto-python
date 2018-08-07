@@ -426,8 +426,6 @@ class CopySQLClient(object):
         :raise CartoException:
         """
 
-        if not isinstance(file_object, file):
-            raise CartoException('The object passed is not a file')
         response = self.copyto(query)
         for block in response.iter_content(DEFAULT_CHUNK_SIZE):
             file_object.write(block)

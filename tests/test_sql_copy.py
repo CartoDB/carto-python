@@ -103,17 +103,15 @@ def test_copyfrom_file_path(copy_client):
 
 
 
-def test_copyto(copy_client):
+@pytest.fixture()
+def copyto_sample_query():
     arbitrary_subquery = 'SELECT i cartodb_id, ST_AsEWKT(ST_SetSRID(ST_MakePoint(i, i),4326)) the_geom FROM generate_series(1,10) i'
     query = 'COPY ({subquery}) TO STDOUT'.format(subquery=arbitrary_subquery)
-    response = copy_client.copyto(query)
-    result = ''
+    return query
 
-
-    for block in response.iter_content(10):
-        result += block
-
-    assert result == "\n".join([
+@pytest.fixture()
+def copyto_expected_result():
+    return "\n".join([
         '1\tSRID=4326;POINT(1 1)',
         '2\tSRID=4326;POINT(2 2)',
         '3\tSRID=4326;POINT(3 3)',
@@ -125,3 +123,22 @@ def test_copyto(copy_client):
         '9\tSRID=4326;POINT(9 9)',
         '10\tSRID=4326;POINT(10 10)\n'
     ])
+
+
+
+def test_copyto(copy_client, copyto_sample_query, copyto_expected_result):
+    response = copy_client.copyto(copyto_sample_query)
+
+    result = ''
+    for block in response.iter_content(10):
+        result += block
+
+    assert result == copyto_expected_result
+
+def test_copyto_file_object(copy_client, copyto_sample_query, copyto_expected_result):
+    in_memory_target_fileobj = cStringIO.StringIO()
+
+    copy_client.copyto_file_object(copyto_sample_query, in_memory_target_fileobj)
+    assert in_memory_target_fileobj.getvalue() == copyto_expected_result
+
+    in_memory_target_fileobj.close()
