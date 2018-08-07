@@ -65,3 +65,25 @@ def test_copyfrom_wrong_query(api_key_auth_client_usr):
     with pytest.raises(CartoException) as e:
         copy_client.copyfrom(query, data)
     assert 'relation "any_wrong_table" does not exist' in e.value.message.message
+
+def test_copyfrom_file_object(api_key_auth_client_usr):
+    # Create a pseudo-file in-memory
+    import cStringIO
+    import random
+    file_obj = cStringIO.StringIO()
+    for i in xrange(1000):
+        row = 'SRID=4326;POINT({lon} {lat}),{name},{age}\n'.format(
+            lon = random.uniform(-170.0, 170.0),
+            lat = random.uniform(-80.0, 80.0),
+            name = random.choice(['fulano', 'mengano', 'zutano', 'perengano']),
+            age = random.randint(18,99)
+        )
+        file_obj.write(row)
+    file_obj.seek(0)
+
+    copy_client = CopySQLClient(api_key_auth_client_usr)
+
+    query = 'COPY carto_python_sdk_copy_test (the_geom, name, age) FROM stdin WITH (FORMAT csv, HEADER false)'
+    result = copy_client.copyfrom_file_object(query, file_obj)
+
+    assert result['total_rows'] == 1000

@@ -351,9 +351,6 @@ class CopySQLClient(object):
         :raise CartoException:
         """
 
-        if not isinstance(file_object, file):
-            raise CartoException('The object passed is not a file')
-
         chunk_generator = self._read_in_chunks(file_object)
         return self.copyfrom(query, chunk_generator, compress)
 
