@@ -28,8 +28,8 @@ TABLE_CONTENTS=[
 ]
 
 
-def test_copyfrom(api_key_auth_client_usr):
-    # Create a table suitable for testing
+@pytest.fixture(scope="module")
+def test_table(api_key_auth_client_usr):
     batch_client = BatchSQLClient(api_key_auth_client_usr)
     job = batch_client.create(SETUP_QUERIES)
     while not job['status'] in BATCH_TERMINAL_STATES:
@@ -37,9 +37,12 @@ def test_copyfrom(api_key_auth_client_usr):
         job = batch_client.read(job['job_id'])
     assert job['status'] == 'done'
 
+
+def test_copyfrom(api_key_auth_client_usr):
     copy_client = CopySQLClient(api_key_auth_client_usr)
+
     query = 'COPY carto_python_sdk_copy_test (the_geom, name, age) FROM stdin WITH (FORMAT csv, HEADER true)'
     data = iter(TABLE_CONTENTS)
     result = copy_client.copyfrom(query, data)
 
-
+    assert result['total_rows'] == 3
