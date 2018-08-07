@@ -1,6 +1,8 @@
 import os
 import pytest
 import time
+import cStringIO
+import random
 
 from carto.exceptions import CartoException
 from carto.sql import SQLClient, BatchSQLClient, CopySQLClient
@@ -66,12 +68,19 @@ def test_copyfrom_wrong_query(api_key_auth_client_usr):
         copy_client.copyfrom(query, data)
     assert 'relation "any_wrong_table" does not exist' in e.value.message.message
 
-def test_copyfrom_file_object(api_key_auth_client_usr):
-    # Create a pseudo-file in-memory
-    import cStringIO
-    import random
+
+IN_MEMORY_CSV_NROWS = 1000
+
+@pytest.fixture()
+def in_memory_csv(request):
     file_obj = cStringIO.StringIO()
-    for i in xrange(1000):
+
+    def fin():
+        file_obj.close()
+
+    request.addfinalizer(fin)
+
+    for i in xrange(IN_MEMORY_CSV_NROWS):
         row = 'SRID=4326;POINT({lon} {lat}),{name},{age}\n'.format(
             lon = random.uniform(-170.0, 170.0),
             lat = random.uniform(-80.0, 80.0),
@@ -80,10 +89,12 @@ def test_copyfrom_file_object(api_key_auth_client_usr):
         )
         file_obj.write(row)
     file_obj.seek(0)
+    return file_obj
 
+def test_copyfrom_file_object(api_key_auth_client_usr, in_memory_csv):
     copy_client = CopySQLClient(api_key_auth_client_usr)
 
     query = 'COPY carto_python_sdk_copy_test (the_geom, name, age) FROM stdin WITH (FORMAT csv, HEADER false)'
-    result = copy_client.copyfrom_file_object(query, file_obj)
+    result = copy_client.copyfrom_file_object(query, in_memory_csv)
 
-    assert result['total_rows'] == 1000
+    assert result['total_rows'] == IN_MEMORY_CSV_NROWS
