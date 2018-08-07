@@ -303,7 +303,6 @@ class CopySQLClient(object):
 
         :raise CartoException:
         """
-
         if isinstance(iterable_data, file):
             raise CartoException('The object passed cannot be a file. Use copyfrom_file_object instead.')
 
@@ -350,7 +349,6 @@ class CopySQLClient(object):
 
         :raise CartoException:
         """
-
         chunk_generator = self._read_in_chunks(file_object)
         return self.copyfrom(query, chunk_generator, compress)
 
@@ -370,7 +368,6 @@ class CopySQLClient(object):
 
         :raise CartoException:
         """
-
         with open(path, 'rb') as f:
             result = self.copyfrom_file_object(query, f, compress)
         return result
@@ -388,7 +385,6 @@ class CopySQLClient(object):
 
         :raise CartoException:
         """
-
         url = self.api_url + '/copyto'
         params={'api_key': self.api_key, 'q': query}
 
@@ -425,7 +421,6 @@ class CopySQLClient(object):
 
         :raise CartoException:
         """
-
         response = self.copyto(query)
         for block in response.iter_content(DEFAULT_CHUNK_SIZE):
             file_object.write(block)
@@ -447,7 +442,6 @@ class CopySQLClient(object):
 
         :raise CartoException:
         """
-
         file_mode = 'wb' if not append else 'ab'
         with open(path, file_mode) as f:
             self.copyto_file_object(query, f)
