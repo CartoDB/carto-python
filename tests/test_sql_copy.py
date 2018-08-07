@@ -67,7 +67,7 @@ def test_copyfrom_wrong_query(copy_client):
     data = iter(TABLE_CONTENTS)
     with pytest.raises(CartoException) as e:
         copy_client.copyfrom(query, data)
-    assert 'relation "any_wrong_table" does not exist' in e.value.message.message
+    assert 'relation "any_wrong_table" does not exist' in str(e.value)
 
 
 IN_MEMORY_CSV_NROWS = 1000
