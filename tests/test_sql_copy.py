@@ -7,7 +7,6 @@ import random
 from carto.exceptions import CartoException
 from carto.sql import SQLClient, BatchSQLClient, CopySQLClient
 
-
 SETUP_QUERIES = [
     'DROP TABLE IF EXISTS carto_python_sdk_copy_test',
     """
@@ -98,3 +97,11 @@ def test_copyfrom_file_object(api_key_auth_client_usr, in_memory_csv):
     result = copy_client.copyfrom_file_object(query, in_memory_csv)
 
     assert result['total_rows'] == IN_MEMORY_CSV_NROWS
+
+def test_copyfrom_file_path(api_key_auth_client_usr):
+    copy_client = CopySQLClient(api_key_auth_client_usr)
+
+    query = 'COPY carto_python_sdk_copy_test (the_geom, name, age) FROM stdin WITH (FORMAT csv, HEADER true)'
+    result = copy_client.copyfrom_file_path(query, 'tests/copy_from.csv')
+
+    assert result['total_rows'] == 3
