@@ -5,7 +5,7 @@ import logging
 import time
 
 from carto.auth import APIKeyAuthClient
-from carto.sql import BatchSQLClient
+from carto.sql import SQLClient
 from carto.sql import CopySQLClient
 
 # Logger (better than print)
@@ -43,30 +43,19 @@ else:
     sys.exit(1)
 
 
-LIST_OF_SQL_QUERIES = [
-    'DROP TABLE IF EXISTS copy_example',
-    """
-    CREATE TABLE copy_example (
+
+# Create and cartodbfy a table
+sqlClient = SQLClient(auth_client)
+sqlClient.send("""
+    CREATE TABLE IF NOT EXISTS copy_example (
       the_geom geometry(Geometry,4326),
       name text,
       age integer
     )
-    """,
-    "SELECT CDB_CartodbfyTable(current_schema, 'copy_example')"
-]
+    """)
+sqlClient.send("SELECT CDB_CartodbfyTable(current_schema, 'copy_example')")
 
-BATCH_TERMINAL_STATES = ['done', 'failed', 'cancelled', 'unknown']
 
-# Create and cartodbfy a table
-batchSQLClient = BatchSQLClient(auth_client)
-job = batchSQLClient.create(LIST_OF_SQL_QUERIES)
-while not job['status'] in BATCH_TERMINAL_STATES:
-    time.sleep(1)
-    job = batchSQLClient.read(job['job_id'])
-if job['status'] != 'done':
-    logger.error('Could not create and cartodbfy table')
-    logger.error(job['failed_reason'])
-    sys.exit(1)
 
 copyClient = CopySQLClient(auth_client)
 
@@ -81,3 +70,8 @@ query = 'COPY copy_example TO stdout WITH (FORMAT csv, HEADER true)'
 output_file = 'files/copy_export.csv'
 copyClient.copyto_file_path(query, output_file)
 logger.info('Table copied to %s' % output_file)
+
+
+
+# Truncate the table to make this example repeatable
+sqlClient.send('TRUNCATE TABLE copy_example RESTART IDENTITY')
