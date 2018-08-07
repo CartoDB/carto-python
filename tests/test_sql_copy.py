@@ -3,10 +3,13 @@ import pytest
 import time
 import random
 
+# Make the tests compatible with python 2 and 3
 try:
-    from StringIO import StringIO
+    # python 2
+    from StringIO import cStringIO as InMemIO
 except ImportError:
-    from io import StringIO
+    # python 3
+    from io import BytesIO as InMemIO
 
 from carto.exceptions import CartoException
 from carto.sql import SQLClient, BatchSQLClient, CopySQLClient
@@ -74,7 +77,7 @@ IN_MEMORY_CSV_NROWS = 1000
 
 @pytest.fixture()
 def in_memory_csv(request):
-    file_obj = StringIO()
+    file_obj = InMemIO()
 
     def fin():
         file_obj.close()
@@ -82,13 +85,13 @@ def in_memory_csv(request):
     request.addfinalizer(fin)
 
     for i in range(IN_MEMORY_CSV_NROWS):
-        row = 'SRID=4326;POINT({lon} {lat}),{name},{age}\n'.format(
+        row = u'SRID=4326;POINT({lon} {lat}),{name},{age}\n'.format(
             lon = random.uniform(-170.0, 170.0),
             lat = random.uniform(-80.0, 80.0),
             name = random.choice(['fulano', 'mengano', 'zutano', 'perengano']),
             age = random.randint(18,99)
         )
-        file_obj.write(row)
+        file_obj.write(bytearray(row, 'utf-8'))
     file_obj.seek(0)
     return file_obj
 
@@ -139,7 +142,7 @@ def test_copyto(copy_client, copyto_sample_query, copyto_expected_result):
     assert result == copyto_expected_result
 
 def test_copyto_file_object(copy_client, copyto_sample_query, copyto_expected_result):
-    in_memory_target_fileobj = StringIO()
+    in_memory_target_fileobj = InMemIO()
 
     copy_client.copyto_file_object(copyto_sample_query, in_memory_target_fileobj)
     assert in_memory_target_fileobj.getvalue() == copyto_expected_result
