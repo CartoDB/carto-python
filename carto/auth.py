@@ -66,9 +66,14 @@ class _BaseUrlChecker:
 
 
 class _ClientIdentifier:
+
+    CARTO_VERSION = pkg_resources.require('carto')[0].version
+
     def get_user_agent(self, name='carto-python-sdk'):
-        carto_version = pkg_resources.require('carto')[0].version
-        return "{name}/{version}".format(name=name, version=carto_version)
+        return "{name}/{version}".format(name=name, version=self.CARTO_VERSION)
+
+    def get_client_identifier(self, prefix='cps'):
+        return "{prefix}-{version}".format(prefix=prefix, version=self.CARTO_VERSION)
 
 
 class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier, BaseAuthClient):
@@ -98,6 +103,7 @@ class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier, Base
         base_url = self.check_base_url(base_url)
         self.username = self.get_user_name(base_url)
         self.user_agent = self.get_user_agent()
+        self.client_id = self.get_client_identifier()
 
         super(APIKeyAuthClient, self).__init__(base_url, session=session)
 
@@ -129,11 +135,17 @@ class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier, Base
     def prepare_send(self, http_method, **requests_args):
         http_method = http_method.lower()
         if (http_method in ['post', 'put']) and "json" in requests_args:
-            requests_args["json"].update({"api_key": self.api_key})
+            requests_args["json"].update({
+                "api_key": self.api_key,
+                "client": self.client_id
+            })
         else:
             if "params" not in requests_args:
                 requests_args["params"] = {}
-            requests_args["params"].update({"api_key": self.api_key})
+            requests_args["params"].update({
+                "api_key": self.api_key,
+                "client": self.client_id
+            })
 
         if 'headers' not in requests_args or not requests_args['headers']:
             requests_args['headers'] = {}
