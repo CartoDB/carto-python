@@ -422,7 +422,7 @@ class CopySQLClient(object):
 
     def copyto_file_path(self, query, path, append=False):
         """
-        Gets data from a table into a writable file object
+        Gets data from a table into a writable file
 
         :param query: The "COPY { table_name [(column_name[, ...])] | ( query ) }
                            TO STDOUT [WITH(option[,...])]" query to execute
