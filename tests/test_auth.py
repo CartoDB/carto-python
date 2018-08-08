@@ -61,10 +61,15 @@ def test_auth_api_client_me_endpoint():
     assert username == USER1_USERNAME
 
 
-def test_api_key_auth_cant_read_api_keys_with_default_public():
+def test_api_key_auth_can_only_read_default_public_with_default_public():
     client = APIKeyAuthClient(USER1_BASE_URL, DEFAULT_PUBLIC_API_KEY)
     response = client.send('/api/v3/api_keys', 'get')
-    assert response.status_code == 401
+    assert response.status_code == 200
+    api_keys = response.json()
+    assert api_keys['count'] == 1
+    assert len(api_keys['result']) == 1
+    assert api_keys['result'][0]['name'] == 'Default public'
+    assert api_keys['result'][0]['token'] == 'default_public'
 
 
 def test_auth_api_can_read_api_keys_with_default_public():
