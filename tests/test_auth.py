@@ -1,5 +1,7 @@
 import pytest
 import re
+import requests
+import requests_mock
 
 from secret import API_KEY
 from carto.auth import APIKeyAuthClient
@@ -104,3 +106,16 @@ def test_client_identifier():
 
     client_id_pattern = re.compile('test/\d+\.\d+\.\d+')
     assert client_id_pattern.match(ci.get_user_agent('test'))
+
+def test_user_agent():
+    expected_user_agent = _ClientIdentifier().get_user_agent()
+    adapter = requests_mock.Adapter()
+    session = requests.Session()
+
+    # Using file:// cause urllib's urljoin (used in pyrestcli) does not support a mock:// schema
+    session.mount('file', adapter)
+    adapter.register_uri('POST', 'file://test.carto.com/headers',
+                         request_headers={'User-Agent': expected_user_agent})
+
+    client = APIKeyAuthClient('file://test.carto.com', 'some_api_key', None, session)
+    resp = client.send('headers', 'post')
