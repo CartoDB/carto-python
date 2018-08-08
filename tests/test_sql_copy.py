@@ -50,7 +50,7 @@ def copy_client(api_key_auth_client_usr):
     return CopySQLClient(api_key_auth_client_usr)
 
 
-def test_copyfrom(copy_client):
+def test_copyfrom(copy_client, test_table):
     query = 'COPY carto_python_sdk_copy_test (the_geom, name, age) FROM stdin WITH (FORMAT csv, HEADER true)'
     data = iter(TABLE_CONTENTS)
     result = copy_client.copyfrom(query, data)
