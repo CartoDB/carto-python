@@ -327,7 +327,7 @@ class CopySQLClient(object):
 
         return response_json
 
-    def copyfrom_file_object(self, query, file_object, compress=True):
+    def copyfrom_file_object(self, query, file_object, compress=True, compression_level=DEFAULT_COMPRESSION_LEVEL):
         """
         Gets data from a readable file object into a table
 
@@ -347,7 +347,7 @@ class CopySQLClient(object):
         chunk_generator = self._read_in_chunks(file_object)
         return self.copyfrom(query, chunk_generator, compress)
 
-    def copyfrom_file_path(self, query, path, compress=True):
+    def copyfrom_file_path(self, query, path, compress=True, compression_level=DEFAULT_COMPRESSION_LEVEL):
         """
         Gets data from a readable file into a table
 
