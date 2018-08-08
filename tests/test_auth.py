@@ -1,10 +1,12 @@
 import pytest
+import re
 
 from secret import API_KEY
 from carto.auth import APIKeyAuthClient
 from carto.exceptions import CartoException
 from conftest import USR_BASE_URL, DEFAULT_PUBLIC_API_KEY
 from carto.auth import AuthAPIClient
+from carto.auth import _ClientIdentifier
 
 
 def test_wrong_url():
@@ -92,3 +94,13 @@ def test_auth_api_is_valid_api_key_with_master_key():
     if API_KEY == 'mockmockmock':
         pytest.skip("Can't be tested with mock api key")
     assert AuthAPIClient(USR_BASE_URL, API_KEY).is_valid_api_key()
+
+
+def test_client_identifier():
+    ci = _ClientIdentifier()
+
+    client_id_pattern = re.compile('carto-python-sdk/\d+\.\d+\.\d+')
+    assert client_id_pattern.match(ci.get_user_agent())
+
+    client_id_pattern = re.compile('test/\d+\.\d+\.\d+')
+    assert client_id_pattern.match(ci.get_user_agent('test'))

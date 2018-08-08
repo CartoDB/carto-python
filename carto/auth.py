@@ -17,6 +17,7 @@ from gettext import gettext as _
 import re
 import sys
 import warnings
+import pkg_resources
 
 from pyrestcli.auth import BaseAuthClient, BasicAuthClient
 
@@ -64,7 +65,13 @@ class _BaseUrlChecker:
         return base_url
 
 
-class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, BaseAuthClient):
+class _ClientIdentifier:
+    def get_user_agent(self, name='carto-python-sdk'):
+        carto_version = pkg_resources.require('carto')[0].version
+        return "{name}/{version}".format(name=name, version=carto_version)
+
+
+class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier, BaseAuthClient):
     """
     This class provides you with authenticated access to CARTO's APIs using
     your API key.
@@ -90,6 +97,7 @@ class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, BaseAuthClient):
         self.api_key = api_key
         base_url = self.check_base_url(base_url)
         self.username = self.get_user_name(base_url)
+        self.user_agent = self.get_user_agent()
 
         super(APIKeyAuthClient, self).__init__(base_url, session=session)
 
@@ -126,6 +134,10 @@ class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, BaseAuthClient):
             if "params" not in requests_args:
                 requests_args["params"] = {}
             requests_args["params"].update({"api_key": self.api_key})
+
+        if 'headers' not in requests_args:
+            requests_args['headers'] = {}
+        requests_args['headers'].update({'User-Agent': self.user_agent})
 
         return http_method, requests_args
 
