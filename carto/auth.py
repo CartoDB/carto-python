@@ -70,13 +70,18 @@ class _ClientIdentifier:
     CARTO_VERSION = pkg_resources.require('carto')[0].version
 
     def get_user_agent(self, name='carto-python-sdk'):
-        return "{name}/{version}".format(name=name, version=self.CARTO_VERSION)
+        return "{name}/{version}".format(
+            name=name,
+            version=self.CARTO_VERSION)
 
     def get_client_identifier(self, prefix='cps'):
-        return "{prefix}-{version}".format(prefix=prefix, version=self.CARTO_VERSION)
+        return "{prefix}-{version}".format(
+            prefix=prefix,
+            version=self.CARTO_VERSION)
 
 
-class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier, BaseAuthClient):
+class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier,
+                       BaseAuthClient):
     """
     This class provides you with authenticated access to CARTO's APIs using
     your API key.

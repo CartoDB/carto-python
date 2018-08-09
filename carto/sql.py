@@ -25,7 +25,7 @@ MAX_GET_QUERY_LEN = 1024
 # The chunk size should be a multiple of the filesystem/buffers block
 # size. Big values can cause resource starvation and OTOH small values
 # incur in some protocol overhead. Typical linux block size is 4 KB.
-DEFAULT_CHUNK_SIZE = 8 * 1024 # 8 KB provides good results in practice
+DEFAULT_CHUNK_SIZE = 8 * 1024  # 8 KB provides good results in practice
 
 # The compression level of gzip/zlib ranges from 1 (fastest, least
 # compression) to 9 (slowest, most compression).  In our performance
@@ -276,15 +276,17 @@ class CopySQLClient(object):
 
     def _compress_chunks(self, chunk_generator, compression_level):
         zlib_mode = 16 + zlib.MAX_WBITS
-        compressor = zlib.compressobj(compression_level, zlib.DEFLATED, zlib_mode)
+        compressor = zlib.compressobj(compression_level,
+                                      zlib.DEFLATED,
+                                      zlib_mode)
         for chunk in chunk_generator:
             compressed_chunk = compressor.compress(chunk)
             if len(compressed_chunk) > 0:
                 yield compressed_chunk
         yield compressor.flush()
 
-
-    def copyfrom(self, query, iterable_data, compress=True, compression_level=DEFAULT_COMPRESSION_LEVEL):
+    def copyfrom(self, query, iterable_data, compress=True,
+                 compression_level=DEFAULT_COMPRESSION_LEVEL):
         """
         Gets data from an iterable object into a table
 
@@ -306,11 +308,12 @@ class CopySQLClient(object):
             'Content-Type': 'application/octet-stream',
             'Transfer-Encoding': 'chunked'
         }
-        params={'api_key': self.api_key, 'q': query}
+        params = {'api_key': self.api_key, 'q': query}
 
         if compress:
             headers['Content-Encoding'] = 'gzip'
-            _iterable_data = self._compress_chunks(iterable_data, compression_level)
+            _iterable_data = self._compress_chunks(iterable_data,
+                                                   compression_level)
         else:
             _iterable_data = iterable_data
 
@@ -327,7 +330,8 @@ class CopySQLClient(object):
 
         return response_json
 
-    def copyfrom_file_object(self, query, file_object, compress=True, compression_level=DEFAULT_COMPRESSION_LEVEL):
+    def copyfrom_file_object(self, query, file_object, compress=True,
+                             compression_level=DEFAULT_COMPRESSION_LEVEL):
         """
         Gets data from a readable file object into a table
 
@@ -345,9 +349,11 @@ class CopySQLClient(object):
         :raise CartoException:
         """
         chunk_generator = self._read_in_chunks(file_object)
-        return self.copyfrom(query, chunk_generator, compress, compression_level)
+        return self.copyfrom(query, chunk_generator, compress,
+                             compression_level)
 
-    def copyfrom_file_path(self, query, path, compress=True, compression_level=DEFAULT_COMPRESSION_LEVEL):
+    def copyfrom_file_path(self, query, path, compress=True,
+                           compression_level=DEFAULT_COMPRESSION_LEVEL):
         """
         Gets data from a readable file into a table
 
@@ -364,14 +370,15 @@ class CopySQLClient(object):
         :raise CartoException:
         """
         with open(path, 'rb') as f:
-            result = self.copyfrom_file_object(query, f, compress, compression_level)
+            result = self.copyfrom_file_object(query, f, compress,
+                                               compression_level)
         return result
 
     def copyto(self, query):
         """
         Gets data from a table into a Response object that can be iterated
 
-        :param query: The "COPY { table_name [(column_name[, ...])] | ( query ) }
+        :param query: The "COPY { table_name [(column_name[, ...])] | (query) }
                            TO STDOUT [WITH(option[,...])]" query to execute
         :type query: str
 
@@ -381,7 +388,7 @@ class CopySQLClient(object):
         :raise CartoException:
         """
         url = self.api_url + '/copyto'
-        params={'api_key': self.api_key, 'q': query}
+        params = {'api_key': self.api_key, 'q': query}
 
         try:
             response = self.client.send(url,
@@ -393,7 +400,8 @@ class CopySQLClient(object):
             if 400 <= response.status_code < 500:
                 # Client error, provide better reason
                 reason = response.json()['error'][0]
-                error_msg = u'%s Client Error: %s' % (response.status_code, reason)
+                error_msg = u'%s Client Error: %s' % (response.status_code,
+                                                      reason)
                 raise CartoException(error_msg)
             else:
                 raise CartoException(e)
@@ -406,7 +414,7 @@ class CopySQLClient(object):
         """
         Gets data from a table into a writable file object
 
-        :param query: The "COPY { table_name [(column_name[, ...])] | ( query ) }
+        :param query: The "COPY { table_name [(column_name[, ...])] | (query) }
                            TO STDOUT [WITH(option[,...])]" query to execute
         :type query: str
 
@@ -424,7 +432,7 @@ class CopySQLClient(object):
         """
         Gets data from a table into a writable file
 
-        :param query: The "COPY { table_name [(column_name[, ...])] | ( query ) }
+        :param query: The "COPY { table_name [(column_name[, ...])] | (query) }
                            TO STDOUT [WITH(option[,...])]" query to execute
         :type query: str
 

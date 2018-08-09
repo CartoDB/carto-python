@@ -39,6 +39,7 @@ def test_on_prem_url():
     assert user2 == 'user2'
     assert user3 == 'user3'
 
+
 USER1_BASE_URL = 'https://user1.carto.com/'
 USER1_USERNAME = 'user1'
 
@@ -107,18 +108,22 @@ def test_client_identifier():
     client_id_pattern = re.compile('test/\d+\.\d+\.\d+')
     assert client_id_pattern.match(ci.get_user_agent('test'))
 
+
 def test_user_agent():
     expected_user_agent = _ClientIdentifier().get_user_agent()
     adapter = requests_mock.Adapter()
     session = requests.Session()
 
-    # Using file:// cause urllib's urljoin (used in pyrestcli) does not support a mock:// schema
+    # Using file:// cause urllib's urljoin (used in pyrestcli)
+    # does not support a mock:// schema
     session.mount('file', adapter)
     adapter.register_uri('POST', 'file://test.carto.com/headers',
                          request_headers={'User-Agent': expected_user_agent})
 
-    client = APIKeyAuthClient('file://test.carto.com', 'some_api_key', None, session)
+    client = APIKeyAuthClient('file://test.carto.com', 'some_api_key',
+                              None, session)
     client.send('headers', 'post')
+
 
 def test_client_id_in_requests():
     expected_client_id = _ClientIdentifier().get_client_identifier()
