@@ -345,7 +345,7 @@ class CopySQLClient(object):
         :raise CartoException:
         """
         chunk_generator = self._read_in_chunks(file_object)
-        return self.copyfrom(query, chunk_generator, compress)
+        return self.copyfrom(query, chunk_generator, compress, compression_level)
 
     def copyfrom_file_path(self, query, path, compress=True, compression_level=DEFAULT_COMPRESSION_LEVEL):
         """
@@ -364,7 +364,7 @@ class CopySQLClient(object):
         :raise CartoException:
         """
         with open(path, 'rb') as f:
-            result = self.copyfrom_file_object(query, f, compress)
+            result = self.copyfrom_file_object(query, f, compress, compression_level)
         return result
 
     def copyto(self, query):
