@@ -36,7 +36,7 @@ TABLE_CONTENTS = [
 ]
 
 COPY_FROM_QUERY = (
-    'COPY carto_python_sdk_copy_test (the_geom, name, age) FROM stdin WITH ',
+    'COPY carto_python_sdk_copy_test (the_geom, name, age) FROM stdin WITH '
     '(FORMAT csv, HEADER true)'
 )
 
@@ -122,8 +122,8 @@ def test_copyfrom_file_path(copy_client):
 @pytest.fixture()
 def copyto_sample_query():
     arbitrary_subquery = (
-        'SELECT i cartodb_id, ',
-        'ST_AsEWKT(ST_SetSRID(ST_MakePoint(i, i),4326)) the_geom FROM ',
+        'SELECT i cartodb_id, '
+        'ST_AsEWKT(ST_SetSRID(ST_MakePoint(i, i),4326)) the_geom FROM '
         'generate_series(1,10) i'
     )
     query = 'COPY ({subquery}) TO STDOUT'.format(subquery=arbitrary_subquery)
