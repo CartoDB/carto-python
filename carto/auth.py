@@ -145,7 +145,7 @@ class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier, Base
                 requests_args["params"] = {}
             requests_args["params"].update(params)
 
-        if 'headers' not in requests_args or not requests_args['headers']:
+        if not requests_args.get('headers', None):
             requests_args['headers'] = {}
         requests_args['headers'].update({'User-Agent': self.user_agent})
 
