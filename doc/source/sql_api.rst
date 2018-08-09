@@ -101,4 +101,67 @@ The `BatchSQLClient` is asynchronous, but it offers methods to check the status 
   cancelJob = batchSQLClient.cancel(job_id)
 
 
+
+COPY queries
+^^^^^^^^^^^^
+
+COPY queries allow you to use the `PostgreSQL COPY command`_ for
+efficient streaming of data to and from CARTO.
+
+.. _PostgreSQL COPY command: https://www.postgresql.org/docs/10/static/sql-copy.html
+
+Here is a basic example of its usage:
+
+.. code:: python
+
+   from carto.sql import SQLClient
+   from carto.sql import CopySQLClient
+
+   sql_client = SQLClient(auth_client)
+   copy_client = CopySQLClient(auth_client)
+
+   # Create a destination table for the copy with the right schema
+   sql_client.send("""
+       CREATE TABLE IF NOT EXISTS copy_example (
+         the_geom geometry(Geometry,4326),
+         name text,
+         age integer
+       )
+       """)
+   sql_client.send("SELECT CDB_CartodbfyTable(current_schema, 'copy_example')")
+
+   # COPY FROM a csv file in the filesytem
+   from_query = 'COPY copy_example (the_geom, name, age) FROM stdin WITH (FORMAT csv, HEADER true)'
+   result = copy_client.copyfrom_file_path(from_query, 'copy_from.csv')
+
+   # COPY TO a file in the filesystem
+   to_query = 'COPY copy_example TO stdout WITH (FORMAT csv, HEADER true)'
+   copy_client.copyto_file_path(to_query, 'export.csv')
+
+Here’s an equivalent, more pythonic example of the COPY FROM, using a
+``file`` object:
+
+.. code:: python
+
+   with open('copy_from.csv', 'rb') as f:
+       copy_client.copyfrom_file_object(from_query, f)
+
+And here is a demonstration of how to generate and stream data directly
+(no need for a file at all):
+
+.. code:: python
+
+   def rows():
+       # note the \n to delimit rows
+       yield bytearray(u'the_geom,name,age\n', 'utf-8')
+       for i in range(1,80):
+           row = u'SRID=4326;POINT({lon} {lat}),{name},{age}\n'.format(
+               lon = i,
+               lat = i,
+               name = 'fulano',
+               age = 100 - i
+           )
+           yield bytearray(row, 'utf-8')
+   copy_client.copyfrom(from_query, rows())
+
 For more examples on how to use the SQL API, please refer to the **examples** folder or the :ref:`apidoc`.
