@@ -134,18 +134,16 @@ class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier, Base
 
     def prepare_send(self, http_method, **requests_args):
         http_method = http_method.lower()
+        params = {
+            "api_key": self.api_key,
+            "client": self.client_id
+        }
         if (http_method in ['post', 'put']) and "json" in requests_args:
-            requests_args["json"].update({
-                "api_key": self.api_key,
-                "client": self.client_id
-            })
+            requests_args["json"].update(params)
         else:
             if "params" not in requests_args:
                 requests_args["params"] = {}
-            requests_args["params"].update({
-                "api_key": self.api_key,
-                "client": self.client_id
-            })
+            requests_args["params"].update(params)
 
         if 'headers' not in requests_args or not requests_args['headers']:
             requests_args['headers'] = {}
