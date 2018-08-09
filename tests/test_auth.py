@@ -118,4 +118,10 @@ def test_user_agent():
                          request_headers={'User-Agent': expected_user_agent})
 
     client = APIKeyAuthClient('file://test.carto.com', 'some_api_key', None, session)
-    resp = client.send('headers', 'post')
+    client.send('headers', 'post')
+
+def test_client_id_in_requests():
+    expected_client_id = _ClientIdentifier().get_client_identifier()
+    client = APIKeyAuthClient('https://test.carto.com', 'some_api_key')
+    http_method, requests_args = client.prepare_send('post')
+    assert requests_args['params']['client'] == expected_client_id
