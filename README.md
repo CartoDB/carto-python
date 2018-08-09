@@ -182,8 +182,9 @@ And here is a demonstration of how to generate and stream data directly (no need
 
 ```python
 def rows():
+    # note the \n to delimit rows
+    yield bytearray(u'the_geom,name,age\n', 'utf-8')
     for i in range(1,80):
-        # note the \n to delimit rows
         row = u'SRID=4326;POINT({lon} {lat}),{name},{age}\n'.format(
             lon = i,
             lat = i,
