@@ -121,33 +121,13 @@ auth_src_client = APIKeyAuthClient(
     args.CARTO_SRC_URL,
     args.CARTO_SRC_API_KEY
 )
-
+auth_dst_client = APIKeyAuthClient(
+    args.CARTO_DST_URL,
+    args.CARTO_DST_API_KEY
+)
 
 # Create and cartodbfy a table
-sqlClient = SQLClient(auth_client)
-sqlClient.send("""
-    CREATE TABLE IF NOT EXISTS copy_example (
-      the_geom geometry(Geometry,4326),
-      name text,
-      age integer
-    )
-    """)
-sqlClient.send("SELECT CDB_CartodbfyTable(current_schema, 'copy_example')")
+sql_src_client = SQLClient(auth_src_client)
+sql_dst_client = SQLClient(auth_dst_client)
 
-copyClient = CopySQLClient(auth_client)
-
-# COPY FROM example
-logger.info("COPY'ing FROM file...")
-query = ('COPY copy_example (the_geom, name, age) '
-         'FROM stdin WITH (FORMAT csv, HEADER true)')
-result = copyClient.copyfrom_file_path(query, 'files/copy_from.csv')
-logger.info('result = %s' % result)
-
-# COPY TO example
-query = 'COPY copy_example TO stdout WITH (FORMAT csv, HEADER true)'
-output_file = 'files/copy_export.csv'
-copyClient.copyto_file_path(query, output_file)
-logger.info('Table copied to %s' % output_file)
-
-# Truncate the table to make this example repeatable
-sqlClient.send('TRUNCATE TABLE copy_example RESTART IDENTITY')
+# TBD
