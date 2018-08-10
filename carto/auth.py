@@ -17,6 +17,7 @@ from gettext import gettext as _
 import re
 import sys
 import warnings
+import pkg_resources
 
 from pyrestcli.auth import BaseAuthClient, BasicAuthClient
 
@@ -64,7 +65,23 @@ class _BaseUrlChecker:
         return base_url
 
 
-class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, BaseAuthClient):
+class _ClientIdentifier:
+
+    CARTO_VERSION = pkg_resources.require('carto')[0].version
+
+    def get_user_agent(self, name='carto-python-sdk'):
+        return "{name}/{version}".format(
+            name=name,
+            version=self.CARTO_VERSION)
+
+    def get_client_identifier(self, prefix='cps'):
+        return "{prefix}-{version}".format(
+            prefix=prefix,
+            version=self.CARTO_VERSION)
+
+
+class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier,
+                       BaseAuthClient):
     """
     This class provides you with authenticated access to CARTO's APIs using
     your API key.
@@ -90,6 +107,8 @@ class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, BaseAuthClient):
         self.api_key = api_key
         base_url = self.check_base_url(base_url)
         self.username = self.get_user_name(base_url)
+        self.user_agent = self.get_user_agent()
+        self.client_id = self.get_client_identifier()
 
         super(APIKeyAuthClient, self).__init__(base_url, session=session)
 
@@ -120,12 +139,20 @@ class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, BaseAuthClient):
 
     def prepare_send(self, http_method, **requests_args):
         http_method = http_method.lower()
+        params = {
+            "api_key": self.api_key,
+            "client": self.client_id
+        }
         if (http_method in ['post', 'put']) and "json" in requests_args:
-            requests_args["json"].update({"api_key": self.api_key})
+            requests_args["json"].update(params)
         else:
             if "params" not in requests_args:
                 requests_args["params"] = {}
-            requests_args["params"].update({"api_key": self.api_key})
+            requests_args["params"].update(params)
+
+        if not requests_args.get('headers', None):
+            requests_args['headers'] = {}
+        requests_args['headers'].update({'User-Agent': self.user_agent})
 
         return http_method, requests_args
 

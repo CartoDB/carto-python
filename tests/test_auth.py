@@ -1,10 +1,14 @@
 import pytest
+import re
+import requests
+import requests_mock
 
 from secret import API_KEY
 from carto.auth import APIKeyAuthClient
 from carto.exceptions import CartoException
 from conftest import USR_BASE_URL, DEFAULT_PUBLIC_API_KEY
 from carto.auth import AuthAPIClient
+from carto.auth import _ClientIdentifier
 
 
 def test_wrong_url():
@@ -35,6 +39,7 @@ def test_on_prem_url():
     assert user2 == 'user2'
     assert user3 == 'user3'
 
+
 USER1_BASE_URL = 'https://user1.carto.com/'
 USER1_USERNAME = 'user1'
 
@@ -61,10 +66,15 @@ def test_auth_api_client_me_endpoint():
     assert username == USER1_USERNAME
 
 
-def test_api_key_auth_cant_read_api_keys_with_default_public():
+def test_api_key_auth_can_only_read_default_public_with_default_public():
     client = APIKeyAuthClient(USER1_BASE_URL, DEFAULT_PUBLIC_API_KEY)
     response = client.send('/api/v3/api_keys', 'get')
-    assert response.status_code == 401
+    assert response.status_code == 200
+    api_keys = response.json()
+    assert api_keys['count'] == 1
+    assert len(api_keys['result']) == 1
+    assert api_keys['result'][0]['name'] == 'Default public'
+    assert api_keys['result'][0]['token'] == 'default_public'
 
 
 def test_auth_api_can_read_api_keys_with_default_public():
@@ -87,3 +97,36 @@ def test_auth_api_is_valid_api_key_with_master_key():
     if API_KEY == 'mockmockmock':
         pytest.skip("Can't be tested with mock api key")
     assert AuthAPIClient(USR_BASE_URL, API_KEY).is_valid_api_key()
+
+
+def test_client_identifier():
+    ci = _ClientIdentifier()
+
+    client_id_pattern = re.compile('carto-python-sdk/\d+\.\d+\.\d+')
+    assert client_id_pattern.match(ci.get_user_agent())
+
+    client_id_pattern = re.compile('test/\d+\.\d+\.\d+')
+    assert client_id_pattern.match(ci.get_user_agent('test'))
+
+
+def test_user_agent():
+    expected_user_agent = _ClientIdentifier().get_user_agent()
+    adapter = requests_mock.Adapter()
+    session = requests.Session()
+
+    # Using file:// cause urllib's urljoin (used in pyrestcli)
+    # does not support a mock:// schema
+    session.mount('file', adapter)
+    adapter.register_uri('POST', 'file://test.carto.com/headers',
+                         request_headers={'User-Agent': expected_user_agent})
+
+    client = APIKeyAuthClient('file://test.carto.com', 'some_api_key',
+                              None, session)
+    client.send('headers', 'post')
+
+
+def test_client_id_in_requests():
+    expected_client_id = _ClientIdentifier().get_client_identifier()
+    client = APIKeyAuthClient('https://test.carto.com', 'some_api_key')
+    http_method, requests_args = client.prepare_send('post')
+    assert requests_args['params']['client'] == expected_client_id

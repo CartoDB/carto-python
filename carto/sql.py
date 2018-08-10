@@ -11,12 +11,29 @@ Module for the SQL API
 
 """
 
+import zlib
+import struct
+
 from .exceptions import CartoException
+from requests import HTTPError
 
 SQL_API_URL = 'api/{api_version}/sql'
 SQL_BATCH_API_URL = 'api/{api_version}/sql/job/'
 
 MAX_GET_QUERY_LEN = 1024
+
+# The chunk size should be a multiple of the filesystem/buffers block
+# size. Big values can cause resource starvation and OTOH small values
+# incur in some protocol overhead. Typical linux block size is 4 KB.
+DEFAULT_CHUNK_SIZE = 8 * 1024  # 8 KB provides good results in practice
+
+# The compression level of gzip/zlib ranges from 1 (fastest, least
+# compression) to 9 (slowest, most compression).  In our performance
+# tests, we determined that the most efficient way to transmit data
+# end-to-end is to use compression levels 1 or 2 (compressing in the
+# client, transmiting through network, decompressing and loading in
+# the DB). Those levels are also gentle with platform CPU usage.
+DEFAULT_COMPRESSION_LEVEL = 1
 
 
 class SQLClient(object):
@@ -226,3 +243,208 @@ class BatchSQLClient(object):
         """
         confirmation = self.send(self.api_url + job_id, http_method="DELETE")
         return confirmation['status']
+
+
+class CopySQLClient(object):
+    """
+    Allows to use the PostgreSQL COPY command for efficient streaming
+    of data to and from CARTO.
+    """
+
+    def __init__(self, client, api_version='v2'):
+        """
+        :param client: Auth client to make authorized requests, such as
+                        APIKeyAuthClient
+        :param api_version: Current version is 'v2'. 'v1' can be used to avoid
+                            caching, but it's not guaranteed to work
+        :type auth_client: :class:`carto.auth.APIKeyAuthClient`
+        :type api_version: str
+
+        :return:
+        """
+        self.client = client
+        self.api_url = SQL_API_URL.format(api_version=api_version)
+        self.api_key = self.client.api_key \
+            if hasattr(self.client, "api_key") else None
+
+    def _read_in_chunks(self, file_object, chunk_size=DEFAULT_CHUNK_SIZE):
+        while True:
+            data = file_object.read(chunk_size)
+            if not data:
+                break
+            yield data
+
+    def _compress_chunks(self, chunk_generator, compression_level):
+        zlib_mode = 16 + zlib.MAX_WBITS
+        compressor = zlib.compressobj(compression_level,
+                                      zlib.DEFLATED,
+                                      zlib_mode)
+        for chunk in chunk_generator:
+            compressed_chunk = compressor.compress(chunk)
+            if len(compressed_chunk) > 0:
+                yield compressed_chunk
+        yield compressor.flush()
+
+    def copyfrom(self, query, iterable_data, compress=True,
+                 compression_level=DEFAULT_COMPRESSION_LEVEL):
+        """
+        Gets data from an iterable object into a table
+
+        :param query: The "COPY table_name [(column_name[, ...])]
+                           FROM STDIN [WITH(option[,...])]" query to execute
+        :type query: str
+
+        :param iterable_data: An object that can be iterated
+                              to retrieve the data
+        :type iterable_data: object
+
+        :return: Response data as json
+        :rtype: str
+
+        :raise CartoException:
+        """
+        url = self.api_url + '/copyfrom'
+        headers = {
+            'Content-Type': 'application/octet-stream',
+            'Transfer-Encoding': 'chunked'
+        }
+        params = {'api_key': self.api_key, 'q': query}
+
+        if compress:
+            headers['Content-Encoding'] = 'gzip'
+            _iterable_data = self._compress_chunks(iterable_data,
+                                                   compression_level)
+        else:
+            _iterable_data = iterable_data
+
+        try:
+            response = self.client.send(url,
+                                        http_method='POST',
+                                        params=params,
+                                        data=_iterable_data,
+                                        headers=headers,
+                                        stream=True)
+            response_json = self.client.get_response_data(response)
+        except Exception as e:
+            raise CartoException(e)
+
+        return response_json
+
+    def copyfrom_file_object(self, query, file_object, compress=True,
+                             compression_level=DEFAULT_COMPRESSION_LEVEL):
+        """
+        Gets data from a readable file object into a table
+
+        :param query: The "COPY table_name [(column_name[, ...])]
+                           FROM STDIN [WITH(option[,...])]" query to execute
+        :type query: str
+
+        :param file_object: A file-like object.
+                            Normally the return value of open('file.ext', 'rb')
+        :type file_object: file
+
+        :return: Response data as json
+        :rtype: str
+
+        :raise CartoException:
+        """
+        chunk_generator = self._read_in_chunks(file_object)
+        return self.copyfrom(query, chunk_generator, compress,
+                             compression_level)
+
+    def copyfrom_file_path(self, query, path, compress=True,
+                           compression_level=DEFAULT_COMPRESSION_LEVEL):
+        """
+        Gets data from a readable file into a table
+
+        :param query: The "COPY table_name [(column_name[, ...])]
+                           FROM STDIN [WITH(option[,...])]" query to execute
+        :type query: str
+
+        :param path: A path to a file
+        :type path: str
+
+        :return: Response data as json
+        :rtype: str
+
+        :raise CartoException:
+        """
+        with open(path, 'rb') as f:
+            result = self.copyfrom_file_object(query, f, compress,
+                                               compression_level)
+        return result
+
+    def copyto(self, query):
+        """
+        Gets data from a table into a Response object that can be iterated
+
+        :param query: The "COPY { table_name [(column_name[, ...])] | (query) }
+                           TO STDOUT [WITH(option[,...])]" query to execute
+        :type query: str
+
+        :return: response object
+        :rtype: Response
+
+        :raise CartoException:
+        """
+        url = self.api_url + '/copyto'
+        params = {'api_key': self.api_key, 'q': query}
+
+        try:
+            response = self.client.send(url,
+                                        http_method='GET',
+                                        params=params,
+                                        stream=True)
+            response.raise_for_status()
+        except HTTPError as e:
+            if 400 <= response.status_code < 500:
+                # Client error, provide better reason
+                reason = response.json()['error'][0]
+                error_msg = u'%s Client Error: %s' % (response.status_code,
+                                                      reason)
+                raise CartoException(error_msg)
+            else:
+                raise CartoException(e)
+        except Exception as e:
+            raise CartoException(e)
+
+        return response
+
+    def copyto_file_object(self, query, file_object):
+        """
+        Gets data from a table into a writable file object
+
+        :param query: The "COPY { table_name [(column_name[, ...])] | (query) }
+                           TO STDOUT [WITH(option[,...])]" query to execute
+        :type query: str
+
+        :param file_object: A file-like object.
+                            Normally the return value of open('file.ext', 'wb')
+        :type file_object: file
+
+        :raise CartoException:
+        """
+        response = self.copyto(query)
+        for block in response.iter_content(DEFAULT_CHUNK_SIZE):
+            file_object.write(block)
+
+    def copyto_file_path(self, query, path, append=False):
+        """
+        Gets data from a table into a writable file
+
+        :param query: The "COPY { table_name [(column_name[, ...])] | (query) }
+                           TO STDOUT [WITH(option[,...])]" query to execute
+        :type query: str
+
+        :param path: A path to a writable file
+        :type path: str
+
+        :param append: Whether to append or not if the file already exists
+                       Default value is False
+        :type append: bool
+
+        :raise CartoException:
+        """
+        file_mode = 'wb' if not append else 'ab'
+        with open(path, file_mode) as f:
+            self.copyto_file_object(query, f)
