@@ -20,18 +20,18 @@ logger = logging.getLogger()
 
 usage_example="""Examples of use:
 
- ./duplicate_table.py                          \\
-      --source-url     https://source.carto.com \\
-      --source-api-key 12345                    \\
-      --source-table   my_table                 \\
-      --dest-url       https://dest.carto.com   \\
-      --dest-api-key   67890
+ ./duplicate_table.py                         \\
+      --src-url      https://source.carto.com \\
+      --src-api-key  12345                    \\
+      --src-table    my_table                 \\
+      --dst-url      https://dest.carto.com   \\
+      --dst-api-key  67890
 
-  ./duplicate_table.py                          \\
-      --source-url     https://source.carto.com \\
-      --source-api-key 12345                    \\
-      --source-table   my_table                 \\
-      --dest-table     my_copy
+  ./duplicate_table.py                        \\
+      --src-url      https://source.carto.com \\
+      --src-api-key  12345                    \\
+      --src-table    my_table                 \\
+      --dst-table    my_copy
 """
 
 # Set input arguments
@@ -42,9 +42,9 @@ parser = argparse.ArgumentParser(
 )
 
 parser.add_argument(
-    '--source-url',
+    '--src-url',
     type=str,
-    dest='CARTO_SOURCE_URL',
+    dest='CARTO_SRC_URL',
     default=os.environ.get('CARTO_API_URL', ''),
     required=True,
     help=('Set the source base URL. For example: '
@@ -53,8 +53,8 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    '--source-api-key',
-    dest='CARTO_SOURCE_API_KEY',
+    '--src-api-key',
+    dest='CARTO_SRC_API_KEY',
     default=os.environ.get('CARTO_API_KEY', ''),
     required=True,
     help=('API key of the source account '
@@ -62,16 +62,16 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    '--source-table',
-    dest='SOURCE_TABLE',
+    '--src-table',
+    dest='SRC_TABLE',
     required=True,
     help='Name of the source table to copy'
 )
 
 parser.add_argument(
-    '--dest-url',
+    '--dst-url',
     type=str,
-    dest='CARTO_DEST_URL',
+    dest='CARTO_DST_URL',
     default=os.environ.get('CARTO_API_URL', ''),
     required=True,
     help=('Set the destination base URL. For example: '
@@ -80,8 +80,8 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    '--dest-api-key',
-    dest='CARTO_DEST_API_KEY',
+    '--dst-api-key',
+    dest='CARTO_DST_API_KEY',
     default=os.environ.get('CARTO_API_KEY', ''),
     required=True,
     help=('API key of the destination account '
@@ -89,21 +89,19 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    '--dest-table',
-    dest='DEST_TABLE',
+    '--dst-table',
+    dest='DST_TABLE',
     required=True,
-    help='Name of the destination table (defaults to SOURCE_TABLE)'
+    help='Name of the destination table (defaults to the source table)'
 )
 
 
 args = parser.parse_args()
 
-sys.exit()
-
 # Set authentification to CARTO
 auth_client = APIKeyAuthClient(
-    args.CARTO_SOURCE_URL,
-    args.CARTO_SOURCE_API_KEY
+    args.CARTO_SRC_URL,
+    args.CARTO_SRC_API_KEY
 )
 
 
