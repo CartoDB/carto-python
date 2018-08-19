@@ -65,83 +65,9 @@ auth_dst_client = APIKeyAuthClient(
 sql_src_client = SQLClient(auth_src_client)
 sql_dst_client = SQLClient(auth_dst_client)
 
-# A SQL utility function to extract source table structure. See:
-# https://stackoverflow.com/questions/2593803/how-to-generate-the-create-table-sql-statement-for-an-existing-table-in-postgr
-# but we omit the schema name to be able to re-create it in another account.
-# TODO move this to an external file
-query_generate_create_table_statement = """
-CREATE OR REPLACE FUNCTION generate_create_table_statement(p_table_name varchar)
-  RETURNS text AS
-$BODY$
-DECLARE
-    v_table_ddl   text;
-    column_record record;
-BEGIN
-    FOR column_record IN
-        SELECT
-            b.relname as table_name,
-            a.attname as column_name,
-            pg_catalog.format_type(a.atttypid, a.atttypmod) as column_type,
-            CASE WHEN
-                (SELECT substring(pg_catalog.pg_get_expr(d.adbin, d.adrelid) for 128)
-                 FROM pg_catalog.pg_attrdef d
-                 WHERE d.adrelid = a.attrelid AND d.adnum = a.attnum AND a.atthasdef) IS NOT NULL THEN
-                'DEFAULT '|| (SELECT substring(pg_catalog.pg_get_expr(d.adbin, d.adrelid) for 128)
-                              FROM pg_catalog.pg_attrdef d
-                              WHERE d.adrelid = a.attrelid AND d.adnum = a.attnum AND a.atthasdef)
-            ELSE
-                ''
-            END as column_default_value,
-            CASE WHEN a.attnotnull = true THEN
-                'NOT NULL'
-            ELSE
-                'NULL'
-            END as column_not_null,
-            a.attnum as attnum,
-            e.max_attnum as max_attnum
-        FROM
-            pg_catalog.pg_attribute a
-            INNER JOIN
-             (SELECT c.oid,
-                n.nspname,
-                c.relname
-              FROM pg_catalog.pg_class c
-                   LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
-              WHERE c.relname ~ ('^('||p_table_name||')$')
-                AND pg_catalog.pg_table_is_visible(c.oid)
-              ORDER BY 2, 3) b
-            ON a.attrelid = b.oid
-            INNER JOIN
-             (SELECT
-                  a.attrelid,
-                  max(a.attnum) as max_attnum
-              FROM pg_catalog.pg_attribute a
-              WHERE a.attnum > 0
-                AND NOT a.attisdropped
-              GROUP BY a.attrelid) e
-            ON a.attrelid=e.attrelid
-        WHERE a.attnum > 0
-          AND NOT a.attisdropped
-        ORDER BY a.attnum
-    LOOP
-        IF column_record.attnum = 1 THEN
-            v_table_ddl:='CREATE TABLE IF NOT EXISTS '||column_record.table_name||' (';
-        ELSE
-            v_table_ddl:=v_table_ddl||',';
-        END IF;
-
-        IF column_record.attnum <= column_record.max_attnum THEN
-            v_table_ddl:=v_table_ddl||chr(10)||
-                     '    '||column_record.column_name||' '||column_record.column_type||' '||column_record.column_default_value||' '||column_record.column_not_null;
-        END IF;
-    END LOOP;
-
-    v_table_ddl:=v_table_ddl||');';
-    RETURN v_table_ddl;
-END;
-$BODY$
-  LANGUAGE 'plpgsql' COST 100.0 SECURITY INVOKER;
-"""
+# Create a SQL utility function to extract source table structure.
+with open('generate_create_table_statement.sql', 'r') as f:
+    query_generate_create_table_statement = f.read()
 logger.info('Creating function generate_create_table_statement...')
 res = sql_src_client.send(query_generate_create_table_statement)
 logger.info('Response: {}'.format(res))
@@ -171,8 +97,8 @@ logger.info('Response: {}'.format(res))
 copy_src_client = CopySQLClient(auth_src_client)
 copy_dst_client = CopySQLClient(auth_dst_client)
 
-# COPY the info from the source to the destination
-# we use here all the defaults
+# COPY (streaming) the data from the source to the dest table
+# we use here all the COPY defaults
 logger.info("Streaming the data from source to destination...")
 response = copy_src_client.copyto('COPY {} TO STDOUT'.format(TABLE_NAME))
 result = copy_dst_client.copyfrom('COPY {} FROM STDIN'.format(TABLE_NAME), response)
