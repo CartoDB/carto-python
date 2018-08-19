@@ -5,6 +5,7 @@ import re
 import os
 import sys
 import ConfigParser
+import argparse
 
 from carto.auth import APIKeyAuthClient
 from carto.sql import SQLClient
@@ -48,8 +49,18 @@ else:
     logger.error("Generated %s. Please fill in the details of your source and destination CARTO accounts and re-run the script" % SECRET_CONFIG_FILE)
     sys.exit(1)
 
-# TODO add this as a command line argument
-TABLE_NAME = 'taxi_50k'
+# Parse input argument(s)
+parser = argparse.ArgumentParser(description=(
+    "Example of CopySQLClient usage (low-level iterable interface)."
+    " It uses the CopySQLClient to duplicate a table from a source CARTO account to a destination CARTO account."
+    " It works even across clouds and on-premise installations,"
+    " as long as there's connectivity and the API keys have suffient privileges."
+))
+parser.add_argument('-t', '--table', type=str, dest='TABLE_NAME', required=True,
+                    help='Name of the table to COPY from source to destination account')
+args = parser.parse_args()
+
+TABLE_NAME = args.TABLE_NAME
 
 # Set authentification to CARTO
 auth_src_client = APIKeyAuthClient(
