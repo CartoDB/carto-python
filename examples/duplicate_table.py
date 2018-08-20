@@ -100,7 +100,7 @@ create_table = res['rows'][0]['create_table']
 
 # This is a bit of a trick: we omit the sequences to avoid
 # dependencies on other objects Normally this just affects the
-# cartodb_id and can optionally be fixed by cartodby'ing
+# cartodb_id and can optionally be fixed by cartodbfy'ing
 create_table_no_seqs = re.sub(r'DEFAULT nextval\([^\)]+\)', ' ', create_table)
 logger.info(create_table_no_seqs)
 
