@@ -120,8 +120,10 @@ logger.info('Response: {}'.format(res))
 copy_src_client = CopySQLClient(auth_src_client)
 copy_dst_client = CopySQLClient(auth_dst_client)
 
-# COPY (streaming) the data from the source to the dest table
-# we use here all the COPY defaults
+# COPY (streaming) the data from the source to the dest table. We use
+# here all the COPY defaults. Note that we take the `response` from
+# the `copyto`, which can be iterated, and we pipe it directly into
+# the `copyfrom`.
 logger.info("Streaming the data from source to destination...")
 response = copy_src_client.copyto('COPY %s TO STDOUT' % TABLE_NAME)
 result = copy_dst_client.copyfrom('COPY %s FROM STDIN' % TABLE_NAME, response)
