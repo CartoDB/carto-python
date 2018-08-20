@@ -4,7 +4,7 @@ import logging
 import re
 import os
 import sys
-import ConfigParser
+import configparser
 import argparse
 
 from carto.auth import APIKeyAuthClient
@@ -24,9 +24,9 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 # Configuration goes here
+config = configparser.ConfigParser()
 if os.path.isfile(SECRET_CONFIG_FILE):
     with open(SECRET_CONFIG_FILE, 'r') as f:
-        config = ConfigParser.ConfigParser()
         config.readfp(f)
     SRC_URL = config.get('source', 'carto_url')
     SRC_API_KEY = config.get('source', 'carto_api_key')
@@ -38,7 +38,6 @@ if os.path.isfile(SECRET_CONFIG_FILE):
 else:
     logger.error("%s file does not exist. Generating..." % SECRET_CONFIG_FILE)
     with open(SECRET_CONFIG_FILE, 'w') as f:
-        config = ConfigParser.ConfigParser()
         config.add_section('source')
         config.set('source' , 'carto_url', 'https://source.carto.com/')
         config.set('source', 'carto_api_key', '')
