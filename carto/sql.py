@@ -241,7 +241,13 @@ class BatchSQLClient(object):
 
         :raise CartoException:
         """
-        confirmation = self.send(self.api_url + job_id, http_method="DELETE")
+        try:
+            confirmation = self.send(self.api_url + job_id, http_method="DELETE")
+        except CartoException as e:
+            if 'Cannot set status from done to cancelled' in e.args[0].args[0]:
+                return 'done'
+            else:
+                raise e
         return confirmation['status']
 
 
