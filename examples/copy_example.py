@@ -17,7 +17,7 @@ logger = logging.getLogger()
 
 
 # set input arguments
-parser = argparse.ArgumentParser(description='External database connector')
+parser = argparse.ArgumentParser(description='Example of CopySQLClient usage (file-based interface)')
 
 parser.add_argument('--base_url', type=str, dest='CARTO_BASE_URL',
                     default=os.environ.get('CARTO_API_URL', ''),

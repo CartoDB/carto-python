@@ -65,5 +65,6 @@ secret.py
 env
 
 .idea/*
+.vscode/
 .DS_Store
 *variables.sh
