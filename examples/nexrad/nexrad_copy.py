@@ -20,9 +20,6 @@ from siphon.cdmr import Dataset
 #   - https://gist.github.com/stuartlynn/a7868cf8ca02931a6408
 #   - http://nbviewer.jupyter.org/gist/dopplershift/356f2e14832e9b676207
 
-# TODO Figure out how to solve dependency issues: numpy, siphon
-# TODO test with python 2 and 3
-
 # Set up our own logger after cleaning up siphon's one
 logger = logging.getLogger()
 list(map(logger.removeHandler, logger.handlers[:]))
@@ -152,7 +149,7 @@ def rows():
             reflectivity=value
         )
 
-        yield bytearray(row, 'utf-8')
+        yield row
 
 # And finally stream the data to CARTO
 logger.info('Executing COPY command...')
