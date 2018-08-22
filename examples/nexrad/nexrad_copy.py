@@ -106,7 +106,7 @@ logger.info('ref_data.shape: {}'.format(ref_data.shape))
 # https://stackoverflow.com/questions/7222382/get-lat-long-given-current-point-distance-and-bearing
 def offset_by_meters(lat, lon, dist, bearing):
     R = 6378.1
-    bearing_rads = np.deg2rad(az)[:, None]
+    bearing_rads = np.deg2rad(bearing)[:, None]
     dist_km = dist / 1000.0
 
     lat1 = np.radians(lat)
