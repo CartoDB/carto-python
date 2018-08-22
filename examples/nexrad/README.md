@@ -52,3 +52,84 @@ INFO:nexrad_copy:Done
 INFO:nexrad_copy:Executing COPY command...
 INFO:nexrad_copy:{u'total_rows': 204789, u'time': 28.805}
 ```
+
+## About the code
+
+Here are a couple of hints about this example, in case you want to tinker with the code.
+
+## The `copyfrom`
+
+Here's the gist of the code:
+
+```python
+def rows():
+    for ix, iy in np.ndindex(ref.shape):
+        value = ref[ix, iy]
+        if value is np.ma.masked:
+            continue
+
+        row = u'SRID=4326;POINT({lon} {lat}),{reflectivity}\n'.format(
+            lon=lon[ix, iy],
+            lat=lat[ix, iy],
+            reflectivity=value
+        )
+
+        yield row.encode()
+```
+
+`rows` is a [generator function](https://wiki.python.org/moin/Generators). When called it returns an object that can be iterated. What it does underneath:
+- it traverses all the data, and skip values that were previously masked (i.e. zeroes or no data)
+- for every value, it builds a CSV row with the structure specified in the `CREATE TABLE`,
+- and finally it _yields_ a row in every iteration.
+
+```python
+result = copy_client.copyfrom(
+    ('COPY nexrad_copy_example(the_geom, reflectivity)'
+     ' FROM stdin WITH (FORMAT csv)'),
+    rows())
+```
+
+This is the call to the `copyfrom` method. Underneath, the `copyfrom` method will request rows as needed, pack, compress and send them in chunks through the network.
+
+
+
+### The query object
+
+Here's the line defining the station to query and the time:
+
+```python
+query.stations('KLVX').time(datetime.utcnow())
+```
+
+from the `RadarServer` object you can get a list of stations:
+```python
+In [5]: len(rs.stations)
+Out[5]: 159
+
+In [6]: type(rs.stations)
+Out[6]: dict
+
+In [7]: rs.stations
+Out[7]:
+{'KABC': Station(id='KABC', elevation=49.0, latitude=60.78, longitude=-161.87, name='ANCHORAGE/Bethel'),
+ 'KABR': Station(id='KABR', elevation=397.0, latitude=45.45, longitude=-98.4, name='ABERDEEN/Aberdeen'),
+ 'KABX': Station(id='KABX', elevation=1789.0, latitude=35.13, longitude=-106.82, name='ALBUQUERQUE/Albuquerque'),
+ ...
+```
+
+You could also download historical data, which is nicely explained in [dopplershift's jupyter notebook](http://nbviewer.jupyter.org/gist/dopplershift/356f2e14832e9b676207#Download-a-collection-of-historical-data). Mind that with that endpoint you can access up to 2 weeks worth of historical data.
+
+You could even extract high resolution information for each of the samples with a little bit more work:
+```
+In [20]: type(data.variables)
+Out[20]: collections.OrderedDict
+
+In [21]: len(data.variables)
+Out[21]: 72
+
+In [25]: data.variables['timeR_HI'].long_name
+Out[25]: u'time of each ray'
+
+In [26]: data.variables['timeR_HI'].units
+Out[26]: u'msecs since 2018-08-22T00:00:00Z'
+```
