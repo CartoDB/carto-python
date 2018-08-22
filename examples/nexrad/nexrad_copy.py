@@ -149,7 +149,7 @@ def rows():
             reflectivity=value
         )
 
-        yield row
+        yield row.encode()
 
 # And finally stream the data to CARTO
 logger.info('Executing COPY command...')
