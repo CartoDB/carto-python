@@ -68,9 +68,11 @@ sql_client.send(
     "SELECT CDB_CartodbfyTable(current_schema, 'nexrad_copy_example')")
 logger.info('Done')
 
+logger.info('Trying to connect to the THREDDS radar query service')
 rs = RadarServer(
     'http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/IDD/')
 
+logger.info('Quering data from the station')
 query = rs.query()
 query.stations('KLVX').time(datetime.utcnow())
 assert rs.validate_query(query)
