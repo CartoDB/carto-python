@@ -37,16 +37,18 @@ $ python nexrad_copy.py -h
 
 ```
 $ python nexrad_copy.py
-2018-08-22 11:25:18,026 - INFO - Creating table nexrad_copy_example...
-2018-08-22 11:25:18,176 - INFO - Done
-2018-08-22 11:25:19,787 - INFO - Avaliable datasets: ['Level2_KLVX_20180822_0910.ar2v']
-2018-08-22 11:25:19,787 - INFO - Using the first one
-2018-08-22 11:25:21,540 - INFO - Got the following data: Nexrad Level 2 Station KLVX from 2018-08-22T09:10:09Z to 2018-08-22T09:19:39Z
-2018-08-22 11:25:21,541 - INFO - Weather Surveillance Radar-1988 Doppler (WSR-88D) Level II data are the three meteorological base data quantities: reflectivity, mean radial velocity, and spectrum width.
-2018-08-22 11:25:21,541 - INFO - Pulling out some of the variables...
-2018-08-22 11:25:24,494 - INFO - ref_data.shape: (720, 1832)
-2018-08-22 11:25:24,494 - INFO - Converting the data...
-2018-08-22 11:25:24,615 - INFO - Done
-2018-08-22 11:25:24,615 - INFO - Executing COPY command...
-2018-08-22 11:26:17,980 - INFO - {u'total_rows': 378947, u'time': 53.319}
+INFO:nexrad_copy:Creating table nexrad_copy_example...
+INFO:nexrad_copy:Done
+INFO:nexrad_copy:Trying to connect to the THREDDS radar query service
+INFO:nexrad_copy:Quering data from the station
+INFO:nexrad_copy:Avaliable datasets: ['Level2_KLVX_20180822_1536.ar2v']
+INFO:nexrad_copy:Using the first one
+INFO:nexrad_copy:Got the following data: Nexrad Level 2 Station KLVX from 2018-08-22T15:36:10Z to 2018-08-22T15:40:41Z
+INFO:nexrad_copy:Weather Surveillance Radar-1988 Doppler (WSR-88D) Level II data are the three meteorological base data quantities: reflectivity, mean radial velocity, and spectrum width.
+INFO:nexrad_copy:Pulling out some of the variables...
+INFO:nexrad_copy:ref_data.shape: (720, 1832)
+INFO:nexrad_copy:Converting the data...
+INFO:nexrad_copy:Done
+INFO:nexrad_copy:Executing COPY command...
+INFO:nexrad_copy:{u'total_rows': 204789, u'time': 28.805}
 ```
