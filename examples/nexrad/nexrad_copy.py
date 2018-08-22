@@ -20,13 +20,8 @@ from siphon.cdmr import Dataset
 #   - https://gist.github.com/stuartlynn/a7868cf8ca02931a6408
 #   - http://nbviewer.jupyter.org/gist/dopplershift/356f2e14832e9b676207
 
-# Set up our own logger after cleaning up siphon's one
-logger = logging.getLogger()
-list(map(logger.removeHandler, logger.handlers[:]))
-ch = logging.StreamHandler()
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-ch.setFormatter(formatter)
-logger.addHandler(ch)
+# Set up a logger
+logger = logging.getLogger('nexrad_copy')
 logger.setLevel(logging.INFO)
 
 # Parse input arguments
