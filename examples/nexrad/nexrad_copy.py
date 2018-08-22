@@ -83,7 +83,7 @@ def raw_to_masked_float(var, data):
     # Values come back signed. If the _Unsigned attribute is set, we
     # need to convert from the range [-127, 128] to [0, 255].
     if var._Unsigned:
-        data = data & 255
+        data = data & 0xFF
 
     # Mask missing points
     data = np.ma.array(data, mask=(data == 0))
