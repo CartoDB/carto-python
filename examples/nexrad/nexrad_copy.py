@@ -46,7 +46,7 @@ parser.add_argument('--base_url', type=str, dest='CARTO_BASE_URL',
 
 parser.add_argument('--api_key', dest='CARTO_API_KEY',
                     default=os.environ.get('CARTO_API_KEY', ''),
-                    help=('(Api key of the account'
+                    help=('Api key of the account'
                           ' (defaults to env variable CARTO_API_KEY)'))
 
 args = parser.parse_args()
