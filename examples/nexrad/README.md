@@ -120,7 +120,7 @@ Out[7]:
 You could also download historical data, which is nicely explained in [dopplershift's jupyter notebook](http://nbviewer.jupyter.org/gist/dopplershift/356f2e14832e9b676207#Download-a-collection-of-historical-data). Mind that with that endpoint you can access up to 2 weeks worth of historical data.
 
 You could even extract high resolution information for each of the samples with a little bit more work:
-```
+```python
 In [20]: type(data.variables)
 Out[20]: collections.OrderedDict
 

@@ -5,8 +5,7 @@ import sys
 import argparse
 
 from carto.auth import APIKeyAuthClient
-from carto.sql import SQLClient
-from carto.sql import CopySQLClient
+from carto.sql import SQLClient, CopySQLClient
 
 import numpy as np
 from siphon.radarserver import RadarServer
