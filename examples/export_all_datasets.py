@@ -2,6 +2,7 @@ import argparse
 import logging
 import os
 import warnings
+from pathlib import Path
 
 from carto.datasets import DatasetManager
 from carto.auth import APIKeyAuthClient
@@ -37,12 +38,12 @@ parser.add_argument('--api_key', dest='CARTO_API_KEY',
                     ' (defaults to env variable CARTO_API_KEY)')
 
 parser.add_argument('--format', dest='EXPORT_FORMAT',
-                    default='gpkg',
+                    default='csv',
                     help='The format of the file to be exported. ' +
-                    'Default is `gpkg`')
+                    'Default is `csv`')
 
 parser.add_argument('--save_folder', dest='SAVE_FOLDER',
-                    default='.',
+                    default='./files/',
                     help='The folder path to download the datasets, by default is the path where the script is executes')
 
 args = parser.parse_args()
@@ -66,17 +67,18 @@ dataset_manager = DatasetManager(auth_client)
 # Get all datasets from account
 datasets = dataset_manager.all()
 
-# donwload datasets from account
+# loop over all datasets from account
 for tablename in datasets:
-    query = 'SELECT * FROM {table_name}'.format(table_name=tablename) 
+    query = 'SELECT * FROM {table_name}'.format(table_name=tablename.name) 
     try:
         result = sql.send(query, format=args.EXPORT_FORMAT)
-        filename = "carto_{table_name}.{format}".format(table_name=tablename,format=args.EXPORT_FORMAT)
-        with open(filename, 'w') as f:
-            f.write(result)
-        f.close()
-
-        logger.info("CARTO dataset saved: " + filename)
-    except:
-        logger.info("CARTO dataset {table_name} haven't been exported".format(table_name=tablename))
-    
+    except Exception as e:
+        logger.error(str(e))
+        break
+    data_folder = Path(args.SAVE_FOLDER) / "{table_name}.{format}".format(table_name=tablename.name,format=args.EXPORT_FORMAT)
+    # write file to files folder
+    try:
+        data_folder.write_bytes(result)
+    except Exception as e:
+        logger.error(str(e))
+        break
