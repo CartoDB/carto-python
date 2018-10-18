@@ -25,6 +25,6 @@ password=your_password
 ```
 
 5. Upload the package to the test repository: `python setup.py sdist upload -r pypitest`.
-6. Install it in a new environment: `pip install --index-url=https://test.pypi.org/simple --extra-index-url=https://pypi.org/simple carto`.
+6. Install it in a new environment: `pip install --trusted-host --index-url=https://test.pypi.org/simple --extra-index-url=https://pypi.org/simple carto`.
 7. Test it.
 8. Release it: `python setup.py sdist upload -r pypi`.
