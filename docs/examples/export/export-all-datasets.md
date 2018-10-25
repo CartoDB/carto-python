@@ -3,6 +3,7 @@ import argparse
 import logging
 import os
 import warnings
+from pathlib import Path
 
 from carto.datasets import DatasetManager
 from carto.auth import APIKeyAuthClient
@@ -69,16 +70,17 @@ datasets = dataset_manager.all()
 
 # donwload datasets from account
 for tablename in datasets:
-    query = 'SELECT * FROM {table_name}'.format(table_name=tablename) 
+    query = 'SELECT * FROM {table_name}'.format(table_name=tablename.name) 
     try:
         result = sql.send(query, format=args.EXPORT_FORMAT)
-        filename = "carto_{table_name}.{format}".format(table_name=tablename,format=args.EXPORT_FORMAT)
-        with open(filename, 'w') as f:
-            f.write(result)
-        f.close()
-
-        logger.info("CARTO dataset saved: " + filename)
-    except:
-        logger.info("CARTO dataset {table_name} haven't been exported".format(table_name=tablename))
-
+    except Exception as e:
+        logger.error(str(e))
+        break
+    data_folder = Path(args.SAVE_FOLDER) / "{table_name}.{format}".format(table_name=tablename.name,format=args.EXPORT_FORMAT)
+    # write file to files folder
+    try:
+        data_folder.write_bytes(result)
+    except Exception as e:
+        logger.error(str(e))
+        break
 ```
