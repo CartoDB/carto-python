@@ -18,7 +18,7 @@ from pyrestcli.fields import IntegerField, CharField, DateTimeField, \
     BooleanField
 
 from .exceptions import CartoException
-from .fields import TableField
+from .fields import TableField, SynchronizationField
 from .resources import Manager, WarnResource
 from .paginators import CartoPaginator
 from .export import ExportJob
@@ -60,7 +60,7 @@ class Visualization(WarnResource):
     privacy = None
     source = None
     stats = None
-    synchronization = None
+    synchronization = SynchronizationField()
     table = TableField()
     related_tables = TableField(many=True)
     tags = None
