@@ -23,7 +23,7 @@ from .file_import import FileImportJobManager
 from .resources import WarnResource
 from .sync_tables import SyncTableJobManager
 from .tables import TableManager
-from .fields import TableField, UserField, PermissionField
+from .fields import TableField, UserField, PermissionField, SynchronizationField
 from .paginators import CartoPaginator
 from .resources import Manager
 
@@ -67,7 +67,7 @@ class Dataset(WarnResource):
     privacy = CharField()
     source = None
     stats = DateTimeField(many=True)
-    synchronization = None
+    synchronization = SynchronizationField()
     table = TableField()
     tags = CharField(many=True)
     title = CharField()
