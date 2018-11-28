@@ -89,7 +89,8 @@ class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier,
     You can find your API key by clicking on the API key section of the user
     dropdown menu
     """
-    def __init__(self, base_url, api_key, organization=None, session=None):
+    def __init__(self, base_url, api_key, organization=None, session=None,
+                 client_id=None):
         """
         Init method
 
@@ -98,8 +99,10 @@ class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier,
         :param api_key: API key
         :param organization: For enterprise users, organization user belongs to
         :param session: requests' session object
+        :param client_id: Client param string to pass for request args
         :type api_key: str
         :type organization: str
+        :type client_id: str
 
         :return:
         """
@@ -108,7 +111,10 @@ class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier,
         base_url = self.check_base_url(base_url)
         self.username = self.get_user_name(base_url)
         self.user_agent = self.get_user_agent()
-        self.client_id = self.get_client_identifier()
+        if client_id is None:
+            self.client_id = self.get_client_identifier()
+        else:
+            self.client_id = client_id
 
         super(APIKeyAuthClient, self).__init__(base_url, session=session)
 
