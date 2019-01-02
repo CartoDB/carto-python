@@ -63,14 +63,14 @@ vis_manager = VisualizationManager(auth_client)
 # Get all maps from account
 maps = vis_manager.all()
 
-logger.info(f'Downloading {len(maps)} maps')
+logger.info('Downloading {maps} maps'.format(maps=len(maps)))
 
 current_path = Path.cwd()
-logger.info(f'Data will be downloaded in {current_path}/output')
+logger.info('Data will be downloaded in {current_path}/output'.format(current_path=current_path))
 # iterate over each map
-for map in maps:
+for viz in maps:
     # Get map object using map name
-    map_obj = vis_manager.get(map.name)
+    map_obj = vis_manager.get(viz.name)
     try:
         # get URL to export map
         url = map_obj.export()
@@ -81,7 +81,7 @@ for map in maps:
     logger.debug(url)
     # make request to the export URL
     r = requests.get(url)
-    data_path = current_path / 'output' / f"{map.name}.carto"
+    data_path = current_path / 'output' / f"{viz.name}.carto"
     # write download data into a file
     data_path.write_bytes(r.content)
         
