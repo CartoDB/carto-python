@@ -1,4 +1,3 @@
-
 import argparse
 import logging
 import os
@@ -20,21 +19,21 @@ logger = logging.getLogger()
 
 # set input arguments
 parser = argparse.ArgumentParser(
-    description='Exports a dataset')
+    description='Exports all maps')
 
 parser.add_argument('--organization', type=str, dest='organization',
-                    default=os.environ['CARTO_ORG'] if 'CARTO_ORG' in os.environ else '',
+                    default=os.environ.get('CARTO_ORG'),
                     help='Set the name of the organization' +
                     ' account (defaults to env variable CARTO_ORG)')
 
 parser.add_argument('--base_url', type=str, dest='CARTO_BASE_URL',
-                    default=os.environ['CARTO_API_URL'] if 'CARTO_API_URL' in os.environ else '',
+                    default=os.environ.get('CARTO_API_URL'),
                     help='Set the base URL. For example:' +
                     ' https://username.carto.com/ ' +
                     '(defaults to env variable CARTO_API_URL)')
 
 parser.add_argument('--api_key', dest='CARTO_API_KEY',
-                    default=os.environ['CARTO_API_KEY'] if 'CARTO_API_KEY' in os.environ else '',
+                    default=os.environ.get('CARTO_API_KEY'),
                     help='Api key of the CARTO account' +
                     ' (defaults to env variable CARTO_API_KEY)')
 
@@ -81,8 +80,6 @@ for viz in maps:
     logger.debug(url)
     # make request to the export URL
     r = requests.get(url)
-    data_path = current_path / 'output' / f"{viz.name}.carto"
+    data_path = current_path / 'output' / "{viz_name}.carto".format(viz_name=viz.name)
     # write download data into a file
     data_path.write_bytes(r.content)
-        
-    
