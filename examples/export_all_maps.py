@@ -5,6 +5,7 @@ import warnings
 import time
 from pathlib import Path
 import requests
+from tqdm import tqdm
 
 from carto.auth import APIKeyAuthClient
 from carto.visualizations import VisualizationManager
@@ -27,10 +28,10 @@ parser.add_argument('--organization', type=str, dest='organization',
                     ' account (defaults to env variable CARTO_ORG)')
 
 parser.add_argument('--base_url', type=str, dest='CARTO_BASE_URL',
-                    default=os.environ.get('CARTO_API_URL'),
+                    default=os.environ.get('CARTO_BASE_URL'),
                     help='Set the base URL. For example:' +
                     ' https://username.carto.com/ ' +
-                    '(defaults to env variable CARTO_API_URL)')
+                    '(defaults to env variable CARTO_BASE_URL)')
 
 parser.add_argument('--api_key', dest='CARTO_API_KEY',
                     default=os.environ.get('CARTO_API_KEY'),
@@ -61,6 +62,8 @@ vis_manager = VisualizationManager(auth_client)
 
 # Get all maps from account
 maps = vis_manager.all()
+# initialize progress bar tqdm setting as maximum the number of maps in the account
+pbar = tqdm(total=len(maps))
 
 logger.info('Downloading {maps} maps'.format(maps=len(maps)))
 
@@ -76,10 +79,13 @@ for viz in maps:
     except Exception as e:
         logger.error(str(e))
         continue
-    
     logger.debug(url)
     # make request to the export URL
     r = requests.get(url)
     data_path = current_path / 'output' / "{viz_name}.carto".format(viz_name=viz.name)
     # write download data into a file
     data_path.write_bytes(r.content)
+    # update progress bar 
+    pbar.update(1)
+# close progress bar
+pbar.close()
