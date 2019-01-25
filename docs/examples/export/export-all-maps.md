@@ -55,23 +55,22 @@ else:
 
 # create output folder if it doesn't exist
 if not os.path.exists('output'):
-    logger.info('Create output folder to store results')
+    logger.info('Creating output folder to store results')
     os.makedirs('output')
 
 # initialize VisualizationManager manager
 vis_manager = VisualizationManager(auth_client)
 
+logger.info('Retrieving map data from {base_url}'.format(base_url=args.CARTO_BASE_URL))
 # Get all maps from account
 maps = vis_manager.all()
-# initialize progress bar tqdm
-pbar = tqdm(total=len(maps))
 
 logger.info('Downloading {maps} maps'.format(maps=len(maps)))
 
 current_path = Path.cwd()
-logger.info('Data will be downloaded in {current_path}/output'.format(current_path=current_path))
+logger.info('Data will be downloaded into {current_path}/output'.format(current_path=current_path))
 # iterate over each map
-for viz in maps:
+for viz in tqdm(maps):
     # Get map object using map name
     map_obj = vis_manager.get(viz.name)
     try:
@@ -87,8 +86,4 @@ for viz in maps:
     data_path = current_path / 'output' / "{viz_name}.carto".format(viz_name=viz.name)
     # write download data into a file
     data_path.write_bytes(r.content)
-    # update progress bar 
-    pbar.update(1)
-# close progress bar
-pbar.close()
 ```
