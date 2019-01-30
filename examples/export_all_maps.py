@@ -5,6 +5,7 @@ import warnings
 import time
 from pathlib import Path
 import requests
+# we are adding the tqdm module to create a progress bar
 from tqdm import tqdm
 
 from carto.auth import APIKeyAuthClient
@@ -69,6 +70,10 @@ logger.info('Downloading {maps} maps'.format(maps=len(maps)))
 current_path = Path.cwd()
 logger.info('Data will be downloaded into {current_path}/output'.format(current_path=current_path))
 # iterate over each map
+'''
+    The tqdm module is not needed and we could iterate directly over the maps array.
+    However, we added this module to have a nicer way to see the download progress.
+'''
 for viz in tqdm(maps):
     # Get map object using map name
     map_obj = vis_manager.get(viz.name)
