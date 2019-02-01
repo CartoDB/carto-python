@@ -99,4 +99,4 @@ The `BatchSQLClient` is asynchronous, but it offers methods to check the status 
   cancelJob = batchSQLClient.cancel(job_id)
 ```
 
-For more examples on how to use the SQL API, please refer to the [examples]({{pythonsdk_docs}}/examples/) section.
+For more examples on how to use the SQL API, please refer to the [examples]({{site.pythonsdk_docs}}/examples/) section.
