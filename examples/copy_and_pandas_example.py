@@ -2,8 +2,7 @@ import argparse
 import os
 import sys
 import logging
-import time
-import pandas as pd # you will need to install it
+import pandas as pd  # you will need to install it
 
 from carto.auth import APIKeyAuthClient
 from carto.sql import SQLClient
@@ -41,7 +40,6 @@ if args.CARTO_BASE_URL and args.CARTO_API_KEY:
 else:
     logger.error('You need to provide valid credentials, run with '
                  '-h parameter for details')
-    import sys
     sys.exit(1)
 
 # Create and cartodbfy a table
