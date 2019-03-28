@@ -175,7 +175,7 @@ def test_copyto_file_path(copy_client, copyto_sample_query,
 
 
 def test_copyto_stream(copy_client, copyto_sample_query,
-                        copyto_expected_result):
+                       copyto_expected_result):
     response = copy_client.copyto_stream(copyto_sample_query)
 
     assert response.read() == copyto_expected_result
