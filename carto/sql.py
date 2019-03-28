@@ -198,7 +198,9 @@ class BatchSQLClient(object):
         """
         Creates a new batch SQL query and waits for its completion or failure
 
-        Batch SQL jobs are asynchronous, once created this method automatically queries the job status until it's one of 'done', 'failed', 'canceled', 'unknown'
+        Batch SQL jobs are asynchronous, once created this method
+        automatically queries the job status until it's one of 'done',
+        'failed', 'canceled', 'unknown'
 
         :param sql_query: The SQL query to be used
         :type sql_query: str or list of str
