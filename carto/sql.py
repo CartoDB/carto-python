@@ -12,7 +12,7 @@ Module for the SQL API
 """
 
 import zlib
-import struct
+import time
 
 from .exceptions import CartoException
 from requests import HTTPError
@@ -34,6 +34,10 @@ DEFAULT_CHUNK_SIZE = 8 * 1024  # 8 KB provides good results in practice
 # client, transmiting through network, decompressing and loading in
 # the DB). Those levels are also gentle with platform CPU usage.
 DEFAULT_COMPRESSION_LEVEL = 1
+
+BATCH_JOBS_PENDING_STATUSES = ['pending', 'running']
+BATCH_JOBS_DONE_STATUSES = ['done', 'failed', 'canceled', 'unknown']
+BATCH_READ_STATUS_AFTER_SECONDS = 2
 
 
 class SQLClient(object):
@@ -188,6 +192,33 @@ class BatchSQLClient(object):
                          http_method="POST",
                          json_body={"query": sql_query},
                          http_header=header)
+        return data
+
+    def create_and_wait_for_completion(self, sql_query):
+        """
+        Creates a new batch SQL query and waits for its completion or failure
+
+        Batch SQL jobs are asynchronous, once created this method automatically queries the job status until it's one of 'done', 'failed', 'canceled', 'unknown'
+
+        :param sql_query: The SQL query to be used
+        :type sql_query: str or list of str
+
+        :return: Response data, either as json or as a regular response.content
+                    object
+        :rtype: object
+
+        :raise: CartoException
+        """
+        header = {'content-type': 'application/json'}
+        data = self.send(self.api_url,
+                         http_method="POST",
+                         json_body={"query": sql_query},
+                         http_header=header)
+
+        while data and data['status'] in BATCH_JOBS_PENDING_STATUSES:
+            time.sleep(BATCH_READ_STATUS_AFTER_SECONDS)
+            data = self.read(data['job_id'])
+
         return data
 
     def read(self, job_id):
