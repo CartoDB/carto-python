@@ -1,3 +1,6 @@
+xxx-xx-2019: version 1.5.0
+ - Adds a copyto_stream method in sql (#103)
+
 Nov-29-2018: version 1.4.0
  - Adds a custom client_id argument for authentication that optionally overwrites the default (#99)
 
