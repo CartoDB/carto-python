@@ -51,4 +51,4 @@ else:
     sys.exit(1)
 
 job = batchSQLClient.create_and_wait_for_completion(args.query)
-logger.info('Job finished with status {statis}'.format(status=job['status']))
+logger.info('Job finished with status {status}'.format(status=job['status']))
