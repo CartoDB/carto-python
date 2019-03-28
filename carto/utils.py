@@ -1,4 +1,8 @@
-class ResponseStream(io.RawIOBase):
+from io import RawIOBase
+
+DEFAULT_CHUNK_SIZE = 8 * 1024  # 8 KB
+
+class ResponseStream(RawIOBase):
     def __init__(self, response):
         self.it = response.iter_content(DEFAULT_CHUNK_SIZE)
         self.leftover = None
