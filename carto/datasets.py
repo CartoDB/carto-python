@@ -23,7 +23,8 @@ from .file_import import FileImportJobManager
 from .resources import WarnResource
 from .sync_tables import SyncTableJobManager
 from .tables import TableManager
-from .fields import TableField, UserField, PermissionField, SynchronizationField, VisualizationField
+from .fields import (TableField, UserField, PermissionField,
+                     SynchronizationField, VisualizationField)
 from .paginators import CartoPaginator
 from .resources import Manager
 
@@ -82,8 +83,10 @@ class Dataset(WarnResource):
 
     def delete(self):
         if self.dependent_visualizations_count > 0:
-            raise CartoException(_('This dataset contains dependent visualizations. ' +
-                                   'Delete them to be able to delete this dataset.'))
+            raise CartoException(_(
+                'This dataset contains dependent visualizations. ' +
+                'Delete them to be able to delete this dataset.')
+            )
 
         super(WarnResource, self).delete()
 
