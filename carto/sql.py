@@ -463,6 +463,6 @@ class CopySQLClient(object):
                            TO STDOUT [WITH(option[,...])]" query to execute
         :type query: str
 
-        :raise CartoException:
+        :raise: CartoException
         """
         return ResponseStream(self.copyto(query))

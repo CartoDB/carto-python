@@ -13,9 +13,9 @@ class ResponseStream(RawIOBase):
 
     def readinto(self, b):
         try:
-            lenght = len(b)
+            length = len(b)
             chunk = self.leftover or next(self.it)
-            output, self.leftover = chunk[:lenght], chunk[lenght:]
+            output, self.leftover = chunk[:length], chunk[length:]
             b[:len(output)] = output
             return len(output)
         except StopIteration:
