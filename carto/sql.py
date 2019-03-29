@@ -11,6 +11,7 @@ Module for the SQL API
 
 """
 
+from gettext import gettext as _
 import zlib
 import time
 import warnings
@@ -37,7 +38,9 @@ DEFAULT_CHUNK_SIZE = 8 * 1024  # 8 KB provides good results in practice
 DEFAULT_COMPRESSION_LEVEL = 1
 
 BATCH_JOBS_PENDING_STATUSES = ['pending', 'running']
-BATCH_JOBS_DONE_STATUSES = ['done', 'failed', 'canceled', 'unknown']
+BATCH_JOBS_DONE_STATUSES = ['done']
+BATCH_JOBS_FAILED_STATUSES = ['failed', 'canceled', 'unknown']
+BATCH_JOBS_FINISHED_STATUSES = BATCH_JOBS_DONE_STATUSES + BATCH_JOBS_FAILED_STATUSES
 BATCH_READ_STATUS_AFTER_SECONDS = 2
 
 
@@ -210,7 +213,7 @@ class BatchSQLClient(object):
                     object
         :rtype: object
 
-        :raise: CartoException
+        :raise: CartoException when there's an exception in the BatchSQLJob execution or the batch job status is one of the BATCH_JOBS_FAILED_STATUSES ('failed', 'canceled', 'unknown')
         """
         header = {'content-type': 'application/json'}
         data = self.send(self.api_url,
@@ -223,6 +226,9 @@ class BatchSQLClient(object):
         while data and data['status'] in BATCH_JOBS_PENDING_STATUSES:
             time.sleep(BATCH_READ_STATUS_AFTER_SECONDS)
             data = self.read(data['job_id'])
+
+        if data['status'] in BATCH_JOBS_FAILED_STATUSES:
+            raise CartoException(_("Batch SQL job failed with result: {data}".format(data=data)))
 
         return data
 
