@@ -4,6 +4,7 @@ from pyrestcli.exceptions import NotFoundException
 
 from carto.datasets import DatasetManager
 from carto.permissions import PRIVATE, PUBLIC
+from carto.exceptions import CartoException
 
 from secret import IMPORT_URL, IMPORT_FILE
 
@@ -101,6 +102,23 @@ def test_create_and_modify_and_delete_dataset_as_sync_table(dataset_manager):
     dataset.delete()
     with pytest.raises(NotFoundException):
         dataset_manager.get(dataset_id)
+
+def test_create_and_try_to_delete_dataset_with_dependent_visualizations(dataset_manager):
+    """
+    Test trying to delete a dataset with dependent visualizations
+
+    :param dataset_manager: Dataset manager to work with
+    """
+    dataset = dataset_manager.create(IMPORT_URL)
+    dataset_id = dataset.get_id()
+
+    dataset.dependent_visualizations_count = 1
+
+    with pytest.raises(CartoException):
+        dataset.delete()
+
+    dataset.dependent_visualizations_count = 0
+    dataset.delete()
 
 
 def test_import_from_object(dataset_manager):
