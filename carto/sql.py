@@ -463,6 +463,9 @@ class CopySQLClient(object):
                            TO STDOUT [WITH(option[,...])]" query to execute
         :type query: str
 
+        :return: the data from COPY TO query
+        :rtype: raw binary (text stream)
+
         :raise: CartoException
         """
         return ResponseStream(self.copyto(query))
