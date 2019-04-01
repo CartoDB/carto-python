@@ -10,7 +10,7 @@ Module for carto-python exceptions definitions
 
 
 """
-
+from requests import codes
 
 class CartoException(Exception):
     """
@@ -20,7 +20,7 @@ class CartoException(Exception):
 
 
 class CartoRateLimitException(CartoException):
-    def __init__(self, exception, response):
+    def __init__(self, response):
         super()
         self.limit = response.headers['Carto-Rate-Limit-Limit']
         self.remaining = response.headers['Carto-Rate-Limit-Remaining']
@@ -29,7 +29,7 @@ class CartoRateLimitException(CartoException):
 
     @staticmethod
     def isResponseRateLimited(response):
-        if (response.status_code == 429 and 'Retry-After' in response.headers and
+        if (response.status_code == codes.too_many_requests and 'Retry-After' in response.headers and
                 int(response.headers['Retry-After']) >= 0):
             return True
 
