@@ -20,8 +20,6 @@ import warnings
 import pkg_resources
 
 from pyrestcli.auth import BaseAuthClient, BasicAuthClient
-from requests import HTTPError
-
 from .exceptions import CartoException, CartoRateLimitException
 
 if sys.version_info >= (3, 0):
@@ -119,7 +117,7 @@ class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier,
 
         super(APIKeyAuthClient, self).__init__(base_url, session=session)
 
-    def send(self, relative_path, http_method, **requests_args):
+    def send(self, relative_path, http_method, *args, **requests_args):
         """
         Makes an API-key-authorized request
 
@@ -139,14 +137,11 @@ class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier,
             http_method, requests_args = self.prepare_send(http_method, **requests_args)
 
             response = super(APIKeyAuthClient, self).send(relative_path, http_method, **requests_args)
-            response.raise_for_status()
-        except HTTPError as e:
-            if CartoRateLimitException.isResponseRateLimited(response):
-                raise CartoRateLimitException(e, response)
-            else:
-                raise CartoException(e)
         except Exception as e:
             raise CartoException(e)
+
+        if CartoRateLimitException.isResponseRateLimited(response):
+            raise CartoRateLimitException(response)
 
         return response
 
