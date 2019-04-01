@@ -99,6 +99,8 @@ class SQLClient(object):
                 resp = self.auth_client.send(self.api_url, 'POST', data=params)
 
             return self.auth_client.get_response_data(resp, parse_json)
+        except CartoRateLimitException as e:
+            raise e
         except Exception as e:
             raise CartoException(e)
 
@@ -162,6 +164,8 @@ class BatchSQLClient(object):
                                     headers=http_header,
                                     json=json_body)
             data_json = self.client.get_response_data(data)
+        except CartoRateLimitException as e:
+            raise e
         except Exception as e:
             raise CartoException(e)
         return data_json
@@ -307,7 +311,7 @@ class CopySQLClient(object):
         :return: Response data as json
         :rtype: str
 
-        :raise CartoException or CartoRateLimitException:
+        :raise CartoException:
         """
         url = self.api_url + '/copyfrom'
         headers = {
@@ -393,7 +397,7 @@ class CopySQLClient(object):
         :return: response object
         :rtype: Response
 
-        :raise CartoException or CartoRateLimitException:
+        :raise CartoException:
         """
         url = self.api_url + '/copyto'
         params = {'api_key': self.api_key, 'q': query}
