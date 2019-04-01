@@ -1,4 +1,5 @@
 xxx-xx-2019: version 1.5.0
+ - max line length from 80 to 120
  - Adds a copyto_stream method in sql (#103)
 
 Nov-29-2018: version 1.4.0
