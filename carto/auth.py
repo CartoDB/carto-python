@@ -117,7 +117,7 @@ class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier,
 
         super(APIKeyAuthClient, self).__init__(base_url, session=session)
 
-    def send(self, relative_path, http_method, *args, **requests_args):
+    def send(self, relative_path, http_method, **requests_args):
         """
         Makes an API-key-authorized request
 
