@@ -29,9 +29,8 @@ class CartoRateLimitException(CartoException):
 
     @staticmethod
     def isResponseRateLimited(response):
-        if (response.status_code == 429 and
-            'Retry-After' in response.headers and
-            int(response.headers['Retry-After']) >= 0):
+        if (response.status_code == 429 and 'Retry-After' in response.headers and
+                int(response.headers['Retry-After']) >= 0):
             return True
 
         return False
