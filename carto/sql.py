@@ -14,7 +14,7 @@ Module for the SQL API
 import zlib
 import struct
 
-from .exceptions import CartoException
+from .exceptions import CartoException, CartoRateLimitException
 from requests import HTTPError
 
 SQL_API_URL = 'api/{api_version}/sql'
@@ -307,7 +307,7 @@ class CopySQLClient(object):
         :return: Response data as json
         :rtype: str
 
-        :raise CartoException:
+        :raise CartoException or CartoRateLimitException:
         """
         url = self.api_url + '/copyfrom'
         headers = {
@@ -331,6 +331,8 @@ class CopySQLClient(object):
                                         headers=headers,
                                         stream=True)
             response_json = self.client.get_response_data(response)
+        except CartoRateLimitException as e:
+            raise e
         except Exception as e:
             raise CartoException(e)
 
@@ -391,7 +393,7 @@ class CopySQLClient(object):
         :return: response object
         :rtype: Response
 
-        :raise CartoException:
+        :raise CartoException or CartoRateLimitException:
         """
         url = self.api_url + '/copyto'
         params = {'api_key': self.api_key, 'q': query}
@@ -402,6 +404,8 @@ class CopySQLClient(object):
                                         params=params,
                                         stream=True)
             response.raise_for_status()
+        except CartoRateLimitException as e:
+            raise e
         except HTTPError as e:
             if 400 <= response.status_code < 500:
                 # Client error, provide better reason
