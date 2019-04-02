@@ -21,7 +21,7 @@ class CartoException(Exception):
 
 class CartoRateLimitException(CartoException):
     def __init__(self, response):
-        super()
+        super().__init__(response.text)
         self.limit = int(response.headers['Carto-Rate-Limit-Limit'])
         self.remaining = int(response.headers['Carto-Rate-Limit-Remaining'])
         self.retryAfter = int(response.headers['Retry-After'])
