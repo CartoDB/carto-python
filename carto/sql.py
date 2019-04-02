@@ -18,6 +18,7 @@ import warnings
 
 from .exceptions import CartoException
 from requests import HTTPError
+from .utils import ResponseStream
 
 SQL_API_URL = 'api/{api_version}/sql'
 SQL_BATCH_API_URL = 'api/{api_version}/sql/job/'
@@ -496,3 +497,17 @@ class CopySQLClient(object):
         file_mode = 'wb' if not append else 'ab'
         with open(path, file_mode) as f:
             self.copyto_file_object(query, f)
+
+    def copyto_stream(self, query):
+        """
+        Gets data from a table into a stream
+        :param query: The "COPY { table_name [(column_name[, ...])] | (query) }
+                           TO STDOUT [WITH(option[,...])]" query to execute
+        :type query: str
+
+        :return: the data from COPY TO query
+        :rtype: raw binary (text stream)
+
+        :raise: CartoException
+        """
+        return ResponseStream(self.copyto(query))
