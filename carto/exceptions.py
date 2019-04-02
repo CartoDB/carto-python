@@ -22,15 +22,15 @@ class CartoException(Exception):
 class CartoRateLimitException(CartoException):
     def __init__(self, response):
         super()
-        self.limit = response.headers['Carto-Rate-Limit-Limit']
-        self.remaining = response.headers['Carto-Rate-Limit-Remaining']
-        self.retryAfter = response.headers['Retry-After']
-        self.reset = response.headers['Carto-Rate-Limit-Reset']
+        self.limit = int(response.headers['Carto-Rate-Limit-Limit'])
+        self.remaining = int(response.headers['Carto-Rate-Limit-Remaining'])
+        self.retryAfter = int(response.headers['Retry-After'])
+        self.reset = int(response.headers['Carto-Rate-Limit-Reset'])
 
     @staticmethod
     def isResponseRateLimited(response):
         if (response.status_code == codes.too_many_requests and 'Retry-After' in response.headers and
-                int(response.headers['Retry-After']) >= 0):
+                response.headers['Retry-After']) >= 0:
             return True
 
         return False
