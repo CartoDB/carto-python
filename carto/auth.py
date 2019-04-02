@@ -140,7 +140,7 @@ class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier,
         except Exception as e:
             raise CartoException(e)
 
-        if CartoRateLimitException.isResponseRateLimited(response):
+        if CartoRateLimitException.isRateLimited(response):
             raise CartoRateLimitException(response)
 
         return response
@@ -208,11 +208,14 @@ class NonVerifiedAPIKeyAuthClient(APIKeyAuthClient):
         try:
             http_method, requests_args = self.prepare_send(http_method, **requests_args)
             requests_args["verify"] = False
-            return super(APIKeyAuthClient, self).send(relative_path,
-                                                      http_method,
-                                                      **requests_args)
+            response = super(APIKeyAuthClient, self).send(relative_path, http_method, **requests_args)
         except Exception as e:
             raise CartoException(e)
+
+        if CartoRateLimitException.isRateLimited(response):
+            raise CartoRateLimitException(response)
+
+        return response
 
 
 class AuthAPIClient(_UsernameGetter, _BaseUrlChecker, BasicAuthClient):
