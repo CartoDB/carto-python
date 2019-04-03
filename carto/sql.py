@@ -16,7 +16,7 @@ import zlib
 import time
 import warnings
 
-from .exceptions import CartoException
+from .exceptions import CartoException, CartoRateLimitException
 from requests import HTTPError
 from .utils import ResponseStream
 
@@ -108,6 +108,8 @@ class SQLClient(object):
                 resp = self.auth_client.send(self.api_url, 'POST', data=params)
 
             return self.auth_client.get_response_data(resp, parse_json)
+        except CartoRateLimitException as e:
+            raise e
         except Exception as e:
             raise CartoException(e)
 
@@ -171,6 +173,8 @@ class BatchSQLClient(object):
                                     headers=http_header,
                                     json=json_body)
             data_json = self.client.get_response_data(data)
+        except CartoRateLimitException as e:
+            raise e
         except Exception as e:
             raise CartoException(e)
         return data_json
@@ -374,6 +378,8 @@ class CopySQLClient(object):
                                         headers=headers,
                                         stream=True)
             response_json = self.client.get_response_data(response)
+        except CartoRateLimitException as e:
+            raise e
         except Exception as e:
             raise CartoException(e)
 
@@ -445,6 +451,8 @@ class CopySQLClient(object):
                                         params=params,
                                         stream=True)
             response.raise_for_status()
+        except CartoRateLimitException as e:
+            raise e
         except HTTPError as e:
             if 400 <= response.status_code < 500:
                 # Client error, provide better reason

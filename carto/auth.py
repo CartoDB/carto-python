@@ -20,8 +20,7 @@ import warnings
 import pkg_resources
 
 from pyrestcli.auth import BaseAuthClient, BasicAuthClient
-
-from .exceptions import CartoException
+from .exceptions import CartoException, CartoRateLimitException
 
 if sys.version_info >= (3, 0):
     from urllib.parse import urlparse
@@ -137,11 +136,14 @@ class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier,
         try:
             http_method, requests_args = self.prepare_send(http_method, **requests_args)
 
-            return super(APIKeyAuthClient, self).send(relative_path,
-                                                      http_method,
-                                                      **requests_args)
+            response = super(APIKeyAuthClient, self).send(relative_path, http_method, **requests_args)
         except Exception as e:
             raise CartoException(e)
+
+        if CartoRateLimitException.is_rate_limited(response):
+            raise CartoRateLimitException(response)
+
+        return response
 
     def prepare_send(self, http_method, **requests_args):
         http_method = http_method.lower()
@@ -206,11 +208,14 @@ class NonVerifiedAPIKeyAuthClient(APIKeyAuthClient):
         try:
             http_method, requests_args = self.prepare_send(http_method, **requests_args)
             requests_args["verify"] = False
-            return super(APIKeyAuthClient, self).send(relative_path,
-                                                      http_method,
-                                                      **requests_args)
+            response = super(APIKeyAuthClient, self).send(relative_path, http_method, **requests_args)
         except Exception as e:
             raise CartoException(e)
+
+        if CartoRateLimitException.is_rate_limited(response):
+            raise CartoRateLimitException(response)
+
+        return response
 
 
 class AuthAPIClient(_UsernameGetter, _BaseUrlChecker, BasicAuthClient):

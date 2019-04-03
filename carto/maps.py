@@ -18,7 +18,7 @@ except ImportError:
 
 from pyrestcli.resources import Manager, Resource
 
-from .exceptions import CartoException
+from .exceptions import CartoException, CartoRateLimitException
 
 API_VERSION = "v1"
 NAMED_API_ENDPOINT = "api/{api_version}/map/named/"
@@ -157,6 +157,8 @@ class NamedMap(BaseMap):
                     format(auth_token=auth)
 
             self.send(endpoint, "POST", json=params)
+        except CartoRateLimitException as e:
+            raise e
         except Exception as e:
             raise CartoException(e)
 
@@ -198,6 +200,8 @@ class AnonymousMap(BaseMap):
         """
         try:
             self.send(self.Meta.collection_endpoint, "POST", json=params)
+        except CartoRateLimitException as e:
+            raise e
         except Exception as e:
             raise CartoException(e)
 
