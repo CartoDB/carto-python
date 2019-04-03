@@ -121,7 +121,7 @@ def test_try_to_delete_dataset_with_dependent_visualizations(dataset_manager):
     dataset.delete()
 
 
-def test_try_to_force_delete_dataset_with_dependent_visualizations(dataset_manager):
+def test_force_delete_dataset_with_dependent_visualizations(dataset_manager):
     """
     Test trying to delete a dataset with dependent visualizations
 
