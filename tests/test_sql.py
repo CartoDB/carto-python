@@ -66,6 +66,15 @@ def cancel_job_if_not_finished(batch_sql_client, job_id):
         attempts += 1
     assert status == 'done' or status == 'cancelled'
 
+
+def test_batch_create_and_wait_for_completion(api_key_auth_client_usr):
+    sql = BatchSQLClient(api_key_auth_client_usr)
+
+    # Create query
+    data = sql.create_and_wait_for_completion(BATCH_SQL_SINGLE_QUERY)
+
+    assert data['status'] in ['done', 'failed', 'canceled', 'unknown']
+
 def test_batch_create(api_key_auth_client_usr):
     sql = BatchSQLClient(api_key_auth_client_usr)
 
