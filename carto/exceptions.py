@@ -43,7 +43,7 @@ class CartoRateLimitException(CartoException):
         self.reset = int(response.headers['Carto-Rate-Limit-Reset'])
 
     @staticmethod
-    def isRateLimited(response):
+    def is_rate_limited(response):
         """
         Checks if the response has been rate limited by CARTO APIs
 

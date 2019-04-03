@@ -140,7 +140,7 @@ class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier,
         except Exception as e:
             raise CartoException(e)
 
-        if CartoRateLimitException.isRateLimited(response):
+        if CartoRateLimitException.is_rate_limited(response):
             raise CartoRateLimitException(response)
 
         return response
@@ -212,7 +212,7 @@ class NonVerifiedAPIKeyAuthClient(APIKeyAuthClient):
         except Exception as e:
             raise CartoException(e)
 
-        if CartoRateLimitException.isRateLimited(response):
+        if CartoRateLimitException.is_rate_limited(response):
             raise CartoRateLimitException(response)
 
         return response
