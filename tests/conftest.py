@@ -7,6 +7,18 @@ from carto.auth import APIKeyAuthClient, NonVerifiedAPIKeyAuthClient
 from carto.users import UserManager
 from mocks import MockRequests, NotMockRequests
 
+DEFAULT_PUBLIC_API_KEY = 'default_public'
+
+if "PROTOCOL" in os.environ:
+    PROTOCOL = os.environ["PROTOCOL"]
+else:
+    from secret import PROTOCOL
+
+if "HOST" in os.environ:
+    HOST = os.environ["HOST"]
+else:
+    from secret import HOST
+
 if "API_KEY" in os.environ:
     API_KEY = os.environ["API_KEY"]
 else:
@@ -42,13 +54,18 @@ if "ONPREM_API_KEY" in os.environ:
 else:
     from secret import ONPREM_API_KEY
 
-BASE_URL = "https://{organization}.carto.com/user/{user}/". \
-    format(organization=ORGANIZATION,
+BASE_URL = "{protocol}://{organization}.{host}/user/{user}/". \
+    format(protocol=PROTOCOL,
+           host=HOST,
+           organization=ORGANIZATION,
            user=USERNAME)
 ONPREMISES_USR_BASE_URL = "https://{onpremises}/user/{onpremuser}/". \
     format(onpremises=ONPREMISES,
            onpremuser=ONPREM_USERNAME)
-USR_BASE_URL = "https://{user}.carto.com/".format(user=USERNAME)
+USR_BASE_URL = "{protocol}://{user}.{host}/". \
+    format(protocol=PROTOCOL,
+           host=HOST,
+           user=USERNAME)
 
 
 @pytest.fixture(scope="session")

@@ -1,5 +1,6 @@
 import os
 import pytest
+import time
 
 from carto.exceptions import CartoException
 from carto.sql import SQLClient, BatchSQLClient
@@ -56,22 +57,35 @@ def test_no_auth_sql_error_get(no_auth_client):
         sql.send('select * from non_existing_dataset', {'do_post': False})
 
 
+def cancel_job_if_not_finished(batch_sql_client, job_id):
+    status = batch_sql_client.cancel(job_id)
+    attempts = 1
+    while status != 'done' and status != 'cancelled' and attempts < 3:
+        time.sleep(1)
+        status = batch_sql_client.cancel(job_id)
+        attempts += 1
+    assert status == 'done' or status == 'cancelled'
+
+
+def test_batch_create_and_wait_for_completion(api_key_auth_client_usr):
+    sql = BatchSQLClient(api_key_auth_client_usr)
+
+    # Create query
+    data = sql.create_and_wait_for_completion(BATCH_SQL_SINGLE_QUERY)
+
+    assert data['status'] in ['done', 'failed', 'canceled', 'unknown']
+
 def test_batch_create(api_key_auth_client_usr):
     sql = BatchSQLClient(api_key_auth_client_usr)
 
     # Create query
     data = sql.create(BATCH_SQL_SINGLE_QUERY)
 
-    # Update status
+    # Get job ID
     job_id = data['job_id']
 
     # Cancel if not finished
-    try:
-        confirmation = sql.cancel(job_id)
-    except CartoException:
-        pass
-    else:
-        assert confirmation == 'cancelled'
+    cancel_job_if_not_finished(sql, job_id)
 
 
 @pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
@@ -82,16 +96,11 @@ def test_batch_multi_sql(api_key_auth_client_usr):
     # Create query
     data = sql.create(BATCH_SQL_MULTI_QUERY)
 
-    # Update status
+    # Get job ID
     job_id = data['job_id']
 
     # Cancel if not finished
-    try:
-        confirmation = sql.cancel(job_id)
-    except CartoException:
-        pass
-    else:
-        assert confirmation == 'cancelled'
+    cancel_job_if_not_finished(sql, job_id)
 
 
 def test_sql_unverified(non_verified_auth_client):

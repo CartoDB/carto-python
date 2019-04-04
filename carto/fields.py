@@ -51,6 +51,6 @@ class PermissionField(ResourceField):
 
 class SynchronizationField(ResourceField):
     """
-    :class:`carto.permissions.Permission`
+    :class:`carto.synchronizations.Synchronization`
     """
     value_class = "carto.synchronizations.Synchronization"

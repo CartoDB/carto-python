@@ -1,3 +1,35 @@
+xxx-xx-2019: version 1.5.0
+ - max line length from 80 to 120
+ - Adds a copyto_stream method in sql (#103)
+ - Adds wait for completion for batch jobs (#104)
+ - Improve rate limit exception (#108)
+
+Nov-29-2018: version 1.4.0
+ - Adds a custom client_id argument for authentication that optionally overwrites the default (#99)
+
+Nov-27-2018: version 1.3.2
+ - Add SynchronizationField
+
+Oct-18-2018: version 1.3.1
+ - BatchSQLClient.cancel is now resilient to 'Cannot set status from done to cancelled' errors
+ - Fixed a race condition in BatchSQLClient tests
+ - Fixed URL relative path join problem in `is_valid_api_key`
+
+Aug-10-2018: version 1.3.0
+ - Added a `CopySQLClient` for efficient streaming of data to and from CARTO (#87)
+ - Fixed CI tests
+ - Added a request header `User-Agent: carto-python-sdk/x.y.z` where `x.y.z` is the current version of the library.
+ - Added a `client=cps-x.y.z` parameter to requests, where `x.y.z` is the current version of the library.
+
+Feb-22-2028: version 1.2.2
+ - Updated release instructions in CONTRIBUTING.md
+
+Feb-21-2018: version 1.2.1
+ - Added AuthAPIClient class for future Auth API usage and API key validation (#69)
+
+Feb-21-2018: version 1.2.0
+ - Added PROTOCOL and HOST to test configuration allowing local testing
+
 Dec-27-2017: version 1.1.2
  - Fix on examples management of environment variables (#70)
  - Fix onpremises tests (#70)
