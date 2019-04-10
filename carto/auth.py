@@ -89,7 +89,7 @@ class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier,
     dropdown menu
     """
     def __init__(self, base_url, api_key, organization=None, session=None,
-                 client_id=None):
+                 client_id=None, user_agent=None):
         """
         Init method
 
@@ -99,9 +99,12 @@ class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier,
         :param organization: For enterprise users, organization user belongs to
         :param session: requests' session object
         :param client_id: Client param string to pass for request args
+        :param user_agent: User-Agent param string to pass for request args
         :type api_key: str
         :type organization: str
+        :type session: object
         :type client_id: str
+        :type user_agent: str
 
         :return:
         """
@@ -109,7 +112,12 @@ class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier,
         self.api_key = api_key
         base_url = self.check_base_url(base_url)
         self.username = self.get_user_name(base_url)
-        self.user_agent = self.get_user_agent()
+
+        if user_agent is None:
+            self.user_agent = self.get_user_agent()
+        else:
+            self.user_agent = user_agent
+
         if client_id is None:
             self.client_id = self.get_client_identifier()
         else:
