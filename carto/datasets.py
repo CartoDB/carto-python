@@ -81,13 +81,17 @@ class Dataset(WarnResource):
     uses_builder_features = BooleanField()
     user = UserField()
 
-    def delete(self, force=False):
-        if force is not False and self.dependent_visualizations_count > 0:
+    def delete(self):
+        if self.dependent_visualizations_count > 0:
             raise CartoException(_(
                 'This dataset contains dependent visualizations. ' +
-                'Delete them to be able to delete this dataset.')
+                'Delete them to be able to delete this dataset or use `force_delete` ' +
+                'to delete the dataset and the dependent visualizations.')
             )
 
+        super(WarnResource, self).delete()
+
+    def force_delete(self):
         super(WarnResource, self).delete()
 
     class Meta:

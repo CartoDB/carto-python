@@ -131,7 +131,7 @@ def test_force_delete_dataset_with_dependent_visualizations(dataset_manager):
 
     dataset.dependent_visualizations_count = 1
 
-    dataset.delete(force=True)
+    dataset.force_delete()
 
 
 def test_import_from_object(dataset_manager):
