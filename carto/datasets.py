@@ -23,7 +23,8 @@ from .file_import import FileImportJobManager
 from .resources import WarnResource
 from .sync_tables import SyncTableJobManager
 from .tables import TableManager
-from .fields import TableField, UserField, PermissionField, SynchronizationField
+from .fields import (TableField, UserField, PermissionField,
+                     SynchronizationField, VisualizationField)
 from .paginators import CartoPaginator
 from .resources import Manager
 
@@ -49,6 +50,8 @@ class Dataset(WarnResource):
     children = CharField()
     created_at = DateTimeField()
     connector = CharField()
+    dependent_visualizations = VisualizationField(many=True)
+    dependent_visualizations_count = IntegerField()
     description = CharField()
     display_name = CharField()
     external_source = CharField()
@@ -77,6 +80,19 @@ class Dataset(WarnResource):
     url = CharField()
     uses_builder_features = BooleanField()
     user = UserField()
+
+    def delete(self):
+        if self.dependent_visualizations_count > 0:
+            raise CartoException(_(
+                'This dataset contains dependent visualizations. ' +
+                'Delete them to be able to delete this dataset or use `force_delete` ' +
+                'to delete the dataset and the dependent visualizations.')
+            )
+
+        super(WarnResource, self).delete()
+
+    def force_delete(self):
+        super(WarnResource, self).delete()
 
     class Meta:
         collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
@@ -115,7 +131,8 @@ class DatasetManager(Manager):
             if "params" not in client_args:
                 client_args["params"] = {}
             client_args["params"].update({"type": "table",
-                                          "exclude_shared": "true"})
+                                          "exclude_shared": "true",
+                                          "with_dependent_visualizations": 1})
 
             return super(DatasetManager, self).send(url,
                                                     http_method,
