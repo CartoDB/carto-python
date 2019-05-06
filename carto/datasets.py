@@ -16,7 +16,7 @@ import json
 from gettext import gettext as _
 
 from pyrestcli.fields import IntegerField, CharField, DateTimeField, \
-    BooleanField
+    BooleanField, DictField
 
 from .exceptions import CartoException
 from .file_import import FileImportJobManager
@@ -43,18 +43,18 @@ class Dataset(WarnResource):
 
     .. warning:: Non-public API. It may change with no previous notice
     """
-    active_child = None
+    active_child = CharField()
     active_layer_id = CharField()
     attributions = CharField()
     auth_tokens = CharField(many=True)
-    children = None
+    children = CharField()
     created_at = DateTimeField()
-    connector = None
+    connector = CharField()
     dependent_visualizations = VisualizationField(many=True)
     dependent_visualizations_count = IntegerField()
     description = CharField()
     display_name = CharField()
-    external_source = None
+    external_source = CharField()
     id = CharField()
     kind = CharField()
     license = CharField()
@@ -63,18 +63,18 @@ class Dataset(WarnResource):
     locked = BooleanField()
     map_id = CharField()
     name = CharField()
-    next_id = None
+    next_id = CharField()
     parent_id = CharField()
     permission = PermissionField()
-    prev_id = None
+    prev_id = CharField()
     privacy = CharField()
-    source = None
+    source = CharField()
     stats = DateTimeField(many=True)
     synchronization = SynchronizationField()
     table = TableField()
     tags = CharField(many=True)
     title = CharField()
-    transition_options = None
+    transition_options = DictField()
     type = CharField()
     updated_at = DateTimeField()
     url = CharField()

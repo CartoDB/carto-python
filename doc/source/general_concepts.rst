@@ -150,10 +150,11 @@ The CARTO Python client provides additional instances of `ResourceField`:
 Exceptions
 ----------
 
-All the Exceptions of the CARTO Python client are wrapped into the `CartoException` class.
+- `CartoException`: Generic exception class of the CARTO Python client. Most of the exceptions are wrapped into it.
+- `CartoRateLimitException`: it is raised when a request is rate limited by SQL or Maps APIs (429 Too Many Requests HTTP error). `More info about CARTO rate limits`_. It extends `CartoException` class with the rate limits info, so that any client can manage when to retry a rate limited request.
 
-Please refer to the `CARTO API docs`_ for more information about concrete error codes and exceptions.
 
-.. _CARTO API docs: https://carto.com/docs/carto-engine/import-api/import-errors
+Please refer to the `CARTO developer center`_ for more information about concrete error codes and exceptions.
 
-.. _installation:
+.. _CARTO developer center: https://carto.com/developers
+.. _More info about CARTO rate limits: https://carto.com/developers/fundamentals/limits/#rate-limits

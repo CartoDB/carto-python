@@ -15,10 +15,10 @@ import time
 from gettext import gettext as _
 
 from pyrestcli.fields import IntegerField, CharField, DateTimeField, \
-    BooleanField
+    BooleanField, DictField
 
 from .exceptions import CartoException
-from .fields import TableField, SynchronizationField
+from .fields import TableField, PermissionField, SynchronizationField
 from .resources import Manager, WarnResource
 from .paginators import CartoPaginator
 from .export import ExportJob
@@ -37,39 +37,41 @@ class Visualization(WarnResource):
 
     .. warning:: Non-public API. It may change with no previous notice
     """
-    active_child = None
+    active_child = CharField()
     active_layer_id = CharField()
-    attributions = None
-    children = None
+    attributions = CharField()
+    auth_tokens = CharField(many=True)
+    children = CharField(many=True)
     created_at = DateTimeField()
     description = CharField()
     display_name = CharField()
-    external_source = None
+    external_source = DictField()
     id = CharField()
-    kind = None
-    license = None
+    kind = CharField()
+    license = CharField()
     liked = BooleanField()
     likes = IntegerField()
     locked = BooleanField()
     map_id = CharField()
     name = CharField()
-    next_id = None
-    parent_id = None
-    permission = None
-    prev_id = None
-    privacy = None
-    source = None
-    stats = None
+    next_id = CharField()
+    parent_id = CharField()
+    permission = PermissionField()
+    prev_id = CharField()
+    privacy = CharField()
+    source = CharField()
+    stats = DictField()
     synchronization = SynchronizationField()
     table = TableField()
     related_tables = TableField(many=True)
-    tags = None
+    tags = CharField(many=True)
     title = CharField()
-    transition_options = None
-    type = None
+    transition_options = DictField()
+    type = CharField()
     updated_at = DateTimeField()
     url = CharField()
-    uses_builder_features = None
+    uses_builder_features = BooleanField()
+    version = IntegerField()
 
     class Meta:
         collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)

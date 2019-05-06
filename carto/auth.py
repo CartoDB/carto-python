@@ -20,8 +20,7 @@ import warnings
 import pkg_resources
 
 from pyrestcli.auth import BaseAuthClient, BasicAuthClient
-
-from .exceptions import CartoException
+from .exceptions import CartoException, CartoRateLimitException
 
 if sys.version_info >= (3, 0):
     from urllib.parse import urlparse
@@ -90,7 +89,7 @@ class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier,
     dropdown menu
     """
     def __init__(self, base_url, api_key, organization=None, session=None,
-                 client_id=None):
+                 client_id=None, user_agent=None):
         """
         Init method
 
@@ -100,9 +99,12 @@ class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier,
         :param organization: For enterprise users, organization user belongs to
         :param session: requests' session object
         :param client_id: Client param string to pass for request args
+        :param user_agent: User-Agent param string to pass for request args
         :type api_key: str
         :type organization: str
+        :type session: object
         :type client_id: str
+        :type user_agent: str
 
         :return:
         """
@@ -110,7 +112,12 @@ class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier,
         self.api_key = api_key
         base_url = self.check_base_url(base_url)
         self.username = self.get_user_name(base_url)
-        self.user_agent = self.get_user_agent()
+
+        if user_agent is None:
+            self.user_agent = self.get_user_agent()
+        else:
+            self.user_agent = user_agent
+
         if client_id is None:
             self.client_id = self.get_client_identifier()
         else:
@@ -137,11 +144,14 @@ class APIKeyAuthClient(_UsernameGetter, _BaseUrlChecker, _ClientIdentifier,
         try:
             http_method, requests_args = self.prepare_send(http_method, **requests_args)
 
-            return super(APIKeyAuthClient, self).send(relative_path,
-                                                      http_method,
-                                                      **requests_args)
+            response = super(APIKeyAuthClient, self).send(relative_path, http_method, **requests_args)
         except Exception as e:
             raise CartoException(e)
+
+        if CartoRateLimitException.is_rate_limited(response):
+            raise CartoRateLimitException(response)
+
+        return response
 
     def prepare_send(self, http_method, **requests_args):
         http_method = http_method.lower()
@@ -206,11 +216,14 @@ class NonVerifiedAPIKeyAuthClient(APIKeyAuthClient):
         try:
             http_method, requests_args = self.prepare_send(http_method, **requests_args)
             requests_args["verify"] = False
-            return super(APIKeyAuthClient, self).send(relative_path,
-                                                      http_method,
-                                                      **requests_args)
+            response = super(APIKeyAuthClient, self).send(relative_path, http_method, **requests_args)
         except Exception as e:
             raise CartoException(e)
+
+        if CartoRateLimitException.is_rate_limited(response):
+            raise CartoRateLimitException(response)
+
+        return response
 
 
 class AuthAPIClient(_UsernameGetter, _BaseUrlChecker, BasicAuthClient):

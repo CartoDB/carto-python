@@ -17,7 +17,7 @@ try:
 except ImportError:
     from urlparse import urljoin
 
-from pyrestcli.fields import IntegerField, CharField
+from pyrestcli.fields import IntegerField, CharField, BooleanField
 
 from .exceptions import CartoException
 from .paginators import CartoPaginator
@@ -38,17 +38,30 @@ class User(WarnResource):
 
     .. warning:: Non-public API. It may change with no previous notice
     """
-    username = CharField()
-    email = CharField()
+    all_visualization_count = IntegerField()
+    available_for_hire = BooleanField()
     avatar_url = CharField()
     base_url = CharField()
-    quota_in_bytes = IntegerField()
     db_size_in_bytes = IntegerField()
-    table_count = IntegerField()
-    public_visualization_count = IntegerField()
-    all_visualization_count = IntegerField()
+    description = CharField()
+    disqus_shortname = CharField()
+    email = CharField()
+    google_maps_query_string = CharField()
+    last_name = CharField()
+    location = CharField()
+    name = CharField()
+    org_admin = BooleanField()
+    org_user = BooleanField()
     password = CharField()
+    public_visualization_count = IntegerField()
+    quota_in_bytes = IntegerField()
+    remove_logo = BooleanField()
     soft_geocoding_limit = IntegerField()
+    table_count = IntegerField()
+    twitter_username = CharField()
+    username = CharField()
+    viewer = BooleanField()
+    website = CharField()
 
     class Meta:
         id_field = "username"

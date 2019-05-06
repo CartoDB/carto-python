@@ -2,6 +2,7 @@ import argparse
 import os
 import sys
 import logging
+import pandas as pd
 
 from carto.auth import APIKeyAuthClient
 from carto.sql import SQLClient
@@ -16,7 +17,7 @@ logger = logging.getLogger()
 
 
 # set input arguments
-parser = argparse.ArgumentParser(description='Example of CopySQLClient usage (file-based interface)')
+parser = argparse.ArgumentParser(description='Example of CopySQLClient usage with COPY feature and pandas (file-based interface)')
 
 parser.add_argument('--base_url', type=str, dest='CARTO_BASE_URL',
                     default=os.environ.get('CARTO_API_URL', ''),
@@ -61,11 +62,12 @@ query = ('COPY copy_example (the_geom, name, age) '
 result = copyClient.copyfrom_file_path(query, 'files/copy_from.csv')
 logger.info('result = %s' % result)
 
-# COPY TO example
+# COPY TO example with pandas DataFrame
+logger.info("COPY'ing TO pandas DataFrame...")
 query = 'COPY copy_example TO stdout WITH (FORMAT csv, HEADER true)'
-output_file = 'files/copy_export.csv'
-copyClient.copyto_file_path(query, output_file)
-logger.info('Table copied to %s' % output_file)
+result = copyClient.copyto_stream(query)
+df = pd.read_csv(result)
+logger.info(df.head())
 
 # Truncate the table to make this example repeatable
 sqlClient.send('TRUNCATE TABLE copy_example RESTART IDENTITY')

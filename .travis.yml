@@ -9,6 +9,7 @@ before_script:
 - cp tests/secret.py.example tests/secret.py
 install:
 - pip install .
+- pip install pep8-naming
 - pip install -r requirements.txt
 - pip install -r test_requirements.txt
 script: pytest
