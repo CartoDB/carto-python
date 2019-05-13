@@ -1,14 +1,4 @@
-## Python SDK
-
-`carto-python` is a Python library to consume the CARTO APIs. You can integrate `carto-python` into your Python projects to:
-
-* Import data from files, URLs or external databases to your user account or organization
-* Execute SQL queries and get the results
-* Run batch SQL jobs
-* Create and instantiate named and anonymous maps
-* Create, update, get, delete and list datasets, users, maps… etc.
-
-### Guides
+## Guides
 
 * [Introduction](https://carto-python.readthedocs.io/en/latest/index.html){:target="_blank"}
 * [Quickstart](https://carto-python.readthedocs.io/en/latest/quickstart.html){:target="_blank"}
