@@ -8,7 +8,7 @@
 * Create and instantiate named and anonymous maps
 * Create, update, get, delete and list datasets, users, maps… etc.
 
-## Guides
+### Guides
 
 * [Introduction](https://carto-python.readthedocs.io/en/latest/index.html){:target="_blank"}
 * [Quickstart](https://carto-python.readthedocs.io/en/latest/quickstart.html){:target="_blank"}
