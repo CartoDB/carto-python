@@ -13,6 +13,7 @@ HEADERS = {
     'accept': 'application/json'
 }
 
+
 class AnalysisClient(object):
     def __init__(self, auth_client, api_version='v4'):
         self.auth_client = auth_client
@@ -87,7 +88,7 @@ class AnalysisClient(object):
         )
         res = self.auth_client.send(url, 'GET', headers=HEADERS)
         logs = self.auth_client.get_response_data(res, False)
-        if not logs is None:
+        if logs is not None:
             logs = logs.decode()
         return logs
 
@@ -109,10 +110,13 @@ class AnalysisClient(object):
 
 TASK_GROUP = 'analysis'  # we have always one task group named analysis
 
+
 class DefaultOutput:
+
     @staticmethod
     def print(*args):
         print(*args)
+
     @staticmethod
     def clear():
         os.system('clear')
@@ -442,7 +446,6 @@ class Schedule(Updatable):
                 for exec in execs
             ]
 
-
     def update(self):
         if self._need_to_update():
                 self.token = self._context.tokens.schedule_token(
@@ -568,12 +571,14 @@ class Schedule(Updatable):
 
     def last_outputs(self, n=1, only_finished=True, only_succesful=False, decodeJson=False, filter=None):
         self.update()
+
         def select(exec):
             selected = True
             selected = not only_finished or exec.finished()
             selected = selected and (not only_succesful or exec.successful)
             selected = selected and (not filter or filter(exec))
             return selected
+
         execs = self.executions()
         if execs and len(execs) > 0:
             execs = [exec for exec in execs if select(exec)]

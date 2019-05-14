@@ -1,5 +1,6 @@
 from carto.analysis import AnalysisClient
 
+
 def test_analysis(api_key_auth_client_usr):
     analysis = AnalysisClient(api_key_auth_client_usr)
     jobs = analysis.list_jobs()

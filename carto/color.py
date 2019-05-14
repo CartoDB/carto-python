@@ -1,5 +1,6 @@
 import re
 
+
 class Color:
     COLORS = {
         'pink': '\033[95m',
@@ -25,6 +26,7 @@ class Color:
 def enable_colors(mode):
     Color.enabled = mode
 
+
 def colored(attrib, text):
     if not Color.enabled:
         return text
@@ -33,7 +35,9 @@ def colored(attrib, text):
     attrib = ''.join([Color.COLORS[a] for a in attrib])
     return attrib + str(text) + Color.END
 
+
 ANSI_ESCAPE = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
+
 
 def uncolored(text):
     return ANSI_ESCAPE.sub('', text)
