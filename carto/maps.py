@@ -133,6 +133,10 @@ class NamedMap(BaseMap):
                        "placeholders",
                        "layergroup",
                        "view")
+        # Optional fields can be assigned by some responses create, instantiate,
+        # but are not saved to the backend
+        self.optional_fields = ("template_id", "layergroupid", "last_updated")
+)
         super(NamedMap, self).__init__(auth_client)
 
     def instantiate(self, params, auth=None):
@@ -174,7 +178,8 @@ class NamedMap(BaseMap):
             return
         try:
             for k, v in attribute_dict.items():
-                setattr(self, k, v)
+                if k in self.fields + self.optional_fields:
+                    setattr(self, k, v)
         except Exception:
             setattr(self, self.Meta.id_field, attribute_dict)
 
@@ -207,7 +212,8 @@ class AnonymousMap(BaseMap):
 
     def update_from_dict(self, attribute_dict):
         for k, v in attribute_dict.items():
-            setattr(self, k, v)
+            if k in self.fields + self.optional_fields:
+                setattr(self, k, v)
 
 
 class NamedMapManager(Manager):
