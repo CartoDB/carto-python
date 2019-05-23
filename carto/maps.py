@@ -211,8 +211,7 @@ class AnonymousMap(BaseMap):
 
     def update_from_dict(self, attribute_dict):
         for k, v in attribute_dict.items():
-            if k in self.fields + self.optional_fields:
-                setattr(self, k, v)
+            setattr(self, k, v)
 
 
 class NamedMapManager(Manager):
