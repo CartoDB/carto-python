@@ -127,15 +127,15 @@ class NamedMap(BaseMap):
         Initializes a NamedMap instance
         :param auth_client: Auth client
         """
-        self.fields = ("version",
+        self.fields = ["version",
                        "name",
                        "auth",
                        "placeholders",
                        "layergroup",
-                       "view")
+                       "view"]
         # Optional fields can be assigned by some responses create, instantiate,
         # but are not saved to the backend
-        self.optional_fields = ("template_id", "layergroupid", "last_updated")
+        self.optional_fields = ["template_id", "layergroupid", "last_updated"]
         super(NamedMap, self).__init__(auth_client)
 
     def instantiate(self, params, auth=None):
