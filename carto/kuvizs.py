@@ -27,15 +27,15 @@ class Kuviz(WarnResource):
     """
     created_at = DateTimeField()
     data = CharField()
+    id = CharField()
     name = CharField()
     privacy = CharField()
     updated_at = DateTimeField()
     url = CharField()
-    visualization = CharField()
 
     class Meta:
         collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
-        name_field = "visualization"
+        name_field = "id"
 
 
 class KuvizManager(Manager):
@@ -44,6 +44,15 @@ class KuvizManager(Manager):
     """
     resource_class = Kuviz
     paginator_class = CartoPaginator
+
+    def get(self):
+        pass
+
+    def filter(self, **search_args):
+        pass
+
+    def all(self):
+        pass
 
     def create(self, html, name):
         """
@@ -59,4 +68,3 @@ class KuvizManager(Manager):
         """
         data = base64.b64encode(html.encode()).decode('ascii')
         return super(KuvizManager, self).create(data=data, name=name)
-
