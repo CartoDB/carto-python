@@ -20,6 +20,7 @@ from .paginators import CartoPaginator
 API_VERSION = "v4"
 API_ENDPOINT = "api/{api_version}/kuviz/"
 
+PRIVACY_PASSWORD = 'password'
 
 class Kuviz(WarnResource):
     """
@@ -29,6 +30,7 @@ class Kuviz(WarnResource):
     data = CharField()
     id = CharField()
     name = CharField()
+    password = CharField()
     privacy = CharField()
     updated_at = DateTimeField()
     url = CharField()
@@ -54,7 +56,7 @@ class KuvizManager(Manager):
     def all(self):
         pass
 
-    def create(self, html, name):
+    def create(self, html, name, password=None):
         """
         Creates a Kuviz.
 
@@ -67,4 +69,8 @@ class KuvizManager(Manager):
                     of the new Kuviz
         """
         data = base64.b64encode(html.encode()).decode('ascii')
-        return super(KuvizManager, self).create(data=data, name=name)
+        if password:
+            return super(KuvizManager, self).create(data=data, name=name,
+                                                    privacy=PRIVACY_PASSWORD, password=password)
+        else:
+            return super(KuvizManager, self).create(data=data, name=name)
