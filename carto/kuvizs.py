@@ -47,10 +47,7 @@ class KuvizManager(Manager):
     resource_class = Kuviz
     paginator_class = CartoPaginator
 
-    def get(self):
-        pass
-
-    def filter(self, **search_args):
+    def get(self, id):
         pass
 
     def all(self):
@@ -74,3 +71,6 @@ class KuvizManager(Manager):
                                                     privacy=PRIVACY_PASSWORD, password=password)
         else:
             return super(KuvizManager, self).create(data=data, name=name)
+
+    def update(self, html, name, password=None):
+        pass
