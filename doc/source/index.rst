@@ -36,6 +36,7 @@ Please, refer to the :ref:`apidoc` or the source code for further details about 
    sql_api
    import_api
    maps_api
+   kuviz
    non_public_apis
    examples
    modules
