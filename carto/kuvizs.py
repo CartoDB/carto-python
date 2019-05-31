@@ -22,6 +22,7 @@ API_ENDPOINT = "api/{api_version}/kuviz/"
 
 PRIVACY_PASSWORD = 'password'
 
+
 class Kuviz(WarnResource):
     """
     Represents a map custom visualization in CARTO.
