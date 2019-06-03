@@ -1,9 +1,9 @@
 """
-Module for working with map custom visualizations (aka Kuvizs)
+Module for working with custom map visualizations (aka Kuvizs)
 
 .. module:: carto.Kuvizs
    :platform: Unix, Windows
-   :synopsis: Module for working with map custom visualizations (aka Kuvizs)
+   :synopsis: Module for working with custom map visualizations (aka Kuvizs)
 
 .. moduleauthor:: Simon Martin <simon@carto.com>
 
@@ -25,7 +25,9 @@ PRIVACY_PASSWORD = 'password'
 
 class Kuviz(WarnResource):
     """
-    Represents a map custom visualization in CARTO.
+    Represents a custom map visualization in CARTO.
+
+    .. warning:: Non-public API. It may change with no previous notice
     """
     created_at = DateTimeField()
     data = CharField()
@@ -44,6 +46,8 @@ class Kuviz(WarnResource):
 class KuvizManager(Manager):
     """
     Manager for the Kuviz class.
+
+    .. warning:: Non-public API. It may change with no previous notice
     """
     resource_class = Kuviz
     paginator_class = CartoPaginator
