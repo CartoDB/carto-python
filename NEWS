@@ -4,7 +4,7 @@ Jun-03-2019: version 1.5.0-rc1
  - Adds wait for completion for batch jobs (#104)
  - Improve rate limit exception (#108)
  - Raise exception when trying to delete dataset with dependent viz (#107)
- - Named map auth client was overwritten (#118)
+ - Fixed NamedMap problem (#119)
 
 Nov-29-2018: version 1.4.0
  - Adds a custom client_id argument for authentication that optionally overwrites the default (#99)
