@@ -1,4 +1,4 @@
-Jun-03-2019: version 1.5rc1
+Jun-03-2019: version 1.5
  - max line length from 80 to 120
  - Adds a copyto_stream method in sql (#103)
  - Adds wait for completion for batch jobs (#104)
