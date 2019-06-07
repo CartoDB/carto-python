@@ -11,7 +11,7 @@ Module for defining response objects
 
 """
 
-from pyrestcli.fields import ResourceField, Field
+from pyrestcli.fields import ResourceField
 
 
 class VisualizationField(ResourceField):
