@@ -50,7 +50,7 @@ class Kuviz(WarnResource):
         if password:
             self.privacy = PRIVACY_PASSWORD
             self.password = password
-        elif self.password:
+        else:
             self.privacy = PRIVACY_PUBLIC
             self.password = None
 
