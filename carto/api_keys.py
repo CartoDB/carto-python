@@ -43,7 +43,7 @@ class APIKey(Resource):
     def regenerate_token(self):
         """
         Regenerates the associated token
-        
+
         :return:
 
         :raise: CartoException

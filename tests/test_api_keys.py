@@ -124,4 +124,4 @@ def test_api_key_manager_filter_default(api_key_manager):
 def test_api_key_manager_filter_multiple(api_key_manager):
     api_keys = api_key_manager.filter(type='default,master')
 
-    assert len(api_keys) == 2    
+    assert len(api_keys) == 2
