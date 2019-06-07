@@ -56,6 +56,15 @@ class Kuviz(WarnResource):
 
         self.save()
 
+    def __repr__(self):
+        return (
+        """
+        id:      {id}
+        url:     {url}
+        name:    {name}
+        privacy: {privacy}
+        """).format(id=self.id, url=self.url, name=self.name, privacy=self.privacy)
+
 
 class KuvizManager(Manager):
     """
@@ -65,11 +74,12 @@ class KuvizManager(Manager):
     """
     resource_class = Kuviz
     paginator_class = CartoPaginator
+    json_collection_attribute = 'visualizations'
 
     def get(self, id):
-        pass
-
-    def all(self):
+        """
+        Not implemented
+        """
         pass
 
     def create(self, html, name, password=None):
