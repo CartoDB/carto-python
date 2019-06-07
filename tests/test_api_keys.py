@@ -5,6 +5,7 @@ from pyrestcli.exceptions import NotFoundException, UnprocessableEntityError
 
 from carto.api_keys import APIKeyManager
 from carto.datasets import DatasetManager
+from carto.exceptions import CartoException
 from secret import EXISTING_POINT_DATASET
 
 
@@ -40,9 +41,13 @@ def test_get_api_key_not_found(api_key_manager):
         api_key_manager.get('non-existent')
 
 
+def random_api_key_name():
+    return '_'.join(str(time()).split('.'))
+
+
 def create_api_key(api_key_manager, grants, api_key_name=None):
     if api_key_name is None:
-        api_key_name = '_'.join(str(time()).split('.'))
+        api_key_name = random_api_key_name()
     api_key_manager.create(name=api_key_name, apis=grants[0]['apis'], tables=grants[1]['tables'])
     return api_key_name
 
@@ -100,51 +105,6 @@ def test_create_regular_api_key_with_tables(api_key_manager, dataset_manager):
     api_key.delete()
 
 
-def test_rename_key(api_key_manager):
-    table = dataset_manager.get(EXISTING_POINT_DATASET)
-    grants = [
-        {
-            "type": "apis",
-            "apis": ["sql", "maps"]
-        },
-        {
-            "type": "database",
-            "tables": [{
-                "schema": api_key_manager.client.username,
-                "name": table.name,
-                "permissions": [
-                    "insert",
-                    "select",
-                    "update"
-                ]
-            }]
-        }
-    ]
-    api_key_name = create_api_key(api_key_manager, grants)
-    api_key = api_key_manager.get(api_key_name)
-    assert api_key.name == api_key_name
-    assert api_key.type == 'regular'
-    assert api_key.grants.apis == ["sql", "maps"]
-    assert api_key.grants.tables[0].schema == api_key_manager.client.username
-    assert api_key.grants.tables[0].name == table.name
-    assert api_key.grants.tables[0].permissions == ['insert', 'select', 'update']
-
-    new_name = api_key.name + '_'
-    api_key.name = new_name
-    api_key.grants.tables[0].permissions == ['insert']
-    api_key.save()
-    api_key2 = api_key_manager.get(new_name)
-    assert api_key2.name == new_name
-    assert api_key2.type == 'regular'
-    assert api_key2.grants.apis == ["sql", "maps"]
-    assert api_key2.grants.tables[0].schema == api_key_manager.client.username
-    assert api_key2.grants.tables[0].name == table.name
-    assert api_key2.grants.tables[0].permissions == ['insert']
-
-    api_key_manager.get(api_key_name).delete()
-    api_key2.delete()
-
-
 def test_regenerate_token(api_key_manager):
     grants = [
         {
@@ -166,9 +126,15 @@ def test_regenerate_token(api_key_manager):
 
 
 def test_create_invalid_api_key(api_key_manager):
-    with pytest.raises(UnprocessableEntityError):
-        api_key_name = 'wrong_grants'
+    with pytest.raises(CartoException):
+        api_key_name = random_api_key_name()
         api_key_manager.create(name=api_key_name, apis=[])
+
+
+def test_create_invalid_tables_api_key(api_key_manager):
+    with pytest.raises(UnprocessableEntityError):
+        api_key_name = random_api_key_name()
+        api_key_manager.create(name=api_key_name, tables=[{'t': 'pra'}])
 
 
 def test_duplicate_key(api_key_manager):
