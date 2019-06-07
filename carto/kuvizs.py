@@ -43,7 +43,7 @@ class Kuviz(WarnResource):
         collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
         name_field = "id"
 
-    def update(self, html, name, password=None):
+    def update(self, html, name, password):
         self.data = base64.b64encode(html.encode()).decode('ascii')
         self.name = name
 
