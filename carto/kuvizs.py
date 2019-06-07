@@ -56,7 +56,7 @@ class Kuviz(WarnResource):
 
         self.save()
 
-    def __repr__(self):
+    def __str__(self):
         return (
         """
         id:      {id}
