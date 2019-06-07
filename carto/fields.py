@@ -11,7 +11,7 @@ Module for defining response objects
 
 """
 
-from pyrestcli.fields import ResourceField
+from pyrestcli.fields import ResourceField, Field
 
 
 class VisualizationField(ResourceField):
@@ -54,3 +54,34 @@ class SynchronizationField(ResourceField):
     :class:`carto.synchronizations.Synchronization`
     """
     value_class = "carto.synchronizations.Synchronization"
+
+
+class TableGrantField(ResourceField):
+    """
+    :class:`carto.api_keys.TableGrant`
+    """
+    value_class = "carto.api_keys.TableGrant"
+
+
+class GrantsField(ResourceField):
+    """
+    :class:`carto.api_keys.Grants`
+    """
+    value_class = "carto.api_keys.Grants"
+    type_field = {
+        'apis': 'apis',
+        'tables': 'database',
+        'services': 'dataservices'
+    }
+
+    def __set__(self, instance, value):
+        if self._initialized is False:
+            self.set_real_value_class()
+
+        resource = self.value_class(instance.client)
+        for field in resource.fields:
+            for grant_type in value:
+                if grant_type['type'] == self.type_field[field]:
+                    setattr(resource, field, grant_type[field])
+
+        instance.__dict__[self.name] = resource
