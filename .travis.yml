@@ -2,7 +2,7 @@ language: python
 python:
 - '2.7'
 - '3.6'
-- '3.7'
+- 'nightly'
 before_script:
 - cp tests/secret.py.example tests/secret.py
 install:
