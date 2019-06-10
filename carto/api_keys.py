@@ -154,7 +154,7 @@ class Grants(Resource):
     def get_id(self):
         tables = []
         if self.tables:
-            tables = [x.toJson() for x in self.tables]
+            tables = [x.to_json() for x in self.tables]
         return [
                     {
                         'type': 'apis',
