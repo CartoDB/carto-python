@@ -132,7 +132,7 @@ class TableGrant(Resource):
     name = CharField()
     permissions = CharField(many=True)
 
-    def toJson(self):
+    def to_json(self):
         return {
                 'schema': self.schema,
                 'name': self.name,
