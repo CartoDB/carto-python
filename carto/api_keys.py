@@ -98,7 +98,7 @@ class APIKeyManager(Manager):
             elif isinstance(tables[0], TableGrant):
                 grants.append({'type': 'database', 'tables': [x.toJson for x in tables]})
         if services:
-            grants.append({'type': 'dataservices', 'services': tables})
+            grants.append({'type': 'dataservices', 'services': services})
         return super(APIKeyManager, self).create(name=name, grants=grants)
 
 
