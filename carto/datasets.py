@@ -190,7 +190,8 @@ class DatasetManager(Manager):
 
         import_job = manager.create(archive) if interval is None \
             else manager.create(archive, interval)
-        import_job.run(**import_args)
+        if interval is None:
+            import_job.run(**import_args)
 
         if import_job.get_id() is None:
             raise CartoException(_("Import API returned corrupt job details \
