@@ -43,19 +43,6 @@ class Kuviz(WarnResource):
         collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
         name_field = "id"
 
-    def update(self, html, name, password):
-        self.data = base64.b64encode(html.encode()).decode('ascii')
-        self.name = name
-
-        if password:
-            self.privacy = PRIVACY_PASSWORD
-            self.password = password
-        else:
-            self.privacy = PRIVACY_PUBLIC
-            self.password = None
-
-        self.save()
-
 
 class KuvizManager(Manager):
     """
