@@ -1,3 +1,6 @@
+Jun-10-2019: version 1.5.1
+  - fix tests after release of `pyrestcli`
+
 Jun-03-2019: version 1.5.0
  - max line length from 80 to 120
  - Adds a copyto_stream method in sql (#103)
