@@ -15,6 +15,9 @@ import base64
 
 from pyrestcli.fields import ResourceField, CharField
 
+PRIVACY_PUBLIC = 'public'
+PRIVACY_PASSWORD = 'password'
+
 
 class VisualizationField(ResourceField):
     """
@@ -65,3 +68,16 @@ class Base64EncodedField(CharField):
             data = base64.b64encode(value.encode()).decode('ascii')
 
         super(Base64EncodedField, self).__set__(instance, data)
+
+
+class PasswordAndPrivacyFields(CharField):
+    def __set__(self, instance, value):
+        password = None
+        privacy = PRIVACY_PUBLIC
+
+        if value and isinstance(value, str):
+            password = value
+            privacy = PRIVACY_PASSWORD
+
+        super(PasswordAndPrivacyFields, self).__set__(instance, password)
+        instance.__dict__['privacy'] = privacy

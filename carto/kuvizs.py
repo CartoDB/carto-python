@@ -11,16 +11,13 @@ Module for working with custom map visualizations (aka Kuvizs)
 
 from pyrestcli.fields import CharField, DateTimeField
 
-from .fields import Base64EncodedField
+from .fields import Base64EncodedField, PasswordAndPrivacyFields
 from .resources import Manager, WarnResource
 from .paginators import CartoPaginator
 
 
 API_VERSION = "v4"
 API_ENDPOINT = "api/{api_version}/kuviz/"
-
-PRIVACY_PUBLIC = 'public'
-PRIVACY_PASSWORD = 'password'
 
 
 class Kuviz(WarnResource):
@@ -33,7 +30,7 @@ class Kuviz(WarnResource):
     data = Base64EncodedField()
     id = CharField()
     name = CharField()
-    password = CharField()
+    password = PasswordAndPrivacyFields()
     privacy = CharField()
     updated_at = DateTimeField()
     url = CharField()
@@ -71,8 +68,4 @@ class KuvizManager(Manager):
         :return: A Kuviz instance with the `url` and `visualization` properties
                     of the new Kuviz
         """
-        if password:
-            return super(KuvizManager, self).create(data=html, name=name,
-                                                    privacy=PRIVACY_PASSWORD, password=password)
-        else:
-            return super(KuvizManager, self).create(data=html, name=name)
+        return super(KuvizManager, self).create(data=html, name=name, password=password)
