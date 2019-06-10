@@ -11,7 +11,9 @@ Module for defining response objects
 
 """
 
-from pyrestcli.fields import ResourceField
+import base64
+
+from pyrestcli.fields import ResourceField, CharField
 
 
 class VisualizationField(ResourceField):
@@ -54,3 +56,12 @@ class SynchronizationField(ResourceField):
     :class:`carto.synchronizations.Synchronization`
     """
     value_class = "carto.synchronizations.Synchronization"
+
+
+class Base64EncodedField(CharField):
+    def __set__(self, instance, value):
+        data = ""
+        if value and isinstance(value, str):
+            data = base64.b64encode(value.encode()).decode('ascii')
+
+        super(Base64EncodedField, self).__set__(instance, data)

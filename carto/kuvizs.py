@@ -9,10 +9,9 @@ Module for working with custom map visualizations (aka Kuvizs)
 
 """
 
-import base64
-
 from pyrestcli.fields import CharField, DateTimeField
 
+from .fields import Base64EncodedField
 from .resources import Manager, WarnResource
 from .paginators import CartoPaginator
 
@@ -31,7 +30,7 @@ class Kuviz(WarnResource):
     .. warning:: Non-public API. It may change with no previous notice
     """
     created_at = DateTimeField()
-    data = CharField()
+    data = Base64EncodedField()
     id = CharField()
     name = CharField()
     password = CharField()
@@ -72,9 +71,8 @@ class KuvizManager(Manager):
         :return: A Kuviz instance with the `url` and `visualization` properties
                     of the new Kuviz
         """
-        data = base64.b64encode(html.encode()).decode('ascii')
         if password:
-            return super(KuvizManager, self).create(data=data, name=name,
+            return super(KuvizManager, self).create(data=html, name=name,
                                                     privacy=PRIVACY_PASSWORD, password=password)
         else:
-            return super(KuvizManager, self).create(data=data, name=name)
+            return super(KuvizManager, self).create(data=html, name=name)
