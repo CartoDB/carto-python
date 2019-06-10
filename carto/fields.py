@@ -11,7 +11,12 @@ Module for defining response objects
 
 """
 
-from pyrestcli.fields import ResourceField
+import base64
+
+from pyrestcli.fields import ResourceField, CharField
+
+PRIVACY_PUBLIC = 'public'
+PRIVACY_PASSWORD = 'password'
 
 
 class VisualizationField(ResourceField):
@@ -85,3 +90,25 @@ class GrantsField(ResourceField):
                     setattr(resource, field, grant_type[field])
 
         instance.__dict__[self.name] = resource
+
+
+class Base64EncodedField(CharField):
+    def __set__(self, instance, value):
+        data = ""
+        if value and isinstance(value, str):
+            data = base64.b64encode(value.encode()).decode('ascii')
+
+        super(Base64EncodedField, self).__set__(instance, data)
+
+
+class PasswordAndPrivacyFields(CharField):
+    def __set__(self, instance, value):
+        password = None
+        privacy = PRIVACY_PUBLIC
+
+        if value and isinstance(value, str):
+            password = value
+            privacy = PRIVACY_PASSWORD
+
+        super(PasswordAndPrivacyFields, self).__set__(instance, password)
+        instance.__dict__['privacy'] = privacy
