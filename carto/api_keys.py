@@ -84,7 +84,13 @@ class APIKeyManager(Manager):
         Creates a regular APIKey.
 
         :param name: The API key name
+        :param apis: Describes which APIs does this API Key provide access to
+        :param tables: Describes to which tables and which privleges on each table this API Key grants access to
+        :param services: Describes to which data services this API Key grants access to
         :type name: str
+        :type apis: list
+        :type tables: TableGrant or dict
+        :type services: list
 
         :return: An APIKey instance with a token
         """
