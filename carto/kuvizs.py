@@ -56,15 +56,6 @@ class Kuviz(WarnResource):
 
         self.save()
 
-    def __str__(self):
-        return (
-        """
-        id:      {id}
-        url:     {url}
-        name:    {name}
-        privacy: {privacy}
-        """).format(id=self.id, url=self.url, name=self.name, privacy=self.privacy)
-
 
 class KuvizManager(Manager):
     """
