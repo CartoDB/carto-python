@@ -1,5 +1,6 @@
 xxx-xx-2019: version 1.6.0
  - Auth API (#94)
+ - Kuviz API (#121 #124)
 
 Jun-10-2019: version 1.5.1
   - fix tests after release of `pyrestcli`
