@@ -1,6 +1,9 @@
 Custom visualizations (aka Kuviz)
 =================================
 
+.. warning:: Non-public API. It may change with no previous notice
+
+
 Create a Kuviz Manager
 ^^^^^^^^^^^^^^^^^^^^^^
 ::
