@@ -1,47 +1,71 @@
 Custom visualizations (aka Kuviz)
 =================================
 
-Create
-^^^^^^
+.. warning:: Non-public API. It may change with no previous notice
+
+
+Create a Kuviz Manager
+^^^^^^^^^^^^^^^^^^^^^^
 ::
 
+  from carto.auth import APIKeyAuthClient
   from carto.kuvizs import KuvizManager
 
+  auth_client = APIKeyAuthClient(api_key=API_KEY, base_url=BASE_URL)
   km = KuvizManager(auth_client)
-  html = "<html><body><h1>Hi Kuviz</h1></body></html>"
-  kuviz = km.create(html=html, name="public-kuviz")
-
-  print(kuviz.id)
-  print(kuviz.url)
 
 
-Create with password
-^^^^^^^^^^^^^^^^^^^^
+Create a Kuviz
+^^^^^^^^^^^^^^
 ::
 
-  from carto.kuvizs import KuvizManager
+  html = "<html><body><h1>Working with CARTO Kuviz</h1></body></html>"
+  public_kuviz = km.create(html=html, name="kuviz-public-test")
 
-  km = KuvizManager(auth_client)
-  html = "<html><body><h1>Hi Kuviz</h1></body></html>"
-  kuviz = km.create(html=html, name="password-protected-kuviz", password="your-password")
 
-  print(kuviz.id)
-  print(kuviz.url)
+Create a Kuviz with password
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+::
+
+  html = "<html><body><h1>Working with CARTO Kuviz</h1></body></html>"
+  password_kuviz = km.create(html=html, name="kuviz-password-test", password="1234")
 
 
 List all Kuviz
 ^^^^^^^^^^^^^^
+::
 
-WIP
+  kuvizs = km.all()
 
 
-Update
-^^^^^^
+Update a kuviz
+^^^^^^^^^^^^^^
+::
 
-WIP
+  new_html = "<html><body><h1>Another HTML</h1></body></html>"
+  public_kuviz.data = new_html
+  public_kuviz.save()
+
+
+Adding a password
+^^^^^^^^^^^^^^^^^^
+::
+
+  public_kuviz.password = "1234"
+  public_kuviz.save()
+
+
+Removing a password
+^^^^^^^^^^^^^^^^^^^
+::
+
+  public_kuviz.password = None
+  public_kuviz.save()
 
 
 Delete
 ^^^^^^
+::
 
-WIP
+  public_kuviz.delete()
+
