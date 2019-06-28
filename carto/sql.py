@@ -509,8 +509,8 @@ class CopySQLClient(object):
     def copyto_stream(self, query):
         """
         Gets data from a table into a stream
-        :param query: The "COPY { table_name [(column_name[, ...])] | (query) }
-                           TO STDOUT [WITH(option[,...])]" query to execute
+
+        :param query: The "COPY { table_name [(column_name[, ...])] | (query) } TO STDOUT [WITH(option[,...])]" query to execute
         :type query: str
 
         :return: the data from COPY TO query
