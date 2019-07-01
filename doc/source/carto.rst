@@ -13,6 +13,14 @@ carto\.auth module
     :undoc-members:
     :show-inheritance:
 
+carto\.api_keys module
+----------------------
+
+.. automodule:: carto.api_keys
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 carto\.datasets module
 ----------------------
 
