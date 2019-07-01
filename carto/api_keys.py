@@ -29,6 +29,7 @@ PERMISSION_INSERT = "insert"
 PERMISSION_SELECT = "select"
 PERMISSION_UPDATE = "update"
 PERMISSION_DELETE = "delete"
+PERMISSION_DELETE = "create"
 SERVICE_GEOCODING = "geocoding"
 SERVICE_ROUTING = "routing"
 SERVICE_ISOLINES = "isolines"
@@ -79,32 +80,41 @@ class APIKeyManager(Manager):
     json_collection_attribute = "result"
     paginator_class = CartoPaginator
 
-    def create(self, name, apis=['sql', 'maps'], tables=None, services=None):
+    def create(self, name, apis=['sql', 'maps'], tables=None, schemas=None, services=None):
         """
         Creates a regular APIKey.
 
         :param name: The API key name
         :param apis: Describes which APIs does this API Key provide access to
         :param tables: Describes to which tables and which privleges on each table this API Key grants access to
+        :param schemas: Describes to which schemas and which privleges on each schema this API Key grants access to
         :param services: Describes to which data services this API Key grants access to
         :type name: str
         :type apis: list
         :type tables: TableGrant or dict
+        :type schemas: SchemaGrant or dict
         :type services: list
 
         :return: An APIKey instance with a token
         """
         grants = []
+        database_grant = {'type': 'database'}
         if not apis:
             raise CartoException("'apis' cannot be empty. Please specify which CARTO APIs you want to grant. Example: ['sql', 'maps']")
         grants.append({'type': 'apis', 'apis': apis})
         if tables and (len(tables) > 0):
             if isinstance(tables[0], dict):
-                grants.append({'type': 'database', 'tables': tables})
+                database_grant['tables'] = tables
             elif isinstance(tables[0], TableGrant):
-                grants.append({'type': 'database', 'tables': [x.to_json for x in tables]})
+                database_grant['tables'] = [x.to_json for x in tables]
+        if schemas and (len(schemas) > 0):
+            if isinstance(schemas[0], dict):
+                database_grant['schemas'] = schemas
+            elif isinstance(schemas[0], SchemaGrant):
+                database_grant['schemas'] = [x.to_json for x in schemas]
         if services:
             grants.append({'type': 'dataservices', 'services': services})
+        grants.append(database_grant)
         return super(APIKeyManager, self).create(name=name, grants=grants)
 
 
@@ -141,6 +151,40 @@ class TableGrant(Resource):
     def to_json(self):
         return {
                 'schema': self.schema,
+                'name': self.name,
+                'permissions': self.permissions
+            }
+
+
+class SchemaGrant(Resource):
+    """
+    Describes to which schemas and which privleges on each schema this API Key grants access to trough schemas attribute.
+    For example if you grant `create` on the user `public` schema, they will be able to run `CREATE TABLE AS...` SQL queries
+    This is an internal data type, with no specific API endpoints
+
+    See https://carto.com/developers/auth-api/reference/#section/API-Key-format
+
+    Example:
+
+        .. code::
+
+            {
+                "type": "database",
+                "schemas": [
+                    {
+                        "name": "public",
+                        "permissions": [
+                            "create"
+                        ]
+                    }
+                ]
+            }
+    """
+    name = CharField()
+    permissions = CharField(many=True)
+
+    def to_json(self):
+        return {
                 'name': self.name,
                 'permissions': self.permissions
             }

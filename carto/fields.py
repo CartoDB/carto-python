@@ -76,6 +76,7 @@ class GrantsField(ResourceField):
     type_field = {
         'apis': 'apis',
         'tables': 'database',
+        'schemas': 'database',
         'services': 'dataservices'
     }
 
