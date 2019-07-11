@@ -17,6 +17,7 @@ All the guides are hosted on [ReadTheDocs](https://carto-python.readthedocs.io/e
 * [General Concepts](https://carto-python.readthedocs.io/en/latest/general_concepts.html){:target="_blank"}
 * [Installation](https://carto-python.readthedocs.io/en/latest/installation.html){:target="_blank"}
 * [Authentication](https://carto-python.readthedocs.io/en/latest/authentication.html){:target="_blank"}
+* [Auth API](https://carto-python.readthedocs.io/en/latest/auth_api.html){:target="_blank"}
 * [SQL API](https://carto-python.readthedocs.io/en/latest/sql_api.html){:target="_blank"}
 * [Import API](https://carto-python.readthedocs.io/en/latest/import_api.html){:target="_blank"}
 * [Maps API](https://carto-python.readthedocs.io/en/latest/maps_api.html){:target="_blank"}
