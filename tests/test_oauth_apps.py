@@ -4,7 +4,6 @@ from time import time
 from pyrestcli.exceptions import NotFoundException, UnprocessableEntityError
 
 from carto.oauth_apps import OauthAppManager
-from carto.exceptions import CartoException
 
 
 @pytest.fixture(scope="module")
