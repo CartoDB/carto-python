@@ -34,7 +34,6 @@ class OauthApp(Resource):
     client_id = CharField()
     client_secret = CharField()
     user_id = CharField()
-    user_name = CharField()
     redirect_uris = CharField(many=True)
     icon_url = CharField()
     restricted = BooleanField()
