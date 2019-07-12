@@ -31,7 +31,7 @@ Every API key consists on four main parts:
 - grants: Describes which APIs this API key provides access to and to which tables. It consists on an array of two JSON objects. This object's `type` attribute can be `apis`, `database` or `dataservices`:
 
   - `apis`: Describes which APIs does this API key provide access to through apis attribute
-  - `database`: Describes to which tables and schemas and which privleges on them this API Key grants access to through `tables` and `schemas` attributes. You can grant read (`select`) or write (`insert`, `update`, `delete`) permissions on tables. For the case of `schemas` once granted the `create` permission on a schema you'll be able to run SQL queries such as `CREATE TABLE AS...`, `CREATE VIEW AS...` etc. to create entities on it.
+  - `database`: Describes to which tables and schemas and which privleges on them this API Key grants access to through `tables` and `schemas` attributes. You can grant read (`select`) or write (`insert`, `update`, `delete`) permissions on tables. For the case of `schemas` once granted the `create` permission on a schema you'll be able to run SQL queries such as `CREATE TABLE AS...`, `CREATE VIEW AS...` etc. to create entities on it. As the owner of those tables, the API key will be able to `DROP` or `ALTER` them as well.
   - `dataservices`: Describes to which data services this API key grants access to though services attribute:
 
 See the `full API key format reference`_ in the CARTO help center for more info about allowed table permissions, `dataservices`, etc.
