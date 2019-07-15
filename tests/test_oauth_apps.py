@@ -29,7 +29,10 @@ def random_oauth_app_name():
 def create_oauth_app(oauth_app_manager, oauth_app_name=None, redirect_uris=['https://localhost']):
     if oauth_app_name is None:
         oauth_app_name = random_oauth_app_name()
-    return oauth_app_manager.create(name=oauth_app_name, redirect_uris=redirect_uris, icon_url='https://localhost')
+    return oauth_app_manager.create(name=oauth_app_name,
+                                    redirect_uris=redirect_uris,
+                                    icon_url='https://localhost',
+                                    website_url='https://localhost')
 
 
 def test_create_oauth_app(oauth_app_manager):
@@ -39,6 +42,7 @@ def test_create_oauth_app(oauth_app_manager):
     assert oauth_app.name == oauth_app_get.name
     assert oauth_app.redirect_uris == oauth_app_get.redirect_uris
     assert oauth_app.icon_url == oauth_app_get.icon_url
+    assert oauth_app.website_url == oauth_app_get.website_url
     assert oauth_app.client_id is not None
     assert oauth_app.client_secret is not None
 
