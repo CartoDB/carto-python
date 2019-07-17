@@ -14,7 +14,7 @@ https://carto.com/developers/auth-api/
 
 from pyrestcli.fields import CharField, DateTimeField
 
-from .fields import TableGrantField, GrantsField
+from .fields import TableGrantField, GrantsField, SchemaGrantField
 from .resources import Resource, Manager
 from .exceptions import CartoException
 from .paginators import CartoPaginator
@@ -106,12 +106,12 @@ class APIKeyManager(Manager):
             if isinstance(tables[0], dict):
                 database_grant['tables'] = tables
             elif isinstance(tables[0], TableGrant):
-                database_grant['tables'] = [x.to_json for x in tables]
+                database_grant['tables'] = [x.to_json() for x in tables]
         if schemas and (len(schemas) > 0):
             if isinstance(schemas[0], dict):
                 database_grant['schemas'] = schemas
             elif isinstance(schemas[0], SchemaGrant):
-                database_grant['schemas'] = [x.to_json for x in schemas]
+                database_grant['schemas'] = [x.to_json() for x in schemas]
         if services:
             grants.append({'type': 'dataservices', 'services': services})
         grants.append(database_grant)
@@ -194,11 +194,15 @@ class Grants(Resource):
     apis = CharField(many=True)
     tables = TableGrantField(many=True)
     services = CharField(many=True)
+    schemas = SchemaGrantField(many=True)
 
     def get_id(self):
         tables = []
+        schemas = []
         if self.tables:
             tables = [x.to_json() for x in self.tables]
+        if self.schemas:
+            schemas = [x.to_json() for x in self.schemas]
         return [
                     {
                         'type': 'apis',
@@ -206,7 +210,8 @@ class Grants(Resource):
                     },
                     {
                         'type': 'database',
-                        'tables': tables
+                        'tables': tables,
+                        'schemas': schemas
                     },
                     {
                         'type': 'dataservices',
