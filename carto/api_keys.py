@@ -195,6 +195,7 @@ class Grants(Resource):
     tables = TableGrantField(many=True)
     services = CharField(many=True)
     schemas = SchemaGrantField(many=True)
+    _expand = False
 
     def get_id(self):
         tables = []

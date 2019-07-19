@@ -1,2 +1,2 @@
 requests>=2.7.0
-pyrestcli==0.6.9
+pyrestcli==0.6.12
