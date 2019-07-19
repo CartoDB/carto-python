@@ -32,6 +32,7 @@ def create_oauth_app(oauth_app_manager, oauth_app_name=None, redirect_uris=['htt
     return oauth_app_manager.create(name=oauth_app_name,
                                     redirect_uris=redirect_uris,
                                     icon_url='https://localhost',
+                                    description='test from Python SDK',
                                     website_url='https://localhost')
 
 

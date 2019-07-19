@@ -119,20 +119,28 @@ class OauthAppManager(Manager):
     json_collection_attribute = "result"
     paginator_class = CartoPaginator
 
-    def create(self, name, redirect_uris, icon_url):
+    def create(self, name, redirect_uris, icon_url, description, website_url):
         """
         Creates an OauthApp.
 
         :param name: The OAuth app name
         :param redirect_uris: An array of URIs for authorize callback.
         :param icon_url: A URL with a squared icon for the Oauth app.
+        :param description: A description of the app to show in the dashboard.
+        :param website_url: A public URL to the app.
         :type name: str
         :type redirect_uris: list
         :type icon_url: str
+        :type description: str
+        :type website_url: str
 
         :return: An OauthApp instance with a client_id and client_secret
         """
-        return super(OauthAppManager, self).create(name=name, redirect_uris=redirect_uris, icon_url=icon_url)
+        return super(OauthAppManager, self).create(name=name,
+                                                   redirect_uris=redirect_uris,
+                                                   icon_url=icon_url,
+                                                   description=description,
+                                                   website_url=website_url)
 
     def all_granted(self):
         """
