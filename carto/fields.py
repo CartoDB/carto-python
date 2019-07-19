@@ -95,10 +95,7 @@ class GrantsField(ResourceField):
         for field in resource.fields:
             for grant_type in value:
                 if grant_type['type'] == self.type_field[field]:
-                    try:
-                        setattr(resource, field, grant_type[field])
-                    except KeyError:
-                        pass
+                    setattr(resource, field, grant_type.get(field, []))
 
         instance.__dict__[self.name] = resource
 
