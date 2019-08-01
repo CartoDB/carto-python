@@ -429,13 +429,17 @@ class CopySQLClient(object):
                                                compression_level)
         return result
 
-    def copyto(self, query):
+    def copyto(self, query, http_method='GET'):
         """
         Gets data from a table into a Response object that can be iterated
 
         :param query: The "COPY { table_name [(column_name[, ...])] | (query) }
                            TO STDOUT [WITH(option[,...])]" query to execute
         :type query: str
+
+        :param http_method: HTTP method used in COPY TO request. Options:
+                            'GET' or 'POST'. Default value is False
+        :type http_method: str
 
         :return: response object
         :rtype: Response
@@ -447,7 +451,7 @@ class CopySQLClient(object):
 
         try:
             response = self.client.send(url,
-                                        http_method='GET',
+                                        http_method=http_method,
                                         params=params,
                                         stream=True)
             response.raise_for_status()
@@ -467,7 +471,7 @@ class CopySQLClient(object):
 
         return response
 
-    def copyto_file_object(self, query, file_object):
+    def copyto_file_object(self, query, file_object, http_method='GET'):
         """
         Gets data from a table into a writable file object
 
@@ -479,13 +483,17 @@ class CopySQLClient(object):
                             Normally the return value of open('file.ext', 'wb')
         :type file_object: file
 
+        :param http_method: HTTP method used in COPY TO request. Options:
+                            'GET' or 'POST'. Default value is False
+        :type http_method: str
+
         :raise CartoException:
         """
-        response = self.copyto(query)
+        response = self.copyto(query, http_method)
         for block in response.iter_content(DEFAULT_CHUNK_SIZE):
             file_object.write(block)
 
-    def copyto_file_path(self, query, path, append=False):
+    def copyto_file_path(self, query, path, append=False, http_method='GET'):
         """
         Gets data from a table into a writable file
 
@@ -500,22 +508,30 @@ class CopySQLClient(object):
                        Default value is False
         :type append: bool
 
+        :param http_method: HTTP method used in COPY TO request. Options:
+                            'GET' or 'POST'. Default value is False
+        :type http_method: str
+
         :raise CartoException:
         """
         file_mode = 'wb' if not append else 'ab'
         with open(path, file_mode) as f:
-            self.copyto_file_object(query, f)
+            self.copyto_file_object(query, f, http_method)
 
-    def copyto_stream(self, query):
+    def copyto_stream(self, query, http_method='GET'):
         """
         Gets data from a table into a stream
 
         :param query: The "COPY { table_name [(column_name[, ...])] | (query) } TO STDOUT [WITH(option[,...])]" query to execute
         :type query: str
 
+        :param http_method: HTTP method used in COPY TO request. Options:
+                            'GET' or 'POST'. Default value is False
+        :type http_method: str
+
         :return: the data from COPY TO query
         :rtype: raw binary (text stream)
 
         :raise: CartoException
         """
-        return ResponseStream(self.copyto(query))
+        return ResponseStream(self.copyto(query, http_method))
