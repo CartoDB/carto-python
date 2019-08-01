@@ -199,7 +199,7 @@ def test_copyto_file_path(copy_client, copyto_sample_query, copyto_expected_resu
     assert target_path.read() == copyto_expected_result.decode('utf-8')
 
 
-def test_copyto_file_path(copy_client, copyto_sample_query, copyto_expected_result, tmpdir):
+def test_copyto_file_path_using_post(copy_client, copyto_sample_query, copyto_expected_result, tmpdir):
     target_path = tmpdir.join('carto-python-sdk-copy-test.dump')
     copy_client.copyto_file_path(copyto_sample_query, target_path.strpath, 'POST')
     assert target_path.read() == copyto_expected_result.decode('utf-8')
@@ -211,7 +211,7 @@ def test_copyto_stream(copy_client, copyto_sample_query, copyto_expected_result)
     assert response.read() == copyto_expected_result
 
 
-def test_copyto_stream(copy_client, copyto_sample_query, copyto_expected_result):
+def test_copyto_stream_using_post(copy_client, copyto_sample_query, copyto_expected_result):
     response = copy_client.copyto_stream(copyto_sample_query, 'POST')
 
     assert response.read() == copyto_expected_result
