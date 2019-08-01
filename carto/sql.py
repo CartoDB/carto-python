@@ -298,6 +298,9 @@ class BatchSQLClient(object):
         return confirmation['status']
 
 
+COPY_TO_HTTP_METHODS = ['GET', 'POST']
+
+
 class CopySQLClient(object):
     """
     Allows to use the PostgreSQL COPY command for efficient streaming
@@ -446,6 +449,11 @@ class CopySQLClient(object):
 
         :raise CartoException:
         """
+        if not http_method or not isinstance(http_method, str) or http_method.upper() not in COPY_TO_HTTP_METHODS:
+            raise CartoException('`http_method` parameter is {i} and the allowed values can be: {v}'.format(
+                i=http_method,
+                v=', '.join(COPY_TO_HTTP_METHODS)))
+
         url = self.api_url + '/copyto'
         params = {'api_key': self.api_key, 'q': query}
 

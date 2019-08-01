@@ -156,14 +156,23 @@ def test_copyto(copy_client, copyto_sample_query, copyto_expected_result):
     assert result == copyto_expected_result
 
 
-def test_copyto_using_post(copy_client, copyto_sample_query, copyto_expected_result):
-    response = copy_client.copyto(copyto_sample_query, 'POST')
+def test_copyto_valid_http_methods(copy_client, copyto_sample_query, copyto_expected_result):
+    valid_http_methods = ['GET', 'get', 'POST', 'post']
+    for http_method in valid_http_methods:
+        response = copy_client.copyto(copyto_sample_query, http_method)
 
-    result = bytearray()
-    for block in response.iter_content(10):
-        result += block
+        result = bytearray()
+        for block in response.iter_content(10):
+            result += block
 
-    assert result == copyto_expected_result
+        assert result == copyto_expected_result
+
+
+def test_copyto_invalid_http_methods(copy_client, copyto_sample_query, copyto_expected_result):
+    invalid_http_methods = ['', None, 'invalid', 'PUT', 6, True]
+    for http_method in invalid_http_methods:
+        with pytest.raises(CartoException):
+            copy_client.copyto(copyto_sample_query, http_method)
 
 
 def test_copyto_file_object(copy_client, copyto_sample_query, copyto_expected_result):
