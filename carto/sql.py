@@ -441,7 +441,7 @@ class CopySQLClient(object):
         :type query: str
 
         :param http_method: HTTP method used in COPY TO request. Options:
-                            'GET' or 'POST'. Default value is False
+                            'GET' or 'POST'. Default value is 'GET'
         :type http_method: str
 
         :return: response object
