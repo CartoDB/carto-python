@@ -1,5 +1,5 @@
 xxx-xx-2019: version 1.6.1
- - Allow POST in copy to (#142)
+ - Using POST in copy to if the query in longer than 1024 bytes (#142)
 
 Jun-17-2019: version 1.6.0
  - Auth API (#94)
