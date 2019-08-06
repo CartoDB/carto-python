@@ -98,6 +98,7 @@ def test_create_regular_api_key_with_tables(api_key_manager, dataset_manager):
     assert api_key.name == api_key_name
     assert api_key.type == 'regular'
     assert api_key.grants.apis == ["sql", "maps"]
+    assert len(api_key.grants.tables) == 1
     assert api_key.grants.tables[0].schema == api_key_manager.client.username
     assert api_key.grants.tables[0].name == table.name
     assert api_key.grants.tables[0].permissions == ['insert', 'select', 'update']
