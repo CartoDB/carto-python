@@ -6,7 +6,7 @@ import json
 from .color import colored, Color
 import base64
 
-SQL_API_URL = 'api/{api_version}/analysis'
+AFW_API_URL = 'api/{api_version}/analysis'
 
 HEADERS = {
     'content-type': 'application/json',
@@ -17,7 +17,7 @@ HEADERS = {
 class AnalysisClient(object):
     def __init__(self, auth_client, api_version='v4'):
         self.auth_client = auth_client
-        self.api_url = SQL_API_URL.format(api_version=api_version)
+        self.api_url = AFW_API_URL.format(api_version=api_version)
 
         self.api_key = getattr(self.auth_client, 'api_key', None)
         self.username = getattr(self.auth_client, 'username', None)
