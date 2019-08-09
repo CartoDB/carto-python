@@ -33,9 +33,11 @@ Please, refer to the :ref:`apidoc` or the source code for further details about 
    general_concepts
    installation
    authentication
+   auth_api
    sql_api
    import_api
    maps_api
+   kuviz
    non_public_apis
    examples
    modules

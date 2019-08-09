@@ -156,26 +156,22 @@ def test_copyto(copy_client, copyto_sample_query, copyto_expected_result):
     assert result == copyto_expected_result
 
 
-def test_copyto_file_object(copy_client, copyto_sample_query,
-                            copyto_expected_result):
+def test_copyto_file_object(copy_client, copyto_sample_query, copyto_expected_result):
     in_memory_target_fileobj = InMemIO()
 
-    copy_client.copyto_file_object(copyto_sample_query,
-                                   in_memory_target_fileobj)
+    copy_client.copyto_file_object(copyto_sample_query, in_memory_target_fileobj)
     assert in_memory_target_fileobj.getvalue() == copyto_expected_result
 
     in_memory_target_fileobj.close()
 
 
-def test_copyto_file_path(copy_client, copyto_sample_query,
-                          copyto_expected_result, tmpdir):
+def test_copyto_file_path(copy_client, copyto_sample_query, copyto_expected_result, tmpdir):
     target_path = tmpdir.join('carto-python-sdk-copy-test.dump')
     copy_client.copyto_file_path(copyto_sample_query, target_path.strpath)
     assert target_path.read() == copyto_expected_result.decode('utf-8')
 
 
-def test_copyto_stream(copy_client, copyto_sample_query,
-                       copyto_expected_result):
+def test_copyto_stream(copy_client, copyto_sample_query, copyto_expected_result):
     response = copy_client.copyto_stream(copyto_sample_query)
 
     assert response.read() == copyto_expected_result

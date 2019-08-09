@@ -127,12 +127,15 @@ class NamedMap(BaseMap):
         Initializes a NamedMap instance
         :param auth_client: Auth client
         """
-        self.fields = ("version",
+        self.fields = ["version",
                        "name",
                        "auth",
                        "placeholders",
                        "layergroup",
-                       "view")
+                       "view"]
+        # Optional fields can be assigned by some responses create, instantiate,
+        # but are not saved to the backend
+        self.optional_fields = ["template_id", "layergroupid", "last_updated"]
         super(NamedMap, self).__init__(auth_client)
 
     def instantiate(self, params, auth=None):
@@ -174,7 +177,8 @@ class NamedMap(BaseMap):
             return
         try:
             for k, v in attribute_dict.items():
-                setattr(self, k, v)
+                if k in self.fields + self.optional_fields:
+                    setattr(self, k, v)
         except Exception:
             setattr(self, self.Meta.id_field, attribute_dict)
 
@@ -186,6 +190,14 @@ class AnonymousMap(BaseMap):
     class Meta:
         collection_endpoint = ANONYMOUS_API_ENDPOINT.format(
             api_version=API_VERSION)
+
+    def __init__(self, auth_client):
+        """
+        Initializes an AnonymousMap instance
+        :param auth_client: Auth client
+        """
+        self.optional_fields = ['cdn_url', 'last_updated', 'layergroupid', 'metadata']
+        super(AnonymousMap, self).__init__(auth_client)
 
     def instantiate(self, params):
         """
@@ -207,7 +219,8 @@ class AnonymousMap(BaseMap):
 
     def update_from_dict(self, attribute_dict):
         for k, v in attribute_dict.items():
-            setattr(self, k, v)
+            if k in self.fields + self.optional_fields:
+                setattr(self, k, v)
 
 
 class NamedMapManager(Manager):

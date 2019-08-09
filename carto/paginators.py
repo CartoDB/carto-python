@@ -39,7 +39,10 @@ class CartoPaginator(Paginator):
         try:
             total_count_from_api = int(response_json["total_entries"])
         except KeyError:
-            total_count_from_api = int(response_json["total_user_entries"])
+            try:
+                total_count_from_api = int(response_json["total_user_entries"])
+            except KeyError:
+                total_count_from_api = int(response_json["total"])
 
         if self.total_count < total_count_from_api:
             self.page += 1
