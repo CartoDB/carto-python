@@ -372,8 +372,8 @@ class Job(Updatable):
     def execute_and_get_output(self, params, schedule=None, table=None, verbose=False, decodeJson=False):
         schedule = self.execute(params, schedule, table)
         if not (schedule.is_periodic() or schedule.is_triggered()):
-            exec = schedule.follow(not verbose)
-            return exec and exec.output(decodeJson)
+            execution = schedule.follow(not verbose)
+            return execution and execution.output(decodeJson)
         return schedule
 
     def remove(self):
@@ -441,9 +441,9 @@ class Schedule(Updatable):
             execs.sort(key=lambda e: e['time'])
             self._executions = [
                 Execution(
-                    self._context, self.job_id, self.schedule_id, exec
+                    self._context, self.job_id, self.schedule_id, execution
                 )
-                for exec in execs
+                for execution in execs
             ]
 
     def update(self):
@@ -535,11 +535,11 @@ class Schedule(Updatable):
                 self._context.output.clear()
                 self.show()
             last_exec_running = False
-            for exec in self.executions():
-                last_exec = exec
-                last_exec_running = exec.running()
+            for execution in self.executions():
+                last_exec = execution
+                last_exec_running = execution.running()
                 if not silent:
-                    exec.show(with_logs=last_exec_running)
+                    execution.show(with_logs=last_exec_running)
             if last_exec and not last_exec_running and not silent:
                 self._context.output.puts(last_exec.logs())
         return last_exec
@@ -572,19 +572,19 @@ class Schedule(Updatable):
     def last_outputs(self, n=1, only_finished=True, only_succesful=False, decodeJson=False, filter=None):
         self.update()
 
-        def select(exec):
+        def select(execution):
             selected = True
-            selected = not only_finished or exec.finished()
-            selected = selected and (not only_succesful or exec.successful)
-            selected = selected and (not filter or filter(exec))
+            selected = not only_finished or execution.finished()
+            selected = selected and (not only_succesful or execution.successful)
+            selected = selected and (not filter or filter(execution))
             return selected
 
         execs = self.executions()
         if execs and len(execs) > 0:
-            execs = [exec for exec in execs if select(exec)]
+            execs = [execution for execution in execs if select(execution)]
             execs.sort(key=lambda e: e.finish_time(), reverse=True)
             if len(execs) > 0:
-                return list(map(lambda exec: exec.output(decodeJson), execs))
+                return list(map(lambda execution: execution.output(decodeJson), execs))
         return []
 
 
@@ -610,16 +610,16 @@ EVENT_TIME = re.compile(r'\bTime:(\d+)\b')
 
 class Execution:
 
-    def __init__(self, context, job_id, schedule_id, exec):
+    def __init__(self, context, job_id, schedule_id, execution):
         self._context = context
         self.job_id = job_id
         self.schedule_id = schedule_id
-        self.execution_id = exec['execution_id']
-        self._raw_data = exec
-        # dummy_state = exec['state']  # None
+        self.execution_id = execution['execution_id']
+        self._raw_data = execution
+        # dummy_state = execution['state']  # None
         # Time of execution creation
-        self._create_t = _timefromtimestamp(exec['time'])
-        e = exec['execution']
+        self._create_t = _timefromtimestamp(execution['time'])
+        e = execution['execution']
         self._state = e['state']  # pending -> running -> dead
         self._failed = None
         self._start_t = None
