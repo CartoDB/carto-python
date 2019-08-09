@@ -114,8 +114,8 @@ TASK_GROUP = 'analysis'  # we have always one task group named analysis
 class DefaultOutput:
 
     @staticmethod
-    def print(*args):
-        print(*args)
+    def puts(text):
+        print(text)
 
     @staticmethod
     def clear():
@@ -491,14 +491,14 @@ class Schedule(Updatable):
 
     def show(self, details=False):
         color = _status_color(self.status)
-        self._context.output.print(
+        self._context.output.puts(
             self._info_prefix()
             + ' : ' + colored(color, self.status)
             + ' : ' + self.summary_info()
             + self._info_suffix()
         )
         if details:
-            self._context.output.print(self.details())
+            self._context.output.puts(self.details())
 
     def details(self):
         return ''
@@ -541,7 +541,7 @@ class Schedule(Updatable):
                 if not silent:
                     exec.show(with_logs=last_exec_running)
             if last_exec and not last_exec_running and not silent:
-                self._context.output.print(last_exec.logs())
+                self._context.output.puts(last_exec.logs())
         return last_exec
 
     def executions(self):
@@ -724,6 +724,6 @@ class Execution:
         return result
 
     def show(self, with_logs=True):
-        self._context.output.print(self.info())
+        self._context.output.puts(self.info())
         if with_logs:
-            self._context.output.print(self.logs())
+            self._context.output.puts(self.logs())
