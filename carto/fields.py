@@ -68,6 +68,13 @@ class TableGrantField(ResourceField):
     value_class = "carto.api_keys.TableGrant"
 
 
+class SchemaGrantField(ResourceField):
+    """
+    :class:`carto.api_keys.SchemaGrant`
+    """
+    value_class = "carto.api_keys.SchemaGrant"
+
+
 class GrantsField(ResourceField):
     """
     :class:`carto.api_keys.Grants`
@@ -76,6 +83,7 @@ class GrantsField(ResourceField):
     type_field = {
         'apis': 'apis',
         'tables': 'database',
+        'schemas': 'database',
         'services': 'dataservices'
     }
 
@@ -87,7 +95,7 @@ class GrantsField(ResourceField):
         for field in resource.fields:
             for grant_type in value:
                 if grant_type['type'] == self.type_field[field]:
-                    setattr(resource, field, grant_type[field])
+                    setattr(resource, field, grant_type.get(field, []))
 
         instance.__dict__[self.name] = resource
 

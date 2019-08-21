@@ -1,4 +1,5 @@
-xxx-xx-2019: version 1.6.1
+xxx-xx-2019: version 1.7.0
+ - Add schemas to Auth API (#134)
  - Using POST in copy to if the query in longer than 1024 bytes (#142)
 
 Jun-17-2019: version 1.6.0
