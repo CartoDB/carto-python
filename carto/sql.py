@@ -444,10 +444,11 @@ class CopySQLClient(object):
         """
         url = self.api_url + '/copyto'
         params = {'api_key': self.api_key, 'q': query}
+        http_method = 'GET' if len(query) < MAX_GET_QUERY_LEN else 'POST'
 
         try:
             response = self.client.send(url,
-                                        http_method='GET',
+                                        http_method=http_method,
                                         params=params,
                                         stream=True)
             response.raise_for_status()
