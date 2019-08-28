@@ -36,7 +36,7 @@ class CartoRateLimitException(CartoException):
 
         :return:
         """
-        super().__init__(response.text)
+        super(CartoRateLimitException, self).__init__(response.text)
         self.limit = int(response.headers['Carto-Rate-Limit-Limit'])
         self.remaining = int(response.headers['Carto-Rate-Limit-Remaining'])
         self.retry_after = int(response.headers['Retry-After'])
