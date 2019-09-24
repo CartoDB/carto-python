@@ -11,6 +11,7 @@ Module for working with Data Observatory tokens
 
 from pyrestcli.fields import CharField
 
+from .paginators import CartoPaginator
 from .resources import WarnResource, Manager
 
 
@@ -28,7 +29,7 @@ class DoToken(WarnResource):
 
     class Meta:
         collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
-        name_field = None
+        name_field = "access_token"
 
 
 class DoTokenManager(Manager):
@@ -39,4 +40,7 @@ class DoTokenManager(Manager):
     """
     resource_class = DoToken
     json_collection_attribute = None
-    paginator_class = None
+    paginator_class = CartoPaginator
+
+    def get(self):
+        return super(DoTokenManager, self).get('token')
