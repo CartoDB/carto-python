@@ -1,5 +1,6 @@
-xxx-xx-2019: version 1.6.1
+Sept-26-2019: version 1.7.0
  - Using POST in copy to if the query in longer than 1024 bytes (#142)
+ - Support new data_observatory_token endpoint (#148)
 
 Jun-17-2019: version 1.6.0
  - Auth API (#94)
