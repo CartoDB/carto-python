@@ -14,7 +14,6 @@ Module for working with Data Observatory Datasets
 from pyrestcli.fields import CharField
 
 from .resources import Resource, Manager
-from .exceptions import CartoException
 from .paginators import CartoPaginator
 
 
