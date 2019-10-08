@@ -32,8 +32,8 @@ class DODataset(Resource):
     table = CharField()
 
     class Meta:
-            collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
-            name_field = "id"
+        collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
+        name_field = "id"
 
 
 class DODatasetManager(Manager):
