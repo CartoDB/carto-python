@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Module for working with Data Observatory Datasets
 
@@ -18,10 +19,10 @@ from .paginators import CartoPaginator
 
 
 API_VERSION = "v4"
-API_ENDPOINT = "api/{api_version}/do/datasets/"
+API_ENDPOINT = "api/{api_version}/do/datasets"
 
 
-class DODatasets(Resource):
+class DODataset(Resource):
     """
     Represents a Data Observatory Datasets object in CARTO.
 
@@ -33,17 +34,14 @@ class DODatasets(Resource):
 
     class Meta:
             collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
-            name_field = "name"
+            name_field = "id"
 
 
-class DODatasetsManager(Manager):
+class DODatasetManager(Manager):
     """
-    Manager for the DODatasets class.
+    Manager for the DODataset class.
 
     """
-    resource_class = DODatasets
-    json_collection_attribute = None
+    resource_class = DODataset
+    json_collection_attribute = "datasets"
     paginator_class = CartoPaginator
-
-    def get(self):
-        return super(DODatasetsManager, self).get("datasets")
