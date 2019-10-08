@@ -26,11 +26,15 @@ class DODatasets(Resource):
     Represents a Data Observatory Datasets object in CARTO.
 
     """
-    datasets = CharField(many=True)
+    dataset = CharField()
+    id = CharField()
+    project = CharField()
+    table = CharField()
 
     class Meta:
             collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
-            name_field = "datasets"
+            name_field = "name"
+
 
 class DODatasetsManager(Manager):
     """
@@ -38,7 +42,7 @@ class DODatasetsManager(Manager):
 
     """
     resource_class = DODatasets
-    json_collection_attribute = "result"
+    json_collection_attribute = None
     paginator_class = CartoPaginator
 
     def get(self):
