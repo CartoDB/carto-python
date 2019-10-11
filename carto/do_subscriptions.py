@@ -11,10 +11,11 @@ Module for working with Data Observatory Subscriptions
 
 """
 
-from pyrestcli.fields import CharField
+from pyrestcli.fields import CharField, FloatField
 
 from .resources import Resource, Manager
 from .paginators import CartoPaginator
+from .do_subscriptions_info import DOSubscriptionInfo
 
 
 API_VERSION = "v4"
@@ -43,5 +44,35 @@ class DOSubscriptionManager(Manager):
 
     """
     resource_class = DOSubscription
+    json_collection_attribute = "subscriptions"
+    paginator_class = CartoPaginator
+
+
+# FIXME: this is a replication of DOSubscriptionInfo
+class DOCreatedSubscription(Resource):
+    """
+    Represents a Data Observatory Subscriptions in CARTO.
+
+    """
+    id = CharField()
+    estimated_delivery_days = FloatField()
+    tos = CharField()
+    tos_link = CharField()
+    licenses = CharField()
+    licenses_link = CharField()
+    rights = CharField()
+    type = CharField()
+
+    class Meta:
+        collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
+        name_field = "id"
+
+
+class DOSubscriptionCreationManager(Manager):
+    """
+    Manager for the DOSubscription class.
+
+    """
+    resource_class = DOCreatedSubscription
     json_collection_attribute = "subscriptions"
     paginator_class = CartoPaginator
