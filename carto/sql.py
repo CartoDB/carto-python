@@ -14,7 +14,6 @@ Module for the SQL API
 from gettext import gettext as _
 import zlib
 import time
-import warnings
 
 from .exceptions import CartoException, CartoRateLimitException
 from requests import HTTPError
@@ -225,8 +224,6 @@ class BatchSQLClient(object):
                          http_method="POST",
                          json_body={"query": sql_query},
                          http_header=header)
-
-        warnings.warn('Batch SQL job created with job_id: {job_id}'.format(job_id=data['job_id']))
 
         while data and data['status'] in BATCH_JOBS_PENDING_STATUSES:
             time.sleep(BATCH_READ_STATUS_AFTER_SECONDS)

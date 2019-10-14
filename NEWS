@@ -1,3 +1,6 @@
+Unreleased: version 1.9.0
+- Remove needless warnings messages (#154)
+
 Oct-14-2019: version 1.8.0
 - Support new data_observatory endpoints (#151, #153)
   - do_subscriptions
