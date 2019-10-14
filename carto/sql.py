@@ -14,7 +14,6 @@ Module for the SQL API
 from gettext import gettext as _
 import zlib
 import time
-import warnings
 
 from .exceptions import CartoException, CartoRateLimitException
 from requests import HTTPError
