@@ -1,5 +1,7 @@
-Unreleased: version 1.8.0
-- Support new data_observatory_datasets endpoint (#150)
+Oct-14-2019: version 1.8.0
+- Support new data_observatory endpoints (#151, #153)
+  - do_subscriptions
+  - do_subscription_info
 
 Sept-26-2019: version 1.7.0
  - Using POST in copy to if the query in longer than 1024 bytes (#142)
