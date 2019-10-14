@@ -226,8 +226,6 @@ class BatchSQLClient(object):
                          json_body={"query": sql_query},
                          http_header=header)
 
-        warnings.warn('Batch SQL job created with job_id: {job_id}'.format(job_id=data['job_id']))
-
         while data and data['status'] in BATCH_JOBS_PENDING_STATUSES:
             time.sleep(BATCH_READ_STATUS_AFTER_SECONDS)
             data = self.read(data['job_id'])
