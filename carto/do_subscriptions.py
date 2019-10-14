@@ -15,7 +15,6 @@ from pyrestcli.fields import CharField, FloatField
 
 from .resources import Resource, Manager
 from .paginators import CartoPaginator
-from .do_subscriptions_info import DOSubscriptionInfo
 
 
 API_VERSION = "v4"
@@ -48,7 +47,6 @@ class DOSubscriptionManager(Manager):
     paginator_class = CartoPaginator
 
 
-# FIXME: this is a replication of DOSubscriptionInfo
 class DOCreatedSubscription(Resource):
     """
     Represents a Data Observatory Subscriptions in CARTO.
@@ -56,6 +54,7 @@ class DOCreatedSubscription(Resource):
     """
     id = CharField()
     estimated_delivery_days = FloatField()
+    subscription_list_price = FloatField()
     tos = CharField()
     tos_link = CharField()
     licenses = CharField()

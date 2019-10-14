@@ -2,7 +2,7 @@
 """
 Module for working with Data Observatory Subscription Information
 
-.. module:: carto.do_subscriptions_info
+.. module:: carto.do_subscription_info
    :platform: Unix, Windows
    :synopsis: Module for working with Data Observatory Subscription Information
 
@@ -28,6 +28,7 @@ class DOSubscriptionInfo(Resource):
     """
     id = CharField()
     estimated_delivery_days = FloatField()
+    subscription_list_price = FloatField()
     tos = CharField()
     tos_link = CharField()
     licenses = CharField()
@@ -50,7 +51,7 @@ class DOSubscriptionInfoManager(Manager):
     paginator_class = CartoPaginator
 
     def get(self, id, type):
-        response = self.send(self.get_collection_endpoint(), "get", params={'id': id, 'type': type})
+        response = self.send(self.get_collection_endpoint(), "get", params={"id": id, "type": type})
 
         try:
             resource = self.resource_class(self.client)
