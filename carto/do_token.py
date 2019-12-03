@@ -9,7 +9,7 @@ Module for working with Data Observatory tokens
 
 """
 
-from pyrestcli.fields import CharField
+from pyrestcli.fields import CharField, BooleanField
 
 from .paginators import CartoPaginator
 from .resources import WarnResource, Manager
@@ -26,6 +26,12 @@ class DoToken(WarnResource):
     .. warning:: Non-public API. It may change with no previous notice
     """
     access_token = CharField()
+    public_data_project = CharField()
+    execution_project = CharField()
+    user_data_project = CharField()
+    dataset = CharField()
+    bucket = CharField()
+    speed_licensing = BooleanField()
 
     class Meta:
         collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
@@ -41,6 +47,3 @@ class DoTokenManager(Manager):
     resource_class = DoToken
     json_collection_attribute = None
     paginator_class = CartoPaginator
-
-    def get(self):
-        return super(DoTokenManager, self).get('token')
