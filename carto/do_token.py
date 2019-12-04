@@ -26,12 +26,12 @@ class DoToken(WarnResource):
     .. warning:: Non-public API. It may change with no previous notice
     """
     access_token = CharField()
-    public_data_project = CharField()
-    execution_project = CharField()
-    user_data_project = CharField()
-    dataset = CharField()
-    bucket = CharField()
-    speed_licensing = BooleanField()
+    bq_public_project = CharField()
+    gcp_execution_project = CharField()
+    bq_project = CharField()
+    bq_dataset = CharField()
+    gcs_bucket = CharField()
+    instant_licensing = BooleanField()
 
     class Meta:
         collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
