@@ -47,3 +47,6 @@ class DoTokenManager(Manager):
     resource_class = DoToken
     json_collection_attribute = None
     paginator_class = CartoPaginator
+
+    def get(self):
+        return super(DoTokenManager, self).get('token')
