@@ -1,5 +1,5 @@
-Dec-04-2019: version 1.8.2
-- New fields of do token endpoint
+Dec-12-2019: version 1.8.2
+- New fields for do token endpoint
 
 Oct-23-2019: version 1.8.1
 - Remove needless warnings messages (#154)
