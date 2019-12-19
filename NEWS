@@ -1,3 +1,6 @@
+Dec-19-2019: version 1.8.3
+- Fix count when the attribute is not in the response
+
 Dec-12-2019: version 1.8.2
 - New fields for do token endpoint
 
