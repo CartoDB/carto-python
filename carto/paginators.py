@@ -34,7 +34,8 @@ class CartoPaginator(Paginator):
 
     def process_response(self, response):
         response_json = response.json()
-        self.total_count += len(response_json[self.json_collection_attribute])
+        if self.json_collection_attribute in response_json:
+            self.total_count += len(response_json[self.json_collection_attribute])
 
         if "total_entries" in response_json:
             total_count_from_api = int(response_json["total_entries"])
