@@ -1,3 +1,6 @@
+Jan-14-2020: version 1.8.4
+- Add if_exists property to Kuviz resource
+
 Dec-19-2019: version 1.8.3
 - Fix count when the attribute is not in the response
 
