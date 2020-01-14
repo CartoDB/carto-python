@@ -19,8 +19,8 @@ from .paginators import CartoPaginator
 API_VERSION = "v4"
 API_ENDPOINT = "api/{api_version}/kuviz/"
 
-IF_EXISTS_FAIL = 'fail'
-IF_EXISTS_REPLACE = 'replace'
+IF_EXISTS_FAIL = "fail"
+IF_EXISTS_REPLACE = "replace"
 
 
 class Kuviz(WarnResource):
