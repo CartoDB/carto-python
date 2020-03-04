@@ -14,23 +14,15 @@ TYPES_MAPPING = {
     'GEOMETRY': 'GEOGRAPHY'
 }
 
-API_BASE_PATH = 'api/v4/data/observatory'
-DATASETS_BASE_PATH = 'bq/datasets'
-ENRICHMENT_BASE_PATH = 'bq/enrichment'
-
-
-def _build_api_url(base_url, resource):
-    return '{}/{}/{}'.format(base_url, API_BASE_PATH, resource)
+DATASETS_BASE_PATH = 'api/v4/data/observatory/bq/datasets'
+ENRICHMENT_BASE_PATH = 'api/v4/data/observatory/bq/enrichment'
 
 
 class _BQDatasetClient:
 
     def __init__(self, auth_client):
-        self.session = requests.Session()
         self.auth_client = auth_client
-        self._api_key = getattr(self.auth_client, 'api_key', None)
-        self._username = getattr(self.auth_client, 'username', None)
-        self._base_url = self.auth_client.base_url
+        self.api_key = getattr(self.auth_client, 'api_key', None)
 
     def upload(self, dataframe, name, params=None):
         params = params or {}
@@ -43,12 +35,11 @@ class _BQDatasetClient:
 
     def upload_file_object(self, file_object, name, params=None):
         params = params or {}
-        upload_file_path = '{}/{}'.format(DATASETS_BASE_PATH, name)
-        url = _build_api_url(self._base_url, upload_file_path)
-        params['api_key'] = self._api_key
+        params['api_key'] = self.api_key
+        relative_path = '{}/{}'.format(DATASETS_BASE_PATH, name)
 
         try:
-            response = self.session.post(url, params=params, data=file_object)
+            response = self.auth_client.send(relative_path, 'POST', params=params, data=file_object)
             response.raise_for_status()
         except requests.HTTPError as e:
             if 400 <= response.status_code < 500:
@@ -61,12 +52,11 @@ class _BQDatasetClient:
             raise CartoException(e)
 
     def import_dataset(self, name):
-        import_dataset_path = '{}/{}/imports'.format(DATASETS_BASE_PATH, name)
-        url = _build_api_url(self._base_url, import_dataset_path)
-        params = {'api_key': self._api_key}
+        params = {'api_key': self.api_key}
+        relative_path = '{}/{}/imports'.format(DATASETS_BASE_PATH, name)
 
         try:
-            response = self.session.post(url, params=params)
+            response = self.auth_client.send(relative_path, 'POST', params=params)
             response.raise_for_status()
 
             job = response.json()
@@ -91,12 +81,11 @@ class _BQDatasetClient:
         return status
 
     def download(self, name_id):
-        download_path = '{}/{}'.format(DATASETS_BASE_PATH, name_id)
-        url = _build_api_url(self._base_url, download_path)
-        params = {'api_key': self._api_key}
+        params = {'api_key': self.api_key}
+        relative_path = '{}/{}'.format(DATASETS_BASE_PATH, name_id)
 
         try:
-            response = self.session.get(url, params=params, stream=True)
+            response = self.auth_client.send(relative_path, 'GET', params=params, stream=True)
             response.raise_for_status()
         except requests.HTTPError as e:
             if 400 <= response.status_code < 500:
@@ -115,12 +104,11 @@ class _BQDatasetClient:
         return ResponseStream(self.download(name_id))
 
     def create(self, payload):
-        create_path = DATASETS_BASE_PATH
-        url = _build_api_url(self._base_url, create_path)
-        params = {'api_key': self._api_key}
+        params = {'api_key': self.api_key}
+        relative_path = DATASETS_BASE_PATH
 
         try:
-            response = self.session.post(url, params=params, json=payload)
+            response = self.auth_client.send(relative_path, 'POST', params=params, json=payload)
             response.raise_for_status()
         except requests.HTTPError as e:
             if 400 <= response.status_code < 500:
@@ -137,12 +125,11 @@ class _BQDatasetClient:
         return response
 
     def enrichment(self, payload):
-        enrichment_path = ENRICHMENT_BASE_PATH
-        url = _build_api_url(self._base_url, enrichment_path)
-        params = {'api_key': self._api_key}
+        params = {'api_key': self.api_key}
+        relative_path = ENRICHMENT_BASE_PATH
 
         try:
-            response = self.session.post(url, params=params, json=payload)
+            response = self.auth_client.send(relative_path, 'POST', params=params, json=payload)
             response.raise_for_status()
 
             body = response.json()
@@ -167,19 +154,14 @@ class BQJob:
         self.id = job_id
         self.name = name_id
         self.auth_client = auth_client
-        self._api_key = getattr(self.auth_client, 'api_key', None)
-        self._username = getattr(self.auth_client, 'username', None)
-        self._base_url = self.auth_client.base_url
-
-        self.session = requests.Session()
+        self.api_key = getattr(self.auth_client, 'api_key', None)
 
     def status(self):
-        status_path = '{}/{}/imports/{}'.format(DATASETS_BASE_PATH, self.name, self.id)
-        url = _build_api_url(self._base_url, status_path)
-        params = {'api_key': self._api_key}
+        params = {'api_key': self.api_key}
+        relative_path = '{}/{}/imports/{}'.format(DATASETS_BASE_PATH, self.name, self.id)
 
         try:
-            response = self.session.get(url, params=params)
+            response = self.auth_client.send(relative_path, 'GET', params=params)
             response.raise_for_status()
 
             body = response.json()
@@ -215,18 +197,14 @@ class BQUserEnrichmentJob:
     def __init__(self, job_id, auth_client):
         self.id = job_id
         self.auth_client = auth_client
-        self._api_key = getattr(self.auth_client, 'api_key', None)
-        self._username = getattr(self.auth_client, 'username', None)
-        self._base_url = self.auth_client.base_url
-        self.session = requests.Session()
+        self.api_key = getattr(self.auth_client, 'api_key', None)
 
     def status(self):
-        status_path = '{}/{}/status'.format(ENRICHMENT_BASE_PATH, self.id)
-        url = _build_api_url(self._base_url, status_path)
-        params = {'api_key': self._api_key}
+        params = {'api_key': self.api_key}
+        relative_path = '{}/{}/status'.format(ENRICHMENT_BASE_PATH, self.id)
 
         try:
-            response = self.session.get(url, params=params)
+            response = self.auth_client.send(relative_path, 'GET', params=params)
             response.raise_for_status()
 
             body = response.json()
