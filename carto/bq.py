@@ -25,12 +25,12 @@ def _build_api_url(base_url, resource):
 
 class _BQDatasetClient:
 
-    def __init__(self, credentials):
+    def __init__(self, auth_client):
         self.session = requests.Session()
-        self._credentials = credentials
-        self._username = credentials.username
-        self._api_key = credentials.api_key
-        self._base_url = credentials.base_url.format(self._username)
+        self.auth_client = auth_client
+        self._api_key = getattr(self.auth_client, 'api_key', None)
+        self._username = getattr(self.auth_client, 'username', None)
+        self._base_url = self.auth_client.base_url
 
     def upload(self, dataframe, name, params=None):
         params = params or {}
@@ -71,7 +71,7 @@ class _BQDatasetClient:
 
             job = response.json()
 
-            return BQJob(job['item_queue_id'], name, self._credentials)
+            return BQJob(job['item_queue_id'], name, self.auth_client)
         except requests.HTTPError as e:
             if 400 <= response.status_code < 500:
                 reason = response.json()['errors'][0]
@@ -146,7 +146,7 @@ class _BQDatasetClient:
             response.raise_for_status()
 
             body = response.json()
-            job = BQUserEnrichmentJob(body['job_id'], self._credentials)
+            job = BQUserEnrichmentJob(body['job_id'], self.auth_client)
             status = job.result()
 
             return status
@@ -163,12 +163,14 @@ class _BQDatasetClient:
 
 class BQJob:
 
-    def __init__(self, job_id, name_id, credentials):
+    def __init__(self, job_id, name_id, auth_client):
         self.id = job_id
         self.name = name_id
-        self._username = credentials.username
-        self._api_key = credentials.api_key
-        self._base_url = credentials.base_url
+        self.auth_client = auth_client
+        self._api_key = getattr(self.auth_client, 'api_key', None)
+        self._username = getattr(self.auth_client, 'username', None)
+        self._base_url = self.auth_client.base_url
+
         self.session = requests.Session()
 
     def status(self):
@@ -210,11 +212,12 @@ class BQJob:
 
 class BQUserEnrichmentJob:
 
-    def __init__(self, job_id, credentials):
+    def __init__(self, job_id, auth_client):
         self.id = job_id
-        self._username = credentials.username
-        self._api_key = credentials.api_key
-        self._base_url = credentials.base_url
+        self.auth_client = auth_client
+        self._api_key = getattr(self.auth_client, 'api_key', None)
+        self._username = getattr(self.auth_client, 'username', None)
+        self._base_url = self.auth_client.base_url
         self.session = requests.Session()
 
     def status(self):
@@ -255,6 +258,12 @@ class BQUserEnrichmentJob:
 
 class BQUserDataset:
 
+    def __init__(self, name=None, columns=None, ttl_seconds=None, client=None, auth_client=None):
+        self._name = name
+        self._columns = columns or []
+        self._ttl_seconds = ttl_seconds
+        self._client = client or _BQDatasetClient(auth_client)
+
     @staticmethod
     def _map_type(in_type):
         if in_type in TYPES_MAPPING:
@@ -263,17 +272,6 @@ class BQUserDataset:
             out_type = in_type
         return out_type
 
-    def __init__(self, name=None, columns=None, ttl_seconds=None, client=None, credentials=None):
-        self._name = name
-        if columns is None:
-            self._columns = []
-        else:
-            self._columns = columns
-        self._ttl_seconds = ttl_seconds
-        self._client = client
-        if self._client is None:
-            self._credentials = credentials
-            self._client = _BQDatasetClient(self._credentials)
 
     def name(self, name):
         self._name = name
