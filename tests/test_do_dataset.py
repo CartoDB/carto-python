@@ -19,10 +19,13 @@ CSV_SAMPLE_REDUCED = """id,geom
 class ResponseMock:
     def __init__(self, response=None):
         self._response = response
+
     def raise_for_status(self):
         pass
+
     def json(self):
         return self._response
+
     def iter_content(self, value):
         return iter(self._response)
 
@@ -108,9 +111,9 @@ def test_can_import_a_dataset(mocker, api_key_auth_client_usr):
     file_object = StringIO(CSV_SAMPLE_REDUCED)
 
     dataset = bq_user_dataset.name(unique_table_name) \
-                                .column(name='id', type='INT64') \
-                                .column('geom', 'GEOMETRY') \
-                                .ttl_seconds(30)
+        .column(name='id', type='INT64') \
+        .column('geom', 'GEOMETRY') \
+        .ttl_seconds(30)
     dataset.create()
     dataset.upload_file_object(file_object)
     job = dataset.import_dataset()
@@ -126,7 +129,5 @@ def test_can_download_to_dataframe(mocker, api_key_auth_client_usr):
     bq_user_dataset = DODataset(auth_client=api_key_auth_client_usr)
 
     # test
-    result = bq_user_dataset.name('census_tracts_american_samoa') \
-                                    .download_stream()
+    result = bq_user_dataset.name('census_tracts_american_samoa').download_stream()
     assert isinstance(result, ResponseStream)
-
