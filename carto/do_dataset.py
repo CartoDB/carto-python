@@ -29,7 +29,7 @@ class _DODatasetClient:
         dataframe.to_csv(path_or_buf=name, index=False)
         try:
             with open(name, 'rb') as f:
-                self.upload_file_object(f, name, params)
+                return self.upload_file_object(f, name, params)
         finally:
             os.remove(name)
 
@@ -50,6 +50,8 @@ class _DODatasetClient:
             raise CartoException(e)
         except Exception as e:
             raise CartoException(e)
+
+        return response
 
     def import_dataset(self, name):
         params = {'api_key': self.api_key}
@@ -234,7 +236,7 @@ class DOEnrichmentJob:
         return status
 
 
-class DOUserDataset:
+class DODataset:
 
     def __init__(self, name=None, columns=None, ttl_seconds=None, client=None, auth_client=None):
         self._name = name
@@ -280,10 +282,10 @@ class DOUserDataset:
         return self._client.download_stream(self._name)
 
     def upload(self, dataframe):
-        self._client.upload(dataframe, self._name)
+        return self._client.upload(dataframe, self._name)
 
     def upload_file_object(self, file_object):
-        self._client.upload_file_object(file_object, self._name)
+        return self._client.upload_file_object(file_object, self._name)
 
     def import_dataset(self):
         return self._client.import_dataset(self._name)
