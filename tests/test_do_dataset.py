@@ -7,7 +7,7 @@ from carto.do_dataset import DODataset, DODatasetJob, VALID_TYPES
 from carto.auth import APIKeyAuthClient
 from carto.utils import ResponseStream
 
-CSV_SAMPLE_REDUCED = """id,geom
+CSV_SAMPLE_REDUCED = u"""id,geom
 1,POINT (-170.5618796 -14.2587411)
 2,POINT (-170.5589852 -14.2859572)
 3,POINT (-170.6310985 -14.2760947)
