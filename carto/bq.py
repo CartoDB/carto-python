@@ -14,8 +14,8 @@ TYPES_MAPPING = {
     'GEOMETRY': 'GEOGRAPHY'
 }
 
-DATASETS_BASE_PATH = 'api/v4/data/observatory/bq/datasets'
-ENRICHMENT_BASE_PATH = 'api/v4/data/observatory/bq/enrichment'
+DATASETS_BASE_PATH = 'api/v4/data/observatory/user/datasets'
+ENRICHMENT_BASE_PATH = 'api/v4/data/observatory/enrichment'
 
 
 class _BQDatasetClient:
