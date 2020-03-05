@@ -18,7 +18,7 @@ DATASETS_BASE_PATH = 'api/v4/data/observatory/user/datasets'
 ENRICHMENT_BASE_PATH = 'api/v4/data/observatory/enrichment'
 
 
-class _BQDatasetClient:
+class _DODatasetClient:
 
     def __init__(self, auth_client):
         self.auth_client = auth_client
@@ -61,7 +61,7 @@ class _BQDatasetClient:
 
             job = response.json()
 
-            return BQJob(job['item_queue_id'], name, self.auth_client)
+            return DODatasetJob(job['item_queue_id'], name, self.auth_client)
         except requests.HTTPError as e:
             if 400 <= response.status_code < 500:
                 reason = response.json()['errors'][0]
@@ -133,7 +133,7 @@ class _BQDatasetClient:
             response.raise_for_status()
 
             body = response.json()
-            job = BQUserEnrichmentJob(body['job_id'], self.auth_client)
+            job = DOEnrichmentJob(body['job_id'], self.auth_client)
             status = job.result()
 
             return status
@@ -148,7 +148,7 @@ class _BQDatasetClient:
             raise CartoException(e)
 
 
-class BQJob:
+class DODatasetJob:
 
     def __init__(self, job_id, name_id, auth_client):
         self.id = job_id
@@ -192,7 +192,7 @@ class BQJob:
         return status
 
 
-class BQUserEnrichmentJob:
+class DOEnrichmentJob:
 
     def __init__(self, job_id, auth_client):
         self.id = job_id
@@ -234,13 +234,13 @@ class BQUserEnrichmentJob:
         return status
 
 
-class BQUserDataset:
+class DOUserDataset:
 
     def __init__(self, name=None, columns=None, ttl_seconds=None, client=None, auth_client=None):
         self._name = name
         self._columns = columns or []
         self._ttl_seconds = ttl_seconds
-        self._client = client or _BQDatasetClient(auth_client)
+        self._client = client or _DODatasetClient(auth_client)
 
     @staticmethod
     def _map_type(in_type):
