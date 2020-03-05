@@ -250,7 +250,6 @@ class BQUserDataset:
             out_type = in_type
         return out_type
 
-
     def name(self, name):
         self._name = name
         return self
