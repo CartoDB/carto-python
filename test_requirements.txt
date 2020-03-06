@@ -1,4 +1,3 @@
 pytest
 requests_mock>=1.3.0
-pandas
 pytest-mock

@@ -1,5 +1,4 @@
 import pytest
-import pandas
 import uuid
 from io import StringIO
 
@@ -28,6 +27,16 @@ class ResponseMock:
 
     def iter_content(self, value):
         return iter(self._response)
+
+
+class DataFrameMock:
+    def __init__(self, response=None):
+        self._response = response
+
+    def to_csv(self, path_or_buf, index=False):
+        f = open(path_or_buf, "a")
+        f.write(str(self._response))
+        f.close()
 
 
 def test_DODataset_name(api_key_auth_client_usr):
@@ -79,7 +88,7 @@ def test_can_upload_from_dataframe(mocker, api_key_auth_client_usr):
 
     # test
     sample = StringIO(CSV_SAMPLE_REDUCED)
-    df = pandas.read_csv(sample)
+    df = DataFrameMock(sample)
     unique_table_name = 'cf_test_table_' + str(uuid.uuid4()).replace('-', '_')
     result = bq_user_dataset.name(unique_table_name).upload(df)
     assert result == fake_response
