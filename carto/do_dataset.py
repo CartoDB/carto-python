@@ -149,7 +149,7 @@ class _DODatasetClient:
     def metadata(self, entity, filters):
         params = {'api_key': self.api_key}
         if filters is not None:
-            params = {**params, **filters}
+            params.update(filters)
         relative_path = os.path.join(METADATA_BASE_PATH, entity)
 
         try:
