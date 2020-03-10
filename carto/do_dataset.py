@@ -16,6 +16,7 @@ TYPES_MAPPING = {
 
 DATASETS_BASE_PATH = 'api/v4/data/observatory/user/datasets'
 ENRICHMENT_BASE_PATH = 'api/v4/data/observatory/enrichment'
+METADATA_BASE_PATH = 'api/v4/data/observatory/metadata'
 
 
 class _DODatasetClient:
@@ -44,8 +45,7 @@ class _DODatasetClient:
         except requests.HTTPError as e:
             if 400 <= response.status_code < 500:
                 reason = response.json()['errors'][0]
-                error_msg = u'%s Client Error: %s' % (response.status_code,
-                                                      reason)
+                error_msg = u'%s Client Error: %s' % (response.status_code, reason)
                 raise CartoException(error_msg)
             raise CartoException(e)
         except Exception as e:
@@ -67,8 +67,7 @@ class _DODatasetClient:
         except requests.HTTPError as e:
             if 400 <= response.status_code < 500:
                 reason = response.json()['errors'][0]
-                error_msg = u'%s Client Error: %s' % (response.status_code,
-                                                      reason)
+                error_msg = u'%s Client Error: %s' % (response.status_code, reason)
                 raise CartoException(error_msg)
             raise CartoException(e)
         except Exception as e:
@@ -93,8 +92,7 @@ class _DODatasetClient:
             if 400 <= response.status_code < 500:
                 # Client error, provide better reason
                 reason = response.json()['errors'][0]
-                error_msg = u'%s Client Error: %s' % (response.status_code,
-                                                      reason)
+                error_msg = u'%s Client Error: %s' % (response.status_code, reason)
                 raise CartoException(error_msg)
             raise CartoException(e)
         except Exception as e:
@@ -116,8 +114,7 @@ class _DODatasetClient:
             if 400 <= response.status_code < 500:
                 # Client error, provide better reason
                 reason = response.json()['errors'][0]
-                error_msg = u'%s Client Error: %s' % (response.status_code,
-                                                      reason)
+                error_msg = u'%s Client Error: %s' % (response.status_code, reason)
                 raise CartoException(error_msg)
             else:
                 raise CartoException(e)
@@ -149,6 +146,27 @@ class _DODatasetClient:
         except Exception as e:
             raise CartoException(e)
 
+    def metadata(self, entity, filters):
+        params = {'api_key': self.api_key}
+        if filters is not None:
+            params.update(filters)
+        relative_path = os.path.join(METADATA_BASE_PATH, entity)
+
+        try:
+            response = self.auth_client.send(relative_path, 'GET', params=params)
+            response.raise_for_status()
+            return response.json()
+        except requests.HTTPError as e:
+            if 400 <= response.status_code < 500:
+                # Client error, provide better reason
+                reason = response.json()['errors'][0]
+                error_msg = u'%s Client Error: %s' % (response.status_code, reason)
+                raise CartoException(error_msg)
+            else:
+                raise CartoException(e)
+        except Exception as e:
+            raise CartoException(e)
+
 
 class DODatasetJob:
 
@@ -177,8 +195,7 @@ class DODatasetJob:
             if 400 <= response.status_code < 500:
                 # Client error, provide better reason
                 reason = response.json()['errors'][0]
-                error_msg = u'%s Client Error: %s' % (response.status_code,
-                                                      reason)
+                error_msg = u'%s Client Error: %s' % (response.status_code, reason)
                 raise CartoException(error_msg)
             raise CartoException(e)
         except Exception as e:
@@ -304,3 +321,6 @@ class DODataset:
         }
 
         return self._client.enrichment(payload)
+
+    def metadata(self, entity, filters):
+        return self._client.metadata(entity, filters)
