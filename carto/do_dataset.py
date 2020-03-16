@@ -81,8 +81,12 @@ class _DODatasetClient:
 
         return status
 
-    def download(self, name_id):
-        params = {'api_key': self.api_key}
+    def download(self, name_id=None, limit=None, order_by=None):
+        params = {
+            'api_key': self.api_key,
+            'limit': limit,
+            'order_by': order_by
+        }
         relative_path = '{}/{}'.format(DATASETS_BASE_PATH, name_id)
 
         try:
@@ -100,8 +104,8 @@ class _DODatasetClient:
 
         return response
 
-    def download_stream(self, name_id):
-        return ResponseStream(self.download(name_id))
+    def download_stream(self, name_id=None, limit=None, order_by=None):
+        return ResponseStream(self.download(name_id=name_id, limit=limit, order_by=order_by))
 
     def create(self, payload):
         params = {'api_key': self.api_key}
@@ -295,8 +299,8 @@ class DODataset:
             payload['ttl_seconds'] = self._ttl_seconds
         self._client.create(payload)
 
-    def download_stream(self):
-        return self._client.download_stream(self._name)
+    def download_stream(self, limit=None, order_by=None):
+        return self._client.download_stream(name_id=self._name, limit=limit, order_by=order_by)
 
     def upload(self, dataframe):
         return self._client.upload(dataframe, self._name)
