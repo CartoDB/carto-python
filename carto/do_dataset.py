@@ -81,7 +81,7 @@ class _DODatasetClient:
 
         return status
 
-    def download(self, name_id=None, limit=None, order_by=None):
+    def download(self, name_id, limit=None, order_by=None):
         params = {
             'api_key': self.api_key,
             'limit': limit,
@@ -104,8 +104,8 @@ class _DODatasetClient:
 
         return response
 
-    def download_stream(self, name_id=None, limit=None, order_by=None):
-        return ResponseStream(self.download(name_id=name_id, limit=limit, order_by=order_by))
+    def download_stream(self, name_id, limit=None, order_by=None):
+        return ResponseStream(self.download(name_id, limit=limit, order_by=order_by))
 
     def create(self, payload):
         params = {'api_key': self.api_key}
