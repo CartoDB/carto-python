@@ -83,10 +83,15 @@ class _DODatasetClient:
 
     def download(self, name_id, limit=None, order_by=None):
         params = {
-            'api_key': self.api_key,
-            'limit': limit,
-            'order_by': order_by
+            'api_key': self.api_key
         }
+
+        if limit is not None:
+            params['limit'] = limit
+
+        if order_by is not None:
+            params['order_by'] = order_by
+
         relative_path = '{}/{}'.format(DATASETS_BASE_PATH, name_id)
 
         try:
