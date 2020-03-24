@@ -25,7 +25,7 @@ class MockRequests(object):
         """
         self.requests = {
           "test_sql": {
-            "url": "https://mock.carto.com/api/v1/sql?q=select+%2A+from+tornados&api_key=mockmockmock",
+            "url": "https://mock.carto.com/api/v2/sql?q=select+%2A+from+tornados&api_key=mockmockmock",
             "text": '{ \
               "rows": [ \
                 "a" \
