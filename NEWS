@@ -1,3 +1,6 @@
+Mar-dd-2020: version 1.10.0
+- Add params to order and limit number of rows of the DO dataset to download.
+
 Mar-09-2020: version 1.9.1
 - Add DO Metadata API support
 
@@ -91,4 +94,3 @@ Jun-06-2014: version 0.8
 Feb-12-2014: version 0.7
 
  - additional checks in sql call for 404 status (#5)
-
