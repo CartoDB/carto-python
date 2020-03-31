@@ -81,7 +81,7 @@ class _DODatasetClient:
 
         return status
 
-    def download(self, name_id, limit=None, order_by=None):
+    def download(self, name_id, limit=None, order_by=None, sql_query=None, add_geom=None, is_geography=None):
         params = {
             'api_key': self.api_key
         }
@@ -91,6 +91,15 @@ class _DODatasetClient:
 
         if order_by is not None:
             params['order_by'] = order_by
+
+        if sql_query is not None:
+            params['sql_query'] = sql_query
+
+        if add_geom is not None:
+            params['add_geom'] = add_geom
+
+        if is_geography is not None:
+            params['is_geography'] = is_geography
 
         relative_path = '{}/{}'.format(DATASETS_BASE_PATH, name_id)
 
@@ -109,8 +118,13 @@ class _DODatasetClient:
 
         return response
 
-    def download_stream(self, name_id, limit=None, order_by=None):
-        return ResponseStream(self.download(name_id, limit=limit, order_by=order_by))
+    def download_stream(self, name_id, limit=None, order_by=None, sql_query=None, add_geom=None, is_geography=None):
+        return ResponseStream(self.download(name_id,
+                                            limit=limit,
+                                            order_by=order_by,
+                                            sql_query=sql_query,
+                                            add_geom=add_geom,
+                                            is_geography=is_geography))
 
     def create(self, payload):
         params = {'api_key': self.api_key}
@@ -304,8 +318,13 @@ class DODataset:
             payload['ttl_seconds'] = self._ttl_seconds
         self._client.create(payload)
 
-    def download_stream(self, limit=None, order_by=None):
-        return self._client.download_stream(name_id=self._name, limit=limit, order_by=order_by)
+    def download_stream(self, limit=None, order_by=None, sql_query=None, add_geom=None, is_geography=None):
+        return self._client.download_stream(name_id=self._name,
+                                            limit=limit,
+                                            order_by=order_by,
+                                            sql_query=sql_query,
+                                            add_geom=add_geom,
+                                            is_geography=is_geography)
 
     def upload(self, dataframe):
         return self._client.upload(dataframe, self._name)
