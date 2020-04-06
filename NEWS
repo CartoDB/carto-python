@@ -1,5 +1,5 @@
 Apr-06-2020: version 1.10.1
-- Add geom param to DO upload methods.
+- Add geom geom_column to DO upload methods.
 
 Mar-27-2020: version 1.10.0
 - Add params to order and limit number of rows of the DO dataset to download.
