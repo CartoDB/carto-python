@@ -307,11 +307,11 @@ class DODataset:
     def download_stream(self, limit=None, order_by=None):
         return self._client.download_stream(name_id=self._name, limit=limit, order_by=order_by)
 
-    def upload(self, dataframe):
-        return self._client.upload(dataframe, self._name)
+    def upload(self, dataframe, geom_column=None):
+        return self._client.upload(dataframe, self._name, params={'geom_column': geom_column})
 
-    def upload_file_object(self, file_object):
-        return self._client.upload_file_object(file_object, self._name)
+    def upload_file_object(self, file_object, geom_column=None):
+        return self._client.upload_file_object(file_object, self._name, params={'geom_column': geom_column})
 
     def import_dataset(self):
         return self._client.import_dataset(self._name)
