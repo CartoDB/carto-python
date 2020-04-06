@@ -326,11 +326,11 @@ class DODataset:
                                             add_geom=add_geom,
                                             is_geography=is_geography)
 
-    def upload(self, dataframe):
-        return self._client.upload(dataframe, self._name)
+    def upload(self, dataframe, geom_column=None):
+        return self._client.upload(dataframe, self._name, params={'geom_column': geom_column})
 
-    def upload_file_object(self, file_object):
-        return self._client.upload_file_object(file_object, self._name)
+    def upload_file_object(self, file_object, geom_column=None):
+        return self._client.upload_file_object(file_object, self._name, params={'geom_column': geom_column})
 
     def import_dataset(self):
         return self._client.import_dataset(self._name)
