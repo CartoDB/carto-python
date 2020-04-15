@@ -173,7 +173,7 @@ class _DODatasetClient:
         params = {'api_key': self.api_key}
         if filters is not None:
             params.update(filters)
-        relative_path = os.path.join(METADATA_BASE_PATH, entity)
+        relative_path = '{}/{}'.format(METADATA_BASE_PATH, entity)
 
         try:
             response = self.auth_client.send(relative_path, 'GET', params=params)
