@@ -96,6 +96,7 @@ Making requests to the SQL API is pretty straightforward:
 
 ```python
 from carto.sql import SQLClient
+from carto.exceptions import CartoException
 
 sql = SQLClient(auth_client)
 
