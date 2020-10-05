@@ -31,6 +31,7 @@ class DOSubscription(Resource):
     project = CharField()
     table = CharField()
     type = CharField()
+    status = CharField()
 
     class Meta:
         collection_endpoint = API_ENDPOINT.format(api_version=API_VERSION)
