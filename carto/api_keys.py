@@ -69,6 +69,22 @@ class APIKey(Resource):
         except Exception as e:
             raise CartoException(e)
 
+    def delete(self):
+        """
+        Removes the API KEY
+
+        :return:
+
+        :raise: CartoException
+        """
+        try:
+            endpoint = (self.Meta.collection_endpoint
+                        + "{name}"). \
+                format(name=self.name)
+
+            self.send(endpoint, "DELETE")
+        except Exception as exception:
+            raise CartoException(exception)
 
 class APIKeyManager(Manager):
     """

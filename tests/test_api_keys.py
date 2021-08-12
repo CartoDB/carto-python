@@ -183,3 +183,22 @@ def test_api_key_manager_filter_multiple(api_key_manager):
     api_keys = api_key_manager.filter(type='default,master')
 
     assert len(api_keys) == 2
+
+def test_delete_api_key(api_key_manager):
+    grants = [
+        {
+            "type": "apis",
+            "apis": ["sql", "maps"]
+        },
+        {
+            "type": "database",
+            "tables": []
+        }
+    ]
+    api_key_name = create_api_key(api_key_manager, grants)
+    api_key = api_key_manager.get(api_key_name)
+    api_key.delete()
+    with pytest.raises(NotFoundException) as exception:
+        api_key_manager.get(api_key_name)
+    assert "API key not found" in str(exception.value)
+
